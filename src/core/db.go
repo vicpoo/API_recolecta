@@ -1,44 +1,69 @@
-// db.go
 package core
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
-	"log"
 	"os"
+	"sync"
+	"time"
 
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-var db *sql.DB
+var (
+    pool *pgxpool.Pool
+    once sync.Once
+    err  error
+)
 
-func InitDB(){
+func ConnectPostgres() (*pgxpool.Pool, error) {
+    once.Do(func() {
+        dsn := fmt.Sprintf(
+            "postgres://%s:%s@%s:%s/%s",
+            os.Getenv("DB_USER"),
+            os.Getenv("DB_PASSWORD"),
+            os.Getenv("DB_HOST"),
+            os.Getenv("DB_PORT"),
+            os.Getenv("DB_NAME"),
+        )
 
-	if err := godotenv.Load(); err != nil {
-			log.Println("No se pudo cargar el .env")
-	}
+        config, parseErr := pgxpool.ParseConfig(dsn)
+        if parseErr != nil {
+            err = fmt.Errorf("error parsing DSN: %w", parseErr)
+            return
+        }
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
-		os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
-	)
+        // Configuraciones del pool
+        config.MaxConns = 25                          // Máximo de conexiones
+        config.MinConns = 5                           // Mínimo de conexiones
+        config.MaxConnLifetime = time.Hour            // Tiempo de vida
+        config.MaxConnIdleTime = 30 * time.Minute     // Tiempo inactivo
+        config.HealthCheckPeriod = time.Minute        // Health check
 
-	var err error
-	db, err = sql.Open("mysql", dsn)
-	if err != nil {
-		log.Fatal("No se pudo conectar a la BD")
-	}
+        // Crear el pool
+        ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+        defer cancel()
 
-	if err = db.Ping(); err != nil {
-		log.Fatal("No se pudo conectar a la BD")
-	}
+        pool, err = pgxpool.NewWithConfig(ctx, config)
+        if err != nil {
+            err = fmt.Errorf("error creating pool: %w", err)
+            return
+        }
 
-	fmt.Println("Se pudo conectar a la BD")
+        // Verificar conexión
+        if pingErr := pool.Ping(ctx); pingErr != nil {
+            pool.Close()
+            err = fmt.Errorf("error pinging database: %w", pingErr)
+            return
+        }
+    })
+
+    return pool, err
 }
 
-
-func GetBD() *sql.DB {
-	return db
+// ClosePool cierra el pool de conexiones
+func ClosePool() {
+    if pool != nil {
+        pool.Close()
+    }
 }
