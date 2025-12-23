@@ -5,6 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	tipoCamionUseCases "github.com/vicpoo/API_recolecta/src/TipoCamion/application"
+	tipoCamionAdapters "github.com/vicpoo/API_recolecta/src/TipoCamion/infraestructure/adapters"
+	tipoCamionControllers "github.com/vicpoo/API_recolecta/src/TipoCamion/infraestructure/controllers"
+	tipoCamionRoutes "github.com/vicpoo/API_recolecta/src/TipoCamion/infraestructure/routes"
 	"github.com/vicpoo/API_recolecta/src/core"
 )
 
@@ -16,6 +20,28 @@ func InitDependencies() {
 
 	engine := gin.Default()
 	engine.Use(core.CORSMiddleware())
+
+
+	//tipo camion
+	tipoCamionRepository := tipoCamionAdapters.NewPosgres()
+	saveTipoCamionUc := tipoCamionUseCases.NewSaveTipoCamionUseCase(tipoCamionRepository)
+	listAllTipoCamionUc := tipoCamionUseCases.NewListAllTipoCamion(tipoCamionRepository)
+	getTipoCamionUc := tipoCamionUseCases.NewGetTipoCamionByNameUseCase(tipoCamionRepository)
+	deleteTipoCamionByIdUc := tipoCamionUseCases.NewDeleteTipoCamionUseCase(tipoCamionRepository)
+
+	createTipoCamionCtr := tipoCamionControllers.NewCreateTipoCamionController(saveTipoCamionUc)
+	getAllTipoCamionCtr := tipoCamionControllers.NewGetAllTipoCamionController(listAllTipoCamionUc)
+	getTipoCamionByNameCtr := tipoCamionControllers.NewGetTipoCamionByNameController(getTipoCamionUc)
+	deleteTipoCamionByIdCtr := tipoCamionControllers.NewDeleteTipoCamionController(deleteTipoCamionByIdUc)
+
+	tipoCamionRoutes := tipoCamionRoutes.NewTipoCamionRoutes(
+		engine, 
+		createTipoCamionCtr, 
+		getAllTipoCamionCtr, 
+		getTipoCamionByNameCtr, 
+		deleteTipoCamionByIdCtr,
+	)
+	tipoCamionRoutes.Run()
 	
 	engine.Run(":8080")
 }
