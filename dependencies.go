@@ -5,6 +5,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	camionUseCases "github.com/vicpoo/API_recolecta/src/Camion/application"
+	camionAdapters "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/adapters"
+	camionControllers "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/controllers"
+	camionRoutes "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/routes"
 	tipoCamionUseCases "github.com/vicpoo/API_recolecta/src/TipoCamion/application"
 	tipoCamionAdapters "github.com/vicpoo/API_recolecta/src/TipoCamion/infraestructure/adapters"
 	tipoCamionControllers "github.com/vicpoo/API_recolecta/src/TipoCamion/infraestructure/controllers"
@@ -42,6 +46,33 @@ func InitDependencies() {
 		deleteTipoCamionByIdCtr,
 	)
 	tipoCamionRoutes.Run()
+
+
+	//camion
+	camionRepository := camionAdapters.NewPostgres()
+	saveCamionUc :=  camionUseCases.NewSaveCamionUseCase(camionRepository)
+	listAllCamionUc := camionUseCases.NewListCamionUseCase(camionRepository)
+	deleteCamionByIdUc := camionUseCases.NewDeleteCamionUseCase(camionRepository)
+	getCamionByIdUc := camionUseCases.NewGetCamionByIDUseCase(camionRepository)
+	getCamionByPlacaUc := camionUseCases.NewGetCamionByPlacaUseCase(camionRepository)
+	getCamionByModeloUc := camionUseCases.NewGetCamionByModeloUseCase(camionRepository)
+
+	createCamionCtr := camionControllers.NewCreateCamionController(saveCamionUc)
+	getAllCamionCtr := camionControllers.NewGetAllCamionController(listAllCamionUc)
+	deleteCamionByIdCtr := camionControllers.NewDeleteCamionController(deleteCamionByIdUc)
+	getCamionByIdCtr := camionControllers.NewGetCamionByIDController(getCamionByIdUc)
+	getCamionByPlacaCtr := camionControllers.NewGetCamionByPlacaController(getCamionByPlacaUc)
+	getCamionByModeloCtr := camionControllers.NewGetCamionByModeloController(getCamionByModeloUc) 
+
+	camionRoutes := camionRoutes.NewCamionRoutes(
+		engine, createCamionCtr, 
+		getAllCamionCtr, 
+		getCamionByIdCtr, 
+		deleteCamionByIdCtr,
+		getCamionByPlacaCtr,
+		getCamionByModeloCtr,
+	)
+	camionRoutes.Run()
 	
 	engine.Run(":8080")
 }
