@@ -9,6 +9,10 @@ import (
 	camionAdapters "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/adapters"
 	camionControllers "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/controllers"
 	camionRoutes "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/routes"
+	estadoCamionUseCases "github.com/vicpoo/API_recolecta/src/EstadoCamion/application"
+	estadoCamionAdapters "github.com/vicpoo/API_recolecta/src/EstadoCamion/infraestructure/adapters"
+	estadoCamionControllers "github.com/vicpoo/API_recolecta/src/EstadoCamion/infraestructure/controllers"
+	estadoCamionRoutes "github.com/vicpoo/API_recolecta/src/EstadoCamion/infraestructure/routes"
 	tipoCamionUseCases "github.com/vicpoo/API_recolecta/src/TipoCamion/application"
 	tipoCamionAdapters "github.com/vicpoo/API_recolecta/src/TipoCamion/infraestructure/adapters"
 	tipoCamionControllers "github.com/vicpoo/API_recolecta/src/TipoCamion/infraestructure/controllers"
@@ -52,6 +56,7 @@ func InitDependencies() {
 	camionRepository := camionAdapters.NewPostgres()
 	saveCamionUc :=  camionUseCases.NewSaveCamionUseCase(camionRepository)
 	listAllCamionUc := camionUseCases.NewListCamionUseCase(camionRepository)
+	updateCamionUc := camionUseCases.NewUpdateCamionUseCase(camionRepository)
 	deleteCamionByIdUc := camionUseCases.NewDeleteCamionUseCase(camionRepository)
 	getCamionByIdUc := camionUseCases.NewGetCamionByIDUseCase(camionRepository)
 	getCamionByPlacaUc := camionUseCases.NewGetCamionByPlacaUseCase(camionRepository)
@@ -59,6 +64,7 @@ func InitDependencies() {
 
 	createCamionCtr := camionControllers.NewCreateCamionController(saveCamionUc)
 	getAllCamionCtr := camionControllers.NewGetAllCamionController(listAllCamionUc)
+	updateCamionCtr := camionControllers.NewUpdateCamionController(updateCamionUc)
 	deleteCamionByIdCtr := camionControllers.NewDeleteCamionController(deleteCamionByIdUc)
 	getCamionByIdCtr := camionControllers.NewGetCamionByIDController(getCamionByIdUc)
 	getCamionByPlacaCtr := camionControllers.NewGetCamionByPlacaController(getCamionByPlacaUc)
@@ -68,11 +74,39 @@ func InitDependencies() {
 		engine, createCamionCtr, 
 		getAllCamionCtr, 
 		getCamionByIdCtr, 
+		updateCamionCtr, 
 		deleteCamionByIdCtr,
 		getCamionByPlacaCtr,
 		getCamionByModeloCtr,
 	)
 	camionRoutes.Run()
+
+	//estado camion
+	estadoCamionRepository := estadoCamionAdapters.NewPostgres()
+
+	saveEstadoCamionUc := estadoCamionUseCases.NewSaveEstadoCamionUseCase(estadoCamionRepository)
+	listEstadoCamionUc := estadoCamionUseCases.NewListAllEstadoCamionUseCase(estadoCamionRepository)
+	getEstadoCamionByIdUc := estadoCamionUseCases.NewGetByIdEstadoCamionUseCase(estadoCamionRepository)
+	updateEstadoCamionUc := estadoCamionUseCases.NewUpdateEstadoCamionUseCase(estadoCamionRepository)
+	deleteEstadoCamionUc := estadoCamionUseCases.NewDeleteEstadoCamionUseCase(estadoCamionRepository)
+
+	createEstadoCamionCtr := estadoCamionControllers.NewCreateEstadoCamionController(saveEstadoCamionUc)
+	getAllEstadoCamionCtr := estadoCamionControllers.NewGetAllEstadoCamionController(listEstadoCamionUc)
+	getEstadoCamionByIdCtr := estadoCamionControllers.NewGetEstadoCamionByIdController(getEstadoCamionByIdUc)
+	updateEstadoCamionCtr := estadoCamionControllers.NewUpdateEstadoCamionController(&updateEstadoCamionUc)
+	deleteEstadoCamionCtr := estadoCamionControllers.NewDeleteEstadoCamionController(deleteEstadoCamionUc)
+
+	estadoCamionRoutes := estadoCamionRoutes.NewEstadoCamionRoutes(
+		engine, 
+		createEstadoCamionCtr,
+		getAllEstadoCamionCtr,
+		getEstadoCamionByIdCtr,
+		deleteEstadoCamionCtr,
+		updateEstadoCamionCtr,
+	)
+
+	estadoCamionRoutes.Run()
+
 	
 	engine.Run(":8080")
 }

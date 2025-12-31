@@ -22,10 +22,5 @@ func (uc *UpdateCamionUseCase) Run(id int32, camion *entities.Camion) (*entities
 		return nil, errors.New("id inválido")
 	}
 
-	if camion.Placa == "" || camion.Modelo == "" {
-		return nil, errors.New("placa y modelo son obligatorios")
-	}
-
-	camion.CamionID = id
-	return uc.repo.Update(camion)
+	return uc.repo.Update(id,camion)
 }

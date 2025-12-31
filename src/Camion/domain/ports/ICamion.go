@@ -7,7 +7,7 @@ type ICamion interface {
 	ListAll() ([]entities.Camion, error)
 	GetByID(id int32) (*entities.Camion, error)
 	Delete(id int32) error
-	Update(camion *entities.Camion) (*entities.Camion, error)
+	Update(id int32, camion *entities.Camion) (*entities.Camion, error)
 	GetByPlaca(placa string) (*entities.Camion, error)
 	GetByModelo(modelo string) ([]entities.Camion, error)
 }

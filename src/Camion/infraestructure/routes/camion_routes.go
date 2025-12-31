@@ -11,6 +11,7 @@ type CamionRoutes struct {
 	createCamionController   *controllers.CreateCamionController
 	getAllCamionController   *controllers.GetAllCamionController
 	getCamionByIdController  *controllers.GetCamionByIDController
+	updateCamionController   *controllers.UpdateCamionController
 	deleteCamionController   *controllers.DeleteCamionController
 	getCamionByPlaca         *controllers.GetCamionByPlacaController
 	getCamionByModelo        *controllers.GetCamionByModeloController
@@ -21,6 +22,7 @@ func NewCamionRoutes(
 	createCamionController *controllers.CreateCamionController,
 	getAllCamionController *controllers.GetAllCamionController,
 	getCamionByIdController *controllers.GetCamionByIDController,
+	updateCamionController *controllers.UpdateCamionController,
 	deleteCamionController *controllers.DeleteCamionController,
 	getCamionByPlaca       *controllers.GetCamionByPlacaController,
 	getCamionByModelo      *controllers.GetCamionByModeloController, 
@@ -31,7 +33,10 @@ func NewCamionRoutes(
 		createCamionController:  createCamionController,
 		getAllCamionController:  getAllCamionController,
 		getCamionByIdController: getCamionByIdController,
+		updateCamionController: updateCamionController,
 		deleteCamionController:  deleteCamionController,
+		getCamionByPlaca: getCamionByPlaca,
+		getCamionByModelo: getCamionByModelo,
 	}
 }
 
@@ -42,6 +47,7 @@ func (camionRoutes *CamionRoutes) Run() {
 		routes.GET("/", camionRoutes.getAllCamionController.Run)
 		routes.GET("/:id", camionRoutes.getCamionByIdController.Run)
 		routes.DELETE("/:id", camionRoutes.deleteCamionController.Run)
+		routes.PUT("/:id", camionRoutes.updateCamionController.Run)
 		routes.GET("/placa/:placa", camionRoutes.getCamionByPlaca.Run)
 		routes.GET("/modelo", camionRoutes.getCamionByModelo.Run)
 	}

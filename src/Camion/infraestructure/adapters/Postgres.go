@@ -135,7 +135,7 @@ func (pg *Postgres) GetByID(id int32) (*entities.Camion, error) {
 }
 
 
-func (pg *Postgres) Update(camion *entities.Camion) (*entities.Camion, error) {
+func (pg *Postgres) Update(id int32,camion *entities.Camion) (*entities.Camion, error) {
 	sql := `
 	UPDATE camion
 	SET 
@@ -161,7 +161,7 @@ func (pg *Postgres) Update(camion *entities.Camion) (*entities.Camion, error) {
 		camion.DisponibilidadID,
 		camion.NombreDisponibilidad,
 		camion.ColorDisponibilidad,
-		camion.CamionID,
+		id,
 	).Scan(&camion.UpdatedAt)
 
 	if err != nil {
