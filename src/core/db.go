@@ -67,3 +67,12 @@ func ClosePool() {
         pool.Close()
     }
 }
+
+
+func GetBD() *pgxpool.Pool {
+    db, err := ConnectPostgres()
+    if err != nil {
+        panic(fmt.Sprintf("Error al conectar a la base de datos: %v", err))
+    }
+    return db
+}
