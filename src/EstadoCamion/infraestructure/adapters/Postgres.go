@@ -26,9 +26,9 @@ func NewPostgres() *Postgres {
 //
 func (pg *Postgres) Save(estado *entities.EstadoCamion) (*entities.EstadoCamion, error) {
 	sql := `
-	INSERT INTO estado_camion (camion_id, estado, timestamp, observaciones)
-	VALUES ($1, $2, $3, $4)
-	RETURNING estado_id
+	INSERT INTO estado_camion (camion_id, estado, observaciones)
+	VALUES ($1, $2, $3)
+	RETURNING estado_id, timestamp
 	`
 
 	err := pg.conn.QueryRow(
@@ -36,9 +36,8 @@ func (pg *Postgres) Save(estado *entities.EstadoCamion) (*entities.EstadoCamion,
 		sql,
 		estado.CamionID,
 		estado.Estado,
-		estado.Timestamp,
 		estado.Observaciones,
-	).Scan(&estado.EstadoID)
+	).Scan(&estado.EstadoID, &estado.Timestamp)
 
 	if err != nil {
 		return nil, err
@@ -46,6 +45,7 @@ func (pg *Postgres) Save(estado *entities.EstadoCamion) (*entities.EstadoCamion,
 
 	return estado, nil
 }
+
 
 //
 // GET BY ID
@@ -133,20 +133,19 @@ func (pg *Postgres) Update(id int32, estado *entities.EstadoCamion) (*entities.E
 	SET
 		camion_id = $1,
 		estado = $2,
-		timestamp = $3,
-		observaciones = $4
-	WHERE estado_id = $5
+		observaciones = $3
+	WHERE estado_id = $4
+	RETURNING timestamp
 	`
 
-	_, err := pg.conn.Exec(
+	err := pg.conn.QueryRow(
 		context.Background(),
 		sql,
 		estado.CamionID,
 		estado.Estado,
-		estado.Timestamp,
 		estado.Observaciones,
 		id,
-	)
+	).Scan(&estado.Timestamp)
 
 	if err != nil {
 		return nil, err
