@@ -1,6 +1,9 @@
 package main
 
+import "log"
 
 func main() {
-	InitDependencies()
+	if err := InitDependencies(); err != nil {
+		log.Fatal(err)
+	}
 }
