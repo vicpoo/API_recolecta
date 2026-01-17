@@ -41,6 +41,16 @@ import (
     registroVaciadoApplication "github.com/vicpoo/API_recolecta/src/RegistroVaciado/application"
     registroVaciadoControllers "github.com/vicpoo/API_recolecta/src/RegistroVaciado/infraestructure/controllers"
     registroVaciadoRoutesPkg "github.com/vicpoo/API_recolecta/src/RegistroVaciado/infraestructure/routes"
+	alertaMantenimiento "github.com/vicpoo/API_recolecta/src/alerta_mantenimiento/infrastructure"
+	anomalia "github.com/vicpoo/API_recolecta/src/anomalia/infrastructure"
+	incidencia "github.com/vicpoo/API_recolecta/src/incidencia/infrastructure"
+	_ "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
+	reporteConductor "github.com/vicpoo/API_recolecta/src/reporte_conductor/infrastructure"
+	registroMantenimiento "github.com/vicpoo/API_recolecta/src/registro_mantenimiento/infrastructure"
+	reporteFallaCritica "github.com/vicpoo/API_recolecta/src/reporte_falla_critica/infrastructure"
+	reporteMantenimientoGenerado "github.com/vicpoo/API_recolecta/src/reporte_mantenimiento_generado/infrastructure"
+	seguimientoFallaCritica "github.com/vicpoo/API_recolecta/src/seguimiento_falla_critica/infrastructure"
+	tipoMantenimiento "github.com/vicpoo/API_recolecta/src/tipo_mantenimiento/infrastructure"
 
 	"github.com/vicpoo/API_recolecta/src/core"
 )
@@ -377,6 +387,46 @@ registroVaciadoRoutes := registroVaciadoRoutesPkg.NewRegistroVaciadoRoutes(
 registroVaciadoRoutes.Run()
 
 
+    alertaMantenimeintoRoutes := alertaMantenimiento.NewAlertaMantenimientoRouter(engine)
+
+	alertaMantenimeintoRoutes.Run()
+
+
+	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
+
+	anomaliaRoutes.Run()
+
+	incidenciaRoutes := incidencia.NewIncidenciaRouter(engine)
+
+	incidenciaRoutes.Run()
+
+	reporteConductorRoutes := reporteConductor.NewReporteConductorRouter(engine)
+
+	reporteConductorRoutes.Run()
+	
+	registroMantenimientoRoutes := registroMantenimiento.NewRegistroMantenimientoRouter(engine)
+
+	registroMantenimientoRoutes.Run()
+
+
+	reporteFallaCriticaRoutes := reporteFallaCritica.NewReporteFallaCriticaRouter(engine)
+
+	reporteFallaCriticaRoutes.Run()
+
+
+	reporteMantenimientoGeneradoRoutes := reporteMantenimientoGenerado.NewReporteMantenimientoGeneradoRouter(engine)
+
+	reporteMantenimientoGeneradoRoutes.Run()
+
+
+	seguimientoFallaCriticaRoutes := seguimientoFallaCritica.NewSeguimientoFallaCriticaRouter(engine)
+
+	seguimientoFallaCriticaRoutes.Run()
+
+
+	tipoMantenimientoRoutes := tipoMantenimiento.NewTipoMantenimientoRouter(engine)
+
+	tipoMantenimientoRoutes.Run()
 
 	engine.Run(":8080")
 }

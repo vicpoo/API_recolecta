@@ -37,7 +37,7 @@ func NewPuntoRecoleccionRoutes(
 }
 
 func (r *PuntoRecoleccionRoutes) Run() {
-	routes := r.engine.Group("/puntos-recoleccion")
+	routes := r.engine.Group("/api/puntos-recoleccion")
 	{
 		routes.POST("/", r.createController.Run)
 		routes.GET("/", r.getAllController.Run)

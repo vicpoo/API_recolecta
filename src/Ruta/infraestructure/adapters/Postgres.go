@@ -23,21 +23,32 @@ func NewPostgres() *Postgres {
 
 func (pg *Postgres) Save(ruta *entities.Ruta) error {
 	sql := `
-		INSERT INTO ruta (nombre, descripcion, json_ruta)
-		VALUES ($1, $2, $3)
-		RETURNING ruta_id, created_at
+	INSERT INTO ruta
+	(
+		nombre,
+		descripcion,
+		json_ruta,
+		eliminado,
+		created_at
+	)
+	VALUES ($1, $2, $3, false, $4)
+	RETURNING ruta_id
 	`
 
 	jsonData, _ := json.Marshal(ruta.JsonRuta)
 
-	return pg.conn.QueryRow(
+	err := pg.conn.QueryRow(
 		context.Background(),
 		sql,
 		ruta.Nombre,
 		ruta.Descripcion,
 		jsonData,
-	).Scan(&ruta.RutaID, &ruta.CreatedAt)
+		ruta.CreatedAt, // 👈 tú lo insertas
+	).Scan(&ruta.RutaID)
+
+	return err
 }
+
 
 
 func (pg *Postgres) ListAll() ([]entities.Ruta, error) {
@@ -111,11 +122,12 @@ func (pg *Postgres) GetById(id int32) (*entities.Ruta, error) {
 
 func (pg *Postgres) Update(ruta *entities.Ruta) error {
 	sql := `
-		UPDATE ruta
-		SET nombre = $1,
-		    descripcion = $2,
-		    json_ruta = $3
-		WHERE ruta_id = $4
+	UPDATE ruta
+	SET
+		nombre = $1,
+		descripcion = $2,
+		json_ruta = $3
+	WHERE ruta_id = $4 AND eliminado = false
 	`
 
 	jsonData, _ := json.Marshal(ruta.JsonRuta)

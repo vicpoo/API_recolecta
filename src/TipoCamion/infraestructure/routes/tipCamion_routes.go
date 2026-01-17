@@ -25,7 +25,7 @@ func NewTipoCamionRoutes(engine *gin.Engine, createTipoCamionController *control
 }
 
 func (tipoCamionRoutes *TipoCamionRoutes) Run() {
-	routes := tipoCamionRoutes.engine.Group("/tipo-camion")
+	routes := tipoCamionRoutes.engine.Group("/api/tipo-camion")
 	{
 		routes.POST("/", tipoCamionRoutes.createTipoCamionController.Run)
 		routes.GET("/", tipoCamionRoutes.getTipoCamionController.Run)
