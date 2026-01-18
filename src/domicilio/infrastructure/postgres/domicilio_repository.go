@@ -65,6 +65,21 @@ func (r *DomicilioRepository) GetByID(id int) (*domain.Domicilio, error) {
 	return &d, nil
 }
 
+func (r *DomicilioRepository)Delete(id int, usuarioID int) error{
+	query := `
+		UPDATE domicilio
+		SET eliminado = true, updated_at = NOW()
+		WHERE domicilio_id = $1 AND usuario_id = $2 AND eliminado = false
+	`
+	_, err := r.db.Exec(
+		context.Background(),
+		query,
+		id,
+		usuarioID,
+	)
+	return err
+}
+
 func (r *DomicilioRepository) Update(d *domain.Domicilio) error {
 	query := `
 		UPDATE domicilio

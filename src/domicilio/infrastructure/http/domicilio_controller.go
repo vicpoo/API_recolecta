@@ -13,14 +13,16 @@ type DomicilioController struct {
 	create *application.CreateDomicilio
 	get    *application.GetDomicilio
 	update *application.UpdateDomicilio
+	delete *application.DeleteDomicilio
 }
 
 func NewDomicilioController(
 	create *application.CreateDomicilio,
 	get *application.GetDomicilio,
 	update *application.UpdateDomicilio,
+	delete *application.DeleteDomicilio,
 ) *DomicilioController {
-	return &DomicilioController{create, get, update}
+	return &DomicilioController{create, get, update, delete}
 }
 
 func (c *DomicilioController) RegisterRoutes(r *gin.Engine) {
@@ -29,6 +31,7 @@ func (c *DomicilioController) RegisterRoutes(r *gin.Engine) {
 		group.POST("", c.Create)
 		group.GET("/:id", c.GetByID)
 		group.PUT("/:id", c.Update)
+		group.DELETE("/:id", c.Delete)
 	}
 }
 
@@ -75,3 +78,17 @@ func (c *DomicilioController) Update(ctx *gin.Context) {
 
 	ctx.Status(http.StatusOK)
 }
+
+func (c *DomicilioController) Delete(ctx *gin.Context) {
+	id, _ := strconv.Atoi(ctx.Param("id"))
+
+	usuarioID := ctx.GetInt("user_id") // viene del JWT
+
+	if err := c.delete.Execute(id, usuarioID); err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "no autorizado"})
+		return
+	}
+
+	ctx.Status(http.StatusNoContent)
+}
+

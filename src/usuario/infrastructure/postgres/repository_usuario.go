@@ -39,10 +39,43 @@ func (r *UsuarioRepository) Create(u *domain.Usuario) error {
 	return err
 }
 
+func (r *UsuarioRepository) GetByEmail(email string) (*domain.Usuario, error) {
+	query := `
+		SELECT user_id, nombre, alias, telefono, email, password,
+		    role_id, residencia_id, eliminado, created_at, updated_at
+		FROM usuario
+		WHERE email = $1 AND eliminado = false
+	`
+
+	row := r.db.QueryRow(context.Background(), query, email)
+
+	var u domain.Usuario
+	err := row.Scan(
+		&u.UserID,
+		&u.Nombre,
+		&u.Alias,
+		&u.Telefono,
+		&u.Email,
+		&u.Password,
+		&u.RoleID,
+		&u.ResidenciaID,
+		&u.Eliminado,
+		&u.CreatedAt,
+		&u.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &u, nil
+}
+
+
 func (r *UsuarioRepository) GetByID(id int) (*domain.Usuario, error) {
 	query := `
 		SELECT user_id, nombre, alias, telefono, email, role_id,
-		       residencia_id, eliminado, created_at, updated_at
+		    residencia_id, eliminado, created_at, updated_at
 		FROM usuario
 		WHERE user_id = $1 AND eliminado = false
 	`
@@ -73,7 +106,7 @@ func (r *UsuarioRepository) GetByID(id int) (*domain.Usuario, error) {
 func (r *UsuarioRepository) GetAll() ([]domain.Usuario, error) {
 	query := `
 		SELECT user_id, nombre, alias, telefono, email, role_id,
-		       residencia_id, eliminado, created_at, updated_at
+		    residencia_id, eliminado, created_at, updated_at
 		FROM usuario
 		WHERE eliminado = false
 	`
@@ -107,4 +140,28 @@ func (r *UsuarioRepository) GetAll() ([]domain.Usuario, error) {
 	}
 
 	return usuarios, nil
+}
+
+func (uc *LoginUsuario) Execute(email, password string) (string, error) {
+	u, err := uc.repo.GetByEmail(email)
+	if err != nil {
+		return "", errors.New("credenciales inválidas")
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil {
+		return "", errors.New("credenciales inválidas")
+	}
+
+	return core.GenerateToken(u.UserID, u.RoleID)
+}
+
+
+func (r *UsuarioRepository) Delete(id int) error {
+	query := `
+		UPDATE usuario
+		SET eliminado = true, updated_at = NOW()
+		WHERE user_id = $1
+	`
+	_, err := r.db.Exec(context.Background(), query, id)
+	return err
 }

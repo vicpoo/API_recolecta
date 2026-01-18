@@ -105,3 +105,14 @@ func (r *ColoniaRepository) Update(c *domain.Colonia) error {
 
 	return err
 }
+
+func (r *ColoniaRepository) Delete(id int) error {
+	query := `
+		UPDATE colonia
+		SET eliminado = true
+		WHERE colonia_id = $1
+	`
+
+	_, err := r.db.Exec(context.Background(), query, id)
+	return err
+}

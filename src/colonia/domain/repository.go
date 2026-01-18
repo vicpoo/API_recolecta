@@ -5,4 +5,5 @@ type ColoniaRepository interface {
 	GetByID(id int) (*Colonia, error)
 	GetAll() ([]Colonia, error)
 	Update(c *Colonia) error
+	Delete(id int) error
 }

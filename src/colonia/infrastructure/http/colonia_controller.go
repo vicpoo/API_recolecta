@@ -14,6 +14,7 @@ type ColoniaController struct {
 	get    *application.GetColonia
 	list   *application.ListColonias
 	update *application.UpdateColonia
+	delete *application.DeleteColonia
 }
 
 func NewColoniaController(
@@ -21,8 +22,9 @@ func NewColoniaController(
 	get *application.GetColonia,
 	list *application.ListColonias,
 	update *application.UpdateColonia,
+	delete *application.DeleteColonia,
 ) *ColoniaController {
-	return &ColoniaController{create, get, list, update}
+	return &ColoniaController{create, get, list, update, delete}
 }
 
 func (c *ColoniaController) RegisterRoutes(r *gin.Engine) {
@@ -32,6 +34,7 @@ func (c *ColoniaController) RegisterRoutes(r *gin.Engine) {
 		group.GET("", c.List)
 		group.GET("/:id", c.GetByID)
 		group.PUT("/:id", c.Update)
+		group.DELETE("/:id", c.Delete)
 	}
 }
 
@@ -87,3 +90,15 @@ func (c *ColoniaController) Update(ctx *gin.Context) {
 
 	ctx.Status(http.StatusOK)
 }
+
+func (c *ColoniaController) Delete(ctx *gin.Context) {
+	id, _ := strconv.Atoi(ctx.Param("id"))
+
+	if err := c.delete.Execute(id); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.Status(http.StatusNoContent)
+}
+
