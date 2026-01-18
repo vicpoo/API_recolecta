@@ -36,7 +36,7 @@ func NewEstadoCamionRoutes(
 
 
 func (r *EstadoCamionRoutes) Run() {
-	routes := r.engine.Group("/estado-camion") 
+	routes := r.engine.Group("/api/estado-camion") 
 	{
 		routes.POST("/", r.createEstadoCamionController.Run)
 		routes.GET("/", r.getAllEstadoCamionController.Run)

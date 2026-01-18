@@ -35,7 +35,7 @@ func NewRutaRoutes(
 }
 
 func (r *RutaRoutes) Run() {
-	routes := r.engine.Group("/rutas")
+	routes := r.engine.Group("/api/rutas")
 	{
 		routes.POST("/", r.createController.Run)
 		routes.GET("/", r.getAllController.Run)

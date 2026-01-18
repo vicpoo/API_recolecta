@@ -24,12 +24,23 @@ func NewPostgres() *Postgres {
 func (pg *Postgres) Save(camion *entities.Camion) (*entities.Camion, error) {
 	sql := `
 	INSERT INTO camion
-	(placa, modelo, tipo_camion_id, es_rentado, disponibilidad_id, nombre_disponibilidad, color_disponibilidad)
-	VALUES ($1,$2,$3,$4,$5,$6,$7)
-	RETURNING camion_id, created_at
+	(
+		placa,
+		modelo,
+		tipo_camion_id,
+		es_rentado,
+		disponibilidad_id,
+		nombre_disponibilidad,
+		color_disponibilidad,
+		created_at
+	)
+	VALUES ($1,$2,$3,$4,$5,$6,$7, $8)
+	RETURNING camion_id
 	`
 
-	err := pg.conn.QueryRow(context.Background(), sql,
+	err := pg.conn.QueryRow(
+		context.Background(),
+		sql,
 		camion.Placa,
 		camion.Modelo,
 		camion.TipoCamionID,
@@ -37,7 +48,7 @@ func (pg *Postgres) Save(camion *entities.Camion) (*entities.Camion, error) {
 		camion.DisponibilidadID,
 		camion.NombreDisponibilidad,
 		camion.ColorDisponibilidad,
-	).Scan(&camion.CamionID, &camion.CreatedAt)
+	).Scan(&camion.CamionID)
 
 	return camion, err
 }
@@ -135,7 +146,7 @@ func (pg *Postgres) GetByID(id int32) (*entities.Camion, error) {
 }
 
 
-func (pg *Postgres) Update(id int32,camion *entities.Camion) (*entities.Camion, error) {
+func (pg *Postgres) Update(id int32, camion *entities.Camion) (*entities.Camion, error) {
 	sql := `
 	UPDATE camion
 	SET 
@@ -146,12 +157,11 @@ func (pg *Postgres) Update(id int32,camion *entities.Camion) (*entities.Camion, 
 		disponibilidad_id = $5,
 		nombre_disponibilidad = $6,
 		color_disponibilidad = $7,
-		updated_at = NOW()
-	WHERE camion_id = $8 AND eliminado = false
-	RETURNING updated_at
+		updated_at = $8
+	WHERE camion_id = $9 AND eliminado = false
 	`
 
-	err := pg.conn.QueryRow(
+	cmdTag, err := pg.conn.Exec(
 		context.Background(),
 		sql,
 		camion.Placa,
@@ -161,18 +171,21 @@ func (pg *Postgres) Update(id int32,camion *entities.Camion) (*entities.Camion, 
 		camion.DisponibilidadID,
 		camion.NombreDisponibilidad,
 		camion.ColorDisponibilidad,
+		camion.UpdatedAt, 
 		id,
-	).Scan(&camion.UpdatedAt)
+	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, errors.New("camión no encontrado")
-		}
 		return nil, err
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return nil, errors.New("camión no encontrado")
 	}
 
 	return camion, nil
 }
+
 
 func (pg *Postgres) GetByPlaca(placa string) (*entities.Camion, error) {
 	sql := `

@@ -41,7 +41,7 @@ func NewCamionRoutes(
 }
 
 func (camionRoutes *CamionRoutes) Run() {
-	routes := camionRoutes.engine.Group("/camion")
+	routes := camionRoutes.engine.Group("/api/camion")
 	{
 		routes.POST("/", camionRoutes.createCamionController.Run)
 		routes.GET("/", camionRoutes.getAllCamionController.Run)

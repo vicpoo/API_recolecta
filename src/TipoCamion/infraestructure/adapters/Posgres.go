@@ -24,17 +24,33 @@ func NewPosgres() *Postgres {
 }
 
 
-func (posgres *Postgres) Save(tipoCamion *entities.TipoCamion) (*entities.TipoCamion, error) {
-	sql := "INSERT INTO tipo_camion(nombre, descripcion) VALUES ($1, $2) RETURNING tipo_camion_id, created_at"
+func (postgres *Postgres) Save(tipoCamion *entities.TipoCamion) (*entities.TipoCamion, error) {
+	sql := `
+	INSERT INTO tipo_camion
+	(
+		nombre,
+		descripcion,
+		created_at
+	)
+	VALUES ($1, $2, $3)
+	RETURNING tipo_camion_id
+	`
 
-	err := posgres.conn.QueryRow(context.Background(), sql, tipoCamion.Nombre, tipoCamion.Descripcion).Scan(&tipoCamion.TipoCamionID, &tipoCamion.CreatedAt)
+	err := postgres.conn.QueryRow(
+		context.Background(),
+		sql,
+		tipoCamion.Nombre,
+		tipoCamion.Descripcion,
+		tipoCamion.CreatedAt, 
+	).Scan(&tipoCamion.TipoCamionID)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	return tipoCamion, nil
 }
+
 
 func (posgres *Postgres) ListAll() ([]entities.TipoCamion, error) {
 	var tipos []entities.TipoCamion

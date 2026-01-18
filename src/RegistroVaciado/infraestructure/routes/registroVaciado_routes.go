@@ -42,7 +42,7 @@ func NewRegistroVaciadoRoutes(
 }
 
 func (r *RegistroVaciadoRoutes) Run() {
-	group := r.engine.Group("/registro-vaciado")
+	group := r.engine.Group("/api/registro-vaciado")
 	{
 		group.POST("", r.createController.Run)
 		group.GET("", r.getAllController.Run)
