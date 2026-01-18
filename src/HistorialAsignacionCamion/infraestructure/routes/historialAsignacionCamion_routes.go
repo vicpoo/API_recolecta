@@ -60,7 +60,7 @@ func NewHistorialAsignacionCamionRoutes(
 
 
 func (r *HistorialAsignacionCamionRoutes) Run() {
-	routes := r.engine.Group("/historial-asignacion")
+	routes := r.engine.Group("/api/historial-asignacion")
 	{
 		// CRUD
 		routes.POST("/", r.createController.Run)

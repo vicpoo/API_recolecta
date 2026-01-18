@@ -42,7 +42,7 @@ func NewRellenoSanitarioRoutes(
 }
 
 func (r *RellenoSanitarioRoutes) Run() {
-	routes := r.engine.Group("/relleno-sanitario")
+	routes := r.engine.Group("/api/relleno-sanitario")
 	{
 		routes.POST("/", r.createRellenoSanitarioController.Execute)
 		routes.GET("/", r.getAllRellenoSanitarioController.Execute)

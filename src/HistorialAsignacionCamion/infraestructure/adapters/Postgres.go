@@ -24,17 +24,29 @@ func NewPostgres() *Postgres {
 //
 func (pg *Postgres) Save(h *entities.HistorialAsignacionCamion) (*entities.HistorialAsignacionCamion, error) {
 	sql := `
-	INSERT INTO historial_asignacion_camion (id_chofer, id_camion, fecha_baja, eliminado)
-	VALUES ($1, $2, $3, $4)
-	RETURNING id_historial, fecha_asignacion, created_at
+	INSERT INTO historial_asignacion_camion
+	(
+		id_chofer,
+		id_camion,
+		fecha_asignacion,
+		fecha_baja,
+		eliminado,
+		created_at
+	)
+	VALUES ($1,$2,$3,$4,$5,$6)
+	RETURNING id_historial
 	`
 
-	err := pg.conn.QueryRow(context.Background(), sql,
+	err := pg.conn.QueryRow(
+		context.Background(),
+		sql,
 		h.IDChofer,
 		h.IDCamion,
+		h.FechaAsignacion, 
 		h.FechaBaja,
 		h.Eliminado,
-	).Scan(&h.IDHistorial, &h.FechaAsignacion, &h.CreatedAt)
+		h.CreatedAt, 
+	).Scan(&h.IDHistorial)
 
 	if err != nil {
 		return nil, err
@@ -121,26 +133,38 @@ func (pg *Postgres) ListAll() ([]entities.HistorialAsignacionCamion, error) {
 func (pg *Postgres) Update(id int32, h *entities.HistorialAsignacionCamion) (*entities.HistorialAsignacionCamion, error) {
 	sql := `
 	UPDATE historial_asignacion_camion
-	SET id_chofer=$1, id_camion=$2, fecha_baja=$3, eliminado=$4, updated_at=now()
-	WHERE id_historial=$5
-	RETURNING fecha_asignacion, created_at, updated_at
+	SET
+		id_chofer = $1,
+		id_camion = $2,
+		fecha_baja = $3,
+		eliminado = $4,
+		updated_at = $5
+	WHERE id_historial = $6
 	`
 
-	err := pg.conn.QueryRow(context.Background(), sql,
+	cmdTag, err := pg.conn.Exec(
+		context.Background(),
+		sql,
 		h.IDChofer,
 		h.IDCamion,
 		h.FechaBaja,
 		h.Eliminado,
+		h.UpdatedAt, // 👈 tú la defines
 		id,
-	).Scan(&h.FechaAsignacion, &h.CreatedAt, &h.UpdatedAt)
+	)
 
 	if err != nil {
 		return nil, err
 	}
 
+	if cmdTag.RowsAffected() == 0 {
+		return nil, errors.New("historial no encontrado")
+	}
+
 	h.IDHistorial = int(id)
 	return h, nil
 }
+
 
 //
 // DELETE (Soft)

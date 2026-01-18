@@ -24,8 +24,14 @@ func NewPostgres() *Postgres {
 //
 func (pg *Postgres) Save(p *entities.PuntoRecoleccion) (*entities.PuntoRecoleccion, error) {
 	sql := `
-	INSERT INTO punto_recoleccion (ruta_id, cp, eliminado)
-	VALUES ($1, $2, false)
+	INSERT INTO punto_recoleccion
+	(
+		ruta_id,
+		cp,
+		eliminado,
+		created_at
+	)
+	VALUES ($1, $2, false, $3)
 	RETURNING punto_id
 	`
 
@@ -34,6 +40,7 @@ func (pg *Postgres) Save(p *entities.PuntoRecoleccion) (*entities.PuntoRecolecci
 		sql,
 		p.RutaID,
 		p.CP,
+		p.CreatedAt, // 👈 tú lo insertas
 	).Scan(&p.PuntoID)
 
 	if err != nil {
@@ -42,6 +49,7 @@ func (pg *Postgres) Save(p *entities.PuntoRecoleccion) (*entities.PuntoRecolecci
 
 	return p, nil
 }
+
 
 //
 // UPDATE

@@ -28,13 +28,15 @@ func NewPostgres() *Postgres {
 //
 func (pg *Postgres) Save(rutaCamion *entities.RutaCamion) (*entities.RutaCamion, error) {
 	sql := `
-	INSERT INTO ruta_camion (
+	INSERT INTO ruta_camion
+	(
 		ruta_id,
 		camion_id,
-		fecha
+		fecha,
+		created_at
 	)
-	VALUES ($1, $2, $3)
-	RETURNING ruta_camion_id, created_at
+	VALUES ($1, $2, $3, $4)
+	RETURNING ruta_camion_id
 	`
 
 	err := pg.conn.QueryRow(
@@ -42,11 +44,9 @@ func (pg *Postgres) Save(rutaCamion *entities.RutaCamion) (*entities.RutaCamion,
 		sql,
 		rutaCamion.RutaID,
 		rutaCamion.CamionID,
-		rutaCamion.Fecha,
-	).Scan(
-		&rutaCamion.RutaCamionID,
-		&rutaCamion.CreatedAt,
-	)
+		rutaCamion.Fecha,      // dato de negocio
+		rutaCamion.CreatedAt,  // 👈 tú lo insertas
+	).Scan(&rutaCamion.RutaCamionID)
 
 	if err != nil {
 		return nil, err
@@ -54,6 +54,7 @@ func (pg *Postgres) Save(rutaCamion *entities.RutaCamion) (*entities.RutaCamion,
 
 	return rutaCamion, nil
 }
+
 
 //
 // UPDATE
@@ -67,28 +68,29 @@ func (pg *Postgres) Update(id int32, rutaCamion *entities.RutaCamion) (*entities
 		fecha = $3
 	WHERE ruta_camion_id = $4
 	  AND eliminado = false
-	RETURNING created_at
 	`
 
-	err := pg.conn.QueryRow(
+	cmd, err := pg.conn.Exec(
 		context.Background(),
 		sql,
 		rutaCamion.RutaID,
 		rutaCamion.CamionID,
 		rutaCamion.Fecha,
 		id,
-	).Scan(&rutaCamion.CreatedAt)
+	)
 
 	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, errors.New("ruta_camion no encontrada")
-		}
 		return nil, err
+	}
+
+	if cmd.RowsAffected() == 0 {
+		return nil, errors.New("ruta_camion no encontrada")
 	}
 
 	rutaCamion.RutaCamionID = id
 	return rutaCamion, nil
 }
+
 
 //
 // GET ALL
