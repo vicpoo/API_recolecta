@@ -28,6 +28,9 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			tokenStr,
 			&Claims{},
 			func(token *jwt.Token) (interface{}, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, jwt.ErrSignatureInvalid
+				}
 				return jwtSecret, nil
 			},
 		)
@@ -37,7 +40,12 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		claims := token.Claims.(*Claims)
+		claims, ok := token.Claims.(*Claims)
+		if !ok {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "claims inválidos"})
+			return
+		}
+
 		c.Set("user_id", claims.UserID)
 		c.Set("role_id", claims.RoleID)
 

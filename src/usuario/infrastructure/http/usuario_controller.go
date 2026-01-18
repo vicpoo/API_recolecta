@@ -38,40 +38,6 @@ func (c *UsuarioController) RegisterRoutes(r *gin.Engine) {
 	}
 }
 
-func (c *UsuarioController) Create(ctx *gin.Context) {
-	var body domain.Usuario
-	if err := ctx.ShouldBindJSON(&body); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := c.create.Execute(&body); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.Status(http.StatusCreated)
-}
-
-func (c *UsuarioController) GetByID(ctx *gin.Context) {
-	id, _ := strconv.Atoi(ctx.Param("id"))
-	usuario, err := c.get.Execute(id)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "usuario no encontrado"})
-		return
-	}
-	ctx.JSON(http.StatusOK, usuario)
-}
-
-func (c *UsuarioController) List(ctx *gin.Context) {
-	usuarios, err := c.list.Execute()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, usuarios)
-}
-
 func (c *UsuarioController) Login(ctx *gin.Context) {
 	var body struct {
 		Email    string `json:"email"`
@@ -92,6 +58,42 @@ func (c *UsuarioController) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"token": token,
 	})
+}
+
+func (c *UsuarioController) Create(ctx *gin.Context) {
+	var body domain.Usuario
+	if err := ctx.ShouldBindJSON(&body); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+		
+
+	if err := c.create.Execute(&body); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.Status(http.StatusCreated)
+}
+
+
+func (c *UsuarioController) GetByID(ctx *gin.Context) {
+	id, _ := strconv.Atoi(ctx.Param("id"))
+	usuario, err := c.get.Execute(id)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "usuario no encontrado"})
+		return
+	}
+	ctx.JSON(http.StatusOK, usuario)
+}
+
+func (c *UsuarioController) List(ctx *gin.Context) {
+	usuarios, err := c.list.Execute()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, usuarios)
 }
 
 func (c *UsuarioController) Delete(ctx *gin.Context) {
