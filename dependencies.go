@@ -51,6 +51,22 @@ import (
 	reporteMantenimientoGenerado "github.com/vicpoo/API_recolecta/src/reporte_mantenimiento_generado/infrastructure"
 	seguimientoFallaCritica "github.com/vicpoo/API_recolecta/src/seguimiento_falla_critica/infrastructure"
 	tipoMantenimiento "github.com/vicpoo/API_recolecta/src/tipo_mantenimiento/infrastructure"
+	usuarioPostgres "github.com/vicpoo/API_recolecta/src/usuario/infrastructure/postgres"
+	usuarioApplication "github.com/vicpoo/API_recolecta/src/usuario/application"
+	usuarioHttp "github.com/vicpoo/API_recolecta/src/usuario/infrastructure/http"
+	domicilioApplication "github.com/vicpoo/API_recolecta/src/domicilio/application"
+	domicilioHttp "github.com/vicpoo/API_recolecta/src/domicilio/infrastructure/http"
+	domicilioPostgres "github.com/vicpoo/API_recolecta/src/domicilio/infrastructure/postgres"
+	coloniaPostgres "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/postgres"
+	coloniaApplication "github.com/vicpoo/API_recolecta/src/colonia/application"
+	coloniaHttp "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/http"
+	alertaPostgres "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/postgres"
+	alertaApplication "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
+	alertaHttp "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/http"
+
+
+
+	
 
 	"github.com/vicpoo/API_recolecta/src/core"
 )
@@ -385,6 +401,97 @@ registroVaciadoRoutes := registroVaciadoRoutesPkg.NewRegistroVaciadoRoutes(
 )
 
 registroVaciadoRoutes.Run()
+
+
+// ===============================
+// COLONIA
+// ===============================
+
+coloniaRepository := coloniaPostgres.NewColoniaRepository(core.GetBD())
+
+createColoniaUC := coloniaApplication.NewCreateColonia(coloniaRepository)
+getColoniaUC := coloniaApplication.NewGetColonia(coloniaRepository)
+listColoniasUC := coloniaApplication.NewListColonias(coloniaRepository)
+updateColoniaUC := coloniaApplication.NewUpdateColonia(coloniaRepository)
+deleteColoniaUC := coloniaApplication.NewDeleteColonia(coloniaRepository)
+
+coloniaController := coloniaHttp.NewColoniaController(
+	createColoniaUC,
+	getColoniaUC,
+	listColoniasUC,
+	updateColoniaUC,
+	deleteColoniaUC,
+)
+
+coloniaController.RegisterRoutes(engine)
+
+
+
+// ===============================
+// USUARIO
+// ===============================
+
+usuarioRepository := usuarioPostgres.NewUsuarioRepository(core.GetBD())
+
+createUsuarioUC := usuarioApplication.NewCreateUsuario(usuarioRepository)
+getUsuarioUC := usuarioApplication.NewGetUsuario(usuarioRepository)
+listUsuariosUC := usuarioApplication.NewListUsuarios(usuarioRepository)
+loginUsuarioUC := usuarioApplication.NewLoginUsuario(usuarioRepository)
+deleteUsuarioUC := usuarioApplication.NewDeleteUsuario(usuarioRepository)
+
+usuarioController := usuarioHttp.NewUsuarioController(
+	createUsuarioUC,
+	getUsuarioUC,
+	listUsuariosUC,
+	loginUsuarioUC,
+	deleteUsuarioUC,
+)
+
+usuarioController.RegisterRoutes(engine)
+
+// ===============================
+// DOMICILIO
+// ===============================
+
+domicilioRepository := domicilioPostgres.NewDomicilioRepository(core.GetBD())
+
+createDomicilioUC := domicilioApplication.NewCreateDomicilio(domicilioRepository)
+getDomicilioUC := domicilioApplication.NewGetDomicilio(domicilioRepository)
+updateDomicilioUC := domicilioApplication.NewUpdateDomicilio(domicilioRepository)
+deleteDomicilioUC := domicilioApplication.NewDeleteDomicilio(domicilioRepository)
+
+domicilioController := domicilioHttp.NewDomicilioController(
+	createDomicilioUC,
+	getDomicilioUC,
+	updateDomicilioUC,
+	deleteDomicilioUC,
+)
+
+domicilioController.RegisterRoutes(engine)
+
+
+// ===============================
+// ALERTA USUARIO
+// ===============================
+
+alertaUsuarioRepository := alertaPostgres.NewAlertaRepository(core.GetBD())
+
+createAlertaUC := alertaApplication.NewCreateAlerta(alertaUsuarioRepository)
+listMisAlertasUC := alertaApplication.NewListMisAlertas(alertaUsuarioRepository)
+marcarLeidaUC := alertaApplication.NewMarcarLeida(alertaUsuarioRepository)
+
+alertaController := alertaHttp.NewAlertaController(
+	createAlertaUC,
+	listMisAlertasUC,
+	marcarLeidaUC,
+)
+
+
+alertasGroup := engine.Group("/")
+alertasGroup.Use(core.JWTAuthMiddleware())
+
+alertaController.RegisterRoutes(alertasGroup)
+
 
 
     alertaMantenimeintoRoutes := alertaMantenimiento.NewAlertaMantenimientoRouter(engine)

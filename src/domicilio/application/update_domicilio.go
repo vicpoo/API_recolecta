@@ -1,10 +1,8 @@
 package application
 
-import (
-	"time"
+import "time"
 
-	"github.com/vicpoo/API_recolecta/src/domicilio/domain"
-)
+import "github.com/vicpoo/API_recolecta/src/domicilio/domain"
 
 type UpdateDomicilio struct {
 	repo domain.DomicilioRepository
