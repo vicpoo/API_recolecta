@@ -2,18 +2,14 @@ package application
 
 import "github.com/vicpoo/API_recolecta/src/rol/domain"
 
-type CreateRole struct{
-	repo domain.RoleRepository
+type CreateRol struct {
+	repo domain.RolRepository
 }
 
-func NewcreateRole(repo domain.RoleRepository) *CreateRole {
-	return &CreateRole{repo}
+func NewCreateRol(r domain.RolRepository) *CreateRol {
+	return &CreateRol{r}
 }
 
-func (uc *CreateRole) Execute(nombre string) error {
-	role := &domain.Role{
-		Nombre: nombre,
-		Eliminado: false,
-	}
-	return uc.repo.Create(role)
+func (uc *CreateRol) Execute(nombre string) error {
+	return uc.repo.Create(nombre)
 }

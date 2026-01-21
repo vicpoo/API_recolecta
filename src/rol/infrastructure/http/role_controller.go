@@ -1,87 +1,55 @@
-package http
+package postgres
 
 import (
-	"net/http"
-	"strconv"
+	"context"
 
-	"github.com/gin-gonic/gin"
-	"github.com/vicpoo/API_recolecta/src/rol/application"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/vicpoo/API_recolecta/src/rol/domain"
 )
 
-type RoleController struct {
-	create *application.CreateRole
-	get    *application.GetRole
-	list   *application.ListRoles
-	update *application.UpdateRole
+type RolRepository struct {
+	db *pgxpool.Pool
 }
 
-func NewRoleController(
-	create *application.CreateRole,
-	get *application.GetRole,
-	list *application.ListRoles,
-	update *application.UpdateRole,
-) *RoleController {
-	return &RoleController{create, get, list, update}
+func NewRolRepository(db *pgxpool.Pool) *RolRepository {
+	return &RolRepository{db}
 }
 
-func (c *RoleController) RegisterRoutes(r *gin.Engine) {
-	group := r.Group("/roles")
-	{
-		group.POST("", c.Create)
-		group.GET("", c.List)
-		group.GET("/:id", c.GetByID)
-		group.PUT("/:id", c.Update)
-	}
+func (r *RolRepository) Create(nombre string) error {
+	_, err := r.db.Exec(
+		context.Background(),
+		`INSERT INTO rol (nombre) VALUES ($1)`,
+		nombre,
+	)
+	return err
 }
 
-func (c *RoleController) Create(ctx *gin.Context) {
-	var body struct {
-		Nombre string `json:"nombre"`
-	}
-	if err := ctx.ShouldBindJSON(&body); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	err := c.create.Execute(body.Nombre)
+func (r *RolRepository) List() ([]domain.Rol, error) {
+	rows, err := r.db.Query(
+		context.Background(),
+		`SELECT role_id, nombre, eliminado FROM rol WHERE eliminado = false`,
+	)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return nil, err
 	}
-	ctx.Status(http.StatusCreated)
+	defer rows.Close()
+
+	var roles []domain.Rol
+	for rows.Next() {
+		var rol domain.Rol
+		if err := rows.Scan(&rol.ID, &rol.Nombre, &rol.Eliminado); err != nil {
+			return nil, err
+		}
+		roles = append(roles, rol)
+	}
+	return roles, nil
 }
 
-func (c *RoleController) GetByID(ctx *gin.Context) {
-	id, _ := strconv.Atoi(ctx.Param("id"))
-	role, err := c.get.Execute(id)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "rol no encontrado"})
-		return
-	}
-	ctx.JSON(http.StatusOK, role)
-}
-
-func (c *RoleController) List(ctx *gin.Context) {
-	roles, err := c.list.Execute()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, roles)
-}
-
-func (c *RoleController) Update(ctx *gin.Context) {
-	id, _ := strconv.Atoi(ctx.Param("id"))
-	var body struct {
-		Nombre string `json:"nombre"`
-	}
-	if err := ctx.ShouldBindJSON(&body); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	err := c.update.Execute(id, body.Nombre)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.Status(http.StatusOK)
+func (r *RolRepository) Update(id int, nombre string) error {
+	_, err := r.db.Exec(
+		context.Background(),
+		`UPDATE rol SET nombre=$1 WHERE role_id=$2`,
+		nombre, id,
+	)
+	return err
 }

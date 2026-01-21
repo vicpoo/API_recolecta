@@ -1,7 +1,7 @@
 package domain
 
-type Role struct {
-	RoleID int
-	Nombre string
+type Rol struct {
+	ID        int
+	Nombre    string
 	Eliminado bool
 }
