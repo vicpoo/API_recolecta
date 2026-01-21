@@ -31,14 +31,13 @@ func NewUsuarioController(
 
 func (c *UsuarioController) RegisterRoutes(r *gin.Engine) {
 
-	// ---------- RUTAS PÚBLICAS ----------
+	
 	public := r.Group("/usuarios")
 	{
 		public.POST("/login", c.Login)
 		public.POST("", c.Create)
 	}
 
-	// ---------- RUTAS PROTEGIDAS ----------
 	protected := r.Group(
 		"/usuarios",
 		core.JWTAuthMiddleware(),

@@ -1,55 +1,89 @@
-package postgres
+package http
 
 import (
-	"context"
+    "net/http"
+    "strconv"
 
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/vicpoo/API_recolecta/src/rol/domain"
+    "github.com/gin-gonic/gin"
+    "github.com/vicpoo/API_recolecta/src/core"
+    "github.com/vicpoo/API_recolecta/src/rol/application"
 )
 
-type RolRepository struct {
-	db *pgxpool.Pool
+type RolController struct {
+    createRolUC *application.CreateRol
+    listRolUC   *application.ListRol
+    updateRolUC *application.UpdateRol
 }
 
-func NewRolRepository(db *pgxpool.Pool) *RolRepository {
-	return &RolRepository{db}
+func NewRolController(
+    createRol *application.CreateRol,
+    listRol *application.ListRol,
+    updateRol *application.UpdateRol,
+) *RolController {
+    return &RolController{
+        createRolUC: createRol,
+        listRolUC:   listRol,
+        updateRolUC: updateRol,
+    }
 }
 
-func (r *RolRepository) Create(nombre string) error {
-	_, err := r.db.Exec(
-		context.Background(),
-		`INSERT INTO rol (nombre) VALUES ($1)`,
-		nombre,
-	)
-	return err
+func (c *RolController) RegisterRoutes(group *gin.RouterGroup) {
+    group.POST("/roles", core.RequireRole(core.ADMIN), c.Create)
+    group.GET("/roles", core.RequireRole(core.ADMIN), c.List)
+    group.PUT("/roles/:id", core.RequireRole(core.ADMIN), c.Update)
 }
 
-func (r *RolRepository) List() ([]domain.Rol, error) {
-	rows, err := r.db.Query(
-		context.Background(),
-		`SELECT role_id, nombre, eliminado FROM rol WHERE eliminado = false`,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+func (c *RolController) Create(ctx *gin.Context) {
+    var req struct {
+        Nombre string `json:"nombre" binding:"required"`
+    }
 
-	var roles []domain.Rol
-	for rows.Next() {
-		var rol domain.Rol
-		if err := rows.Scan(&rol.ID, &rol.Nombre, &rol.Eliminado); err != nil {
-			return nil, err
-		}
-		roles = append(roles, rol)
-	}
-	return roles, nil
+    if err := ctx.ShouldBindJSON(&req); err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    err := c.createRolUC.Execute(req.Nombre)
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    ctx.JSON(http.StatusCreated, gin.H{"message": "Rol creado"})
 }
 
-func (r *RolRepository) Update(id int, nombre string) error {
-	_, err := r.db.Exec(
-		context.Background(),
-		`UPDATE rol SET nombre=$1 WHERE role_id=$2`,
-		nombre, id,
-	)
-	return err
+func (c *RolController) List(ctx *gin.Context) {
+    roles, err := c.listRolUC.Execute()
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    ctx.JSON(http.StatusOK, roles)
+}
+
+func (c *RolController) Update(ctx *gin.Context) {
+    idStr := ctx.Param("id")
+    id, err := strconv.Atoi(idStr)
+    if err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+        return
+    }
+
+    var req struct {
+        Nombre string `json:"nombre" binding:"required"`
+    }
+
+    if err := ctx.ShouldBindJSON(&req); err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    err = c.updateRolUC.Execute(id, req.Nombre)
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    ctx.JSON(http.StatusOK, gin.H{"message": "Rol actualizado"})
 }
