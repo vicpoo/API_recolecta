@@ -2,14 +2,14 @@ package application
 
 import "github.com/vicpoo/API_recolecta/src/rol/domain"
 
-type ListRoles struct {
-	repo domain.RoleRepository
+type ListRol struct {
+	repo domain.RolRepository
 }
 
-func NewListRoles(repo domain.RoleRepository) *ListRoles {
-	return &ListRoles{repo}
+func NewListRol(r domain.RolRepository) *ListRol {
+	return &ListRol{r}
 }
 
-func (uc *ListRoles) Execute() ([]domain.Role, error) {
-	return uc.repo.GetAll()
+func (uc *ListRol) Execute() ([]domain.Rol, error) {
+	return uc.repo.List()
 }

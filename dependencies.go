@@ -63,6 +63,10 @@ import (
 	alertaPostgres "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/postgres"
 	alertaApplication "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
 	alertaHttp "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/http"
+	rolPostgres "github.com/vicpoo/API_recolecta/src/rol/infrastructure/postgres"
+	rolApplication "github.com/vicpoo/API_recolecta/src/rol/application"
+	rolHttp "github.com/vicpoo/API_recolecta/src/rol/infrastructure/http"
+
 
 
 
@@ -492,6 +496,26 @@ alertasGroup.Use(core.JWTAuthMiddleware())
 
 alertaController.RegisterRoutes(alertasGroup)
 
+rolRepository := rolPostgres.NewRolRepository(core.GetBD())
+
+createRolUC := rolApplication.NewCreateRol(rolRepository)
+listRolUC := rolApplication.NewListRol(rolRepository)
+updateRolUC := rolApplication.NewUpdateRol(rolRepository)
+
+rolController := rolHttp.NewRolController(
+	createRolUC,
+	listRolUC,
+	updateRolUC,
+)
+
+rolGroup := engine.Group("/")
+
+rolGroup.Use(
+	core.JWTAuthMiddleware(),
+	core.RequireRole(core.ADMIN),
+)
+
+rolController.RegisterRoutes(rolGroup)
 
 
     alertaMantenimeintoRoutes := alertaMantenimiento.NewAlertaMantenimientoRouter(engine)

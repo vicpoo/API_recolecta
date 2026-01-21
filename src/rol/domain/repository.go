@@ -1,8 +1,7 @@
 package domain
 
-type RoleRepository interface {
-	Create(role *Role) error
-	GetByID(roleID int) (*Role, error)
-	GetAll() ([]*Role, error)
-	Update(role *Role) error
+type RolRepository interface {
+	Create(nombre string) error
+	List() ([]Rol, error)
+	Update(id int, nombre string) error
 }

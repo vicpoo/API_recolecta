@@ -2,18 +2,14 @@ package application
 
 import "github.com/vicpoo/API_recolecta/src/rol/domain"
 
-type UpdateRole struct {
-	repo domain.RoleRepository
+type UpdateRol struct {
+	repo domain.RolRepository
 }
 
-func NewUpdateRole(repo domain.RoleRepository) *UpdateRole {
-	return &UpdateRole{repo}
+func NewUpdateRol(r domain.RolRepository) *UpdateRol {
+	return &UpdateRol{r}
 }
 
-func (uc *UpdateRole) Execute(id int, nombre string) error {
-	role := &domain.Role{
-		RoleID: id,
-		Nombre: nombre,
-	}
-	return uc.repo.Update(role)
+func (uc *UpdateRol) Execute(id int, nombre string) error {
+	return uc.repo.Update(id, nombre)
 }
