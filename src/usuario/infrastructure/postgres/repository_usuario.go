@@ -18,8 +18,8 @@ func NewUsuarioRepository(db *pgxpool.Pool) *UsuarioRepository {
 func (r *UsuarioRepository) Create(u *domain.Usuario) error {
 	query := `
 		INSERT INTO usuario
-		(nombre, alias, telefono, email, password, role_id, residencia_id, created_at, updated_at)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+		(nombre, alias, telefono, email, password, role_id, created_at, updated_at)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
 	`
 
 	_, err := r.db.Exec(
@@ -31,7 +31,6 @@ func (r *UsuarioRepository) Create(u *domain.Usuario) error {
 		u.Email,
 		u.Password,
 		u.RoleID,
-		u.ResidenciaID,
 		u.CreatedAt,
 		u.UpdatedAt,
 	)
@@ -42,7 +41,7 @@ func (r *UsuarioRepository) Create(u *domain.Usuario) error {
 func (r *UsuarioRepository) GetByEmail(email string) (*domain.Usuario, error) {
 	query := `
 		SELECT user_id, nombre, alias, telefono, email, password,
-		    role_id, residencia_id, eliminado, created_at, updated_at
+		role_id, eliminado, created_at, updated_at
 		FROM usuario
 		WHERE email = $1 AND eliminado = false
 	`
@@ -58,7 +57,6 @@ func (r *UsuarioRepository) GetByEmail(email string) (*domain.Usuario, error) {
 		&u.Email,
 		&u.Password,
 		&u.RoleID,
-		&u.ResidenciaID,
 		&u.Eliminado,
 		&u.CreatedAt,
 		&u.UpdatedAt,
@@ -75,7 +73,7 @@ func (r *UsuarioRepository) GetByEmail(email string) (*domain.Usuario, error) {
 func (r *UsuarioRepository) GetByID(id int) (*domain.Usuario, error) {
 	query := `
 		SELECT user_id, nombre, alias, telefono, email, role_id,
-		    residencia_id, eliminado, created_at, updated_at
+		    eliminado, created_at, updated_at
 		FROM usuario
 		WHERE user_id = $1 AND eliminado = false
 	`
@@ -90,7 +88,6 @@ func (r *UsuarioRepository) GetByID(id int) (*domain.Usuario, error) {
 		&u.Telefono,
 		&u.Email,
 		&u.RoleID,
-		&u.ResidenciaID,
 		&u.Eliminado,
 		&u.CreatedAt,
 		&u.UpdatedAt,
@@ -106,7 +103,7 @@ func (r *UsuarioRepository) GetByID(id int) (*domain.Usuario, error) {
 func (r *UsuarioRepository) GetAll() ([]domain.Usuario, error) {
 	query := `
 		SELECT user_id, nombre, alias, telefono, email, role_id,
-		    residencia_id, eliminado, created_at, updated_at
+		eliminado, created_at, updated_at
 		FROM usuario
 		WHERE eliminado = false
 	`
@@ -128,7 +125,6 @@ func (r *UsuarioRepository) GetAll() ([]domain.Usuario, error) {
 			&u.Telefono,
 			&u.Email,
 			&u.RoleID,
-			&u.ResidenciaID,
 			&u.Eliminado,
 			&u.CreatedAt,
 			&u.UpdatedAt,

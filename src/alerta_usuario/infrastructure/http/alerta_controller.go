@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
 	"github.com/vicpoo/API_recolecta/src/alerta_usuario/domain"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type AlertaController struct {
@@ -24,7 +25,11 @@ func NewAlertaController(
 }
 
 func (c *AlertaController) RegisterRoutes(r *gin.RouterGroup) {
-	r.POST("/alertas", c.Create)
+	r.POST(
+	"/alertas",
+	core.RequireRole(core.SUPERVISOR),
+	c.Create,
+)
 	r.GET("/alertas", c.ListMine)
 	r.PUT("/alertas/:id/leida", c.MarkAsRead)
 }

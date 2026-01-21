@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/domicilio/application"
 	"github.com/vicpoo/API_recolecta/src/domicilio/domain"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type DomicilioController struct {
@@ -26,12 +27,17 @@ func NewDomicilioController(
 }
 
 func (c *DomicilioController) RegisterRoutes(r *gin.Engine) {
-	group := r.Group("/domicilios")
+
+	protected := r.Group(
+		"/domicilios",
+		core.JWTAuthMiddleware(),
+	)
+
 	{
-		group.POST("", c.Create)
-		group.GET("/:id", c.GetByID)
-		group.PUT("/:id", c.Update)
-		group.DELETE("/:id", c.Delete)
+		protected.POST("", c.Create)
+		protected.GET("/:id", c.GetByID)
+		protected.PUT("/:id", c.Update)
+		protected.DELETE("/:id", c.Delete)
 	}
 }
 

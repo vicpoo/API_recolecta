@@ -7,6 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/usuario/application"
 	"github.com/vicpoo/API_recolecta/src/usuario/domain"
+	"github.com/vicpoo/API_recolecta/src/core"
+
 )
 
 type UsuarioController struct {
@@ -28,15 +30,41 @@ func NewUsuarioController(
 }
 
 func (c *UsuarioController) RegisterRoutes(r *gin.Engine) {
-	group := r.Group("/usuarios")
+
+	// ---------- RUTAS PÚBLICAS ----------
+	public := r.Group("/usuarios")
 	{
-		group.POST("", c.Create)
-		group.GET("", c.List)
-		group.GET("/:id", c.GetByID)
-		group.POST("/login", c.Login)	
-		group.DELETE("/:id", c.Delete)
+		public.POST("/login", c.Login)
+		public.POST("", c.Create)
+	}
+
+	// ---------- RUTAS PROTEGIDAS ----------
+	protected := r.Group(
+		"/usuarios",
+		core.JWTAuthMiddleware(),
+	)
+
+	{
+		protected.GET(
+			"",
+			core.RequireRole(core.ADMIN, core.SUPERVISOR),
+			c.List,
+		)
+
+		protected.GET(
+			"/:id",
+			core.RequireRole(core.ADMIN, core.SUPERVISOR),
+			c.GetByID,
+		)
+
+		protected.DELETE(
+			"/:id",
+			core.RequireRole(core.ADMIN),
+			c.Delete,
+		)
 	}
 }
+
 
 func (c *UsuarioController) Login(ctx *gin.Context) {
 	var body struct {
@@ -106,3 +134,4 @@ func (c *UsuarioController) Delete(ctx *gin.Context) {
 
 	ctx.Status(http.StatusNoContent)
 }
+

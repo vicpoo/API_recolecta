@@ -50,16 +50,22 @@ func (c *ColoniaController) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Status(http.StatusCreated)
+	ctx.JSON(http.StatusCreated, body)
 }
 
 func (c *ColoniaController) GetByID(ctx *gin.Context) {
-	id, _ := strconv.Atoi(ctx.Param("id"))
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
+		return
+	}
+
 	colonia, err := c.get.Execute(id)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "colonia no encontrada"})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, colonia)
 }
 
@@ -69,11 +75,16 @@ func (c *ColoniaController) List(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, colonias)
 }
 
 func (c *ColoniaController) Update(ctx *gin.Context) {
-	id, _ := strconv.Atoi(ctx.Param("id"))
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
+		return
+	}
 
 	var body domain.Colonia
 	if err := ctx.ShouldBindJSON(&body); err != nil {
@@ -92,7 +103,11 @@ func (c *ColoniaController) Update(ctx *gin.Context) {
 }
 
 func (c *ColoniaController) Delete(ctx *gin.Context) {
-	id, _ := strconv.Atoi(ctx.Param("id"))
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
+		return
+	}
 
 	if err := c.delete.Execute(id); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -101,4 +116,3 @@ func (c *ColoniaController) Delete(ctx *gin.Context) {
 
 	ctx.Status(http.StatusNoContent)
 }
-
