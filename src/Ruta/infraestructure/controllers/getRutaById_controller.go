@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -13,9 +14,7 @@ type GetRutaByIdController struct {
 }
 
 func NewGetRutaByIdController(uc *application.GetRutaByIdUseCase) *GetRutaByIdController {
-	return &GetRutaByIdController{
-		uc: uc,
-	}
+	return &GetRutaByIdController{uc: uc}
 }
 
 func (ctr *GetRutaByIdController) Run(ctx *gin.Context) {
@@ -38,8 +37,28 @@ func (ctr *GetRutaByIdController) Run(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
+	// Convertir json_ruta de string a objeto JSON
+	var jsonRuta interface{}
+	if err := json.Unmarshal([]byte(ruta.JsonRuta), &jsonRuta); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"message": "Error al parsear json_ruta",
+		})
+		return
+	}
+
+	// Crear respuesta con json_ruta como objeto
+	response := gin.H{
 		"success": true,
-		"data":    ruta,
-	})
+		"data": gin.H{
+			"ruta_id":     ruta.RutaID,
+			"nombre":      ruta.Nombre,
+			"descripcion": ruta.Descripcion,
+			"json_ruta":   jsonRuta, // Ahora es un objeto, no string
+			"eliminado":   ruta.Eliminado,
+			"created_at":  ruta.CreatedAt,
+		},
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
