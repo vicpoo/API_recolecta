@@ -1,30 +1,44 @@
 package application
 
 import (
-	"errors"
+	"context"
+	"strings"
 
-	"github.com/vicpoo/API_recolecta/src/core"
-	"github.com/vicpoo/API_recolecta/src/usuario/domain"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/vicpoo/API_recolecta/src/usuario/domain"
+	"github.com/vicpoo/API_recolecta/src/usuario/domain/entities"
 )
 
-type LoginUsuario struct {
+type LoginInput struct {
+	Email    string
+	Password string
+}
+
+type LoginUser struct {
 	repo domain.UsuarioRepository
 }
 
-func NewLoginUsuario(repo domain.UsuarioRepository) *LoginUsuario {
-	return &LoginUsuario{repo}
+func NewLoginUser(repo domain.UsuarioRepository) *LoginUser {
+	return &LoginUser{repo: repo}
 }
 
-func (uc *LoginUsuario) Execute(email, password string) (string, error) {
-	u, err := uc.repo.GetByEmail(email)
+// Devuelve el usuario si las credenciales son válidas.
+// Si tú ya generas JWT en otro lado, aquí es donde lo “enchufas”.
+func (uc *LoginUser) Execute(ctx context.Context, in LoginInput) (*entities.Usuario, bool, error) {
+	email := strings.TrimSpace(strings.ToLower(in.Email))
+
+	u, err := uc.repo.FindByEmail(ctx, email)
 	if err != nil {
-		return "", errors.New("credenciales inválidas")
+		return nil, false, err
+	}
+	if u == nil {
+		return nil, false, nil
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil {
-		return "", errors.New("credenciales inválidas")
+	if err := bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(in.Password)); err != nil {
+		return nil, false, nil
 	}
 
-	return core.GenerateToken(u.UserID, u.RoleID)
+	return u, true, nil
 }

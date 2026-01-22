@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/vicpoo/API_recolecta/src/core"
 	camionUseCases "github.com/vicpoo/API_recolecta/src/Camion/application"
 	camionAdapters "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/adapters"
 	camionControllers "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/controllers"
@@ -41,7 +42,7 @@ import (
     registroVaciadoApplication "github.com/vicpoo/API_recolecta/src/RegistroVaciado/application"
     registroVaciadoControllers "github.com/vicpoo/API_recolecta/src/RegistroVaciado/infraestructure/controllers"
     registroVaciadoRoutesPkg "github.com/vicpoo/API_recolecta/src/RegistroVaciado/infraestructure/routes"
-	alertaMantenimiento "github.com/vicpoo/API_recolecta/src/alerta_mantenimiento/infrastructure"
+
 	anomalia "github.com/vicpoo/API_recolecta/src/anomalia/infrastructure"
 	incidencia "github.com/vicpoo/API_recolecta/src/incidencia/infrastructure"
 	_ "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
@@ -51,28 +52,20 @@ import (
 	reporteMantenimientoGenerado "github.com/vicpoo/API_recolecta/src/reporte_mantenimiento_generado/infrastructure"
 	seguimientoFallaCritica "github.com/vicpoo/API_recolecta/src/seguimiento_falla_critica/infrastructure"
 	tipoMantenimiento "github.com/vicpoo/API_recolecta/src/tipo_mantenimiento/infrastructure"
-	usuarioPostgres "github.com/vicpoo/API_recolecta/src/usuario/infrastructure/postgres"
-	usuarioApplication "github.com/vicpoo/API_recolecta/src/usuario/application"
-	usuarioHttp "github.com/vicpoo/API_recolecta/src/usuario/infrastructure/http"
 	domicilioApplication "github.com/vicpoo/API_recolecta/src/domicilio/application"
 	domicilioHttp "github.com/vicpoo/API_recolecta/src/domicilio/infrastructure/http"
 	domicilioPostgres "github.com/vicpoo/API_recolecta/src/domicilio/infrastructure/postgres"
 	coloniaPostgres "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/postgres"
 	coloniaApplication "github.com/vicpoo/API_recolecta/src/colonia/application"
 	coloniaHttp "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/http"
-	alertaPostgres "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/postgres"
-	alertaApplication "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
-	alertaHttp "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/http"
-	rolPostgres "github.com/vicpoo/API_recolecta/src/rol/infrastructure/postgres"
-	rolApplication "github.com/vicpoo/API_recolecta/src/rol/application"
-	rolHttp "github.com/vicpoo/API_recolecta/src/rol/infrastructure/http"
+	rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
+	usuarioInfra "github.com/vicpoo/API_recolecta/src/usuario/infrastructure"
 
 
 
 
 	
 
-	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 //archivo para hacer las instancias de los controllers, casos de uso y repositories, etc.
@@ -84,6 +77,7 @@ func InitDependencies() {
 	engine := gin.Default()
 	engine.Use(core.CORSMiddleware())
 
+	db := core.GetBD()
 
 	//tipo camion
 	tipoCamionRepository := tipoCamionAdapters.NewPosgres()
@@ -430,29 +424,6 @@ coloniaController := coloniaHttp.NewColoniaController(
 coloniaController.RegisterRoutes(engine)
 
 
-
-// ===============================
-// USUARIO
-// ===============================
-
-usuarioRepository := usuarioPostgres.NewUsuarioRepository(core.GetBD())
-
-createUsuarioUC := usuarioApplication.NewCreateUsuario(usuarioRepository)
-getUsuarioUC := usuarioApplication.NewGetUsuario(usuarioRepository)
-listUsuariosUC := usuarioApplication.NewListUsuarios(usuarioRepository)
-loginUsuarioUC := usuarioApplication.NewLoginUsuario(usuarioRepository)
-deleteUsuarioUC := usuarioApplication.NewDeleteUsuario(usuarioRepository)
-
-usuarioController := usuarioHttp.NewUsuarioController(
-	createUsuarioUC,
-	getUsuarioUC,
-	listUsuariosUC,
-	loginUsuarioUC,
-	deleteUsuarioUC,
-)
-
-usuarioController.RegisterRoutes(engine)
-
 // ===============================
 // DOMICILIO
 // ===============================
@@ -473,57 +444,13 @@ domicilioController := domicilioHttp.NewDomicilioController(
 
 domicilioController.RegisterRoutes(engine)
 
+usuarioDeps := usuarioInfra.NewUsuarioDependencies(db)
+usuarioInfra.RegisterUsuarioRoutes(engine, usuarioDeps)
 
-// ===============================
-// ALERTA USUARIO
-// ===============================
+rolController := rolInfra.NewRolDependencies(db)
+rolInfra.RegisterRolRoutes(engine, rolController)
 
-alertaUsuarioRepository := alertaPostgres.NewAlertaRepository(core.GetBD())
-
-createAlertaUC := alertaApplication.NewCreateAlerta(alertaUsuarioRepository)
-listMisAlertasUC := alertaApplication.NewListMisAlertas(alertaUsuarioRepository)
-marcarLeidaUC := alertaApplication.NewMarcarLeida(alertaUsuarioRepository)
-
-alertaController := alertaHttp.NewAlertaController(
-	createAlertaUC,
-	listMisAlertasUC,
-	marcarLeidaUC,
-)
-
-
-alertasGroup := engine.Group("/")
-alertasGroup.Use(core.JWTAuthMiddleware())
-
-alertaController.RegisterRoutes(alertasGroup)
-
-rolRepository := rolPostgres.NewRolRepository(core.GetBD())
-
-createRolUC := rolApplication.NewCreateRol(rolRepository)
-listRolUC := rolApplication.NewListRol(rolRepository)
-updateRolUC := rolApplication.NewUpdateRol(rolRepository)
-
-rolController := rolHttp.NewRolController(
-	createRolUC,
-	listRolUC,
-	updateRolUC,
-)
-
-rolGroup := engine.Group("/")
-
-rolGroup.Use(
-	core.JWTAuthMiddleware(),
-	core.RequireRole(core.ADMIN),
-)
-
-rolController.RegisterRoutes(rolGroup)
-
-
-    alertaMantenimeintoRoutes := alertaMantenimiento.NewAlertaMantenimientoRouter(engine)
-
-	alertaMantenimeintoRoutes.Run()
-
-
-	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
+anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
 
 	anomaliaRoutes.Run()
 
