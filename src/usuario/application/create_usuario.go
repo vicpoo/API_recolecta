@@ -1,30 +1,44 @@
 package application
 
 import (
-	"time"
+	"context"
+	"strings"
+
+	"golang.org/x/crypto/bcrypt"
 
 	"github.com/vicpoo/API_recolecta/src/usuario/domain"
-	"golang.org/x/crypto/bcrypt"
+	"github.com/vicpoo/API_recolecta/src/usuario/domain/entities"
 )
 
-type CreateUsuario struct {
+type SaveUserInput struct {
+	Nombre   string
+	Email    string
+	Password string
+	RolID    int
+}
+
+type SaveUser struct {
 	repo domain.UsuarioRepository
 }
 
-func NewCreateUsuario(repo domain.UsuarioRepository) *CreateUsuario {
-	return &CreateUsuario{repo}
+func NewSaveUser(repo domain.UsuarioRepository) *SaveUser {
+	return &SaveUser{repo: repo}
 }
 
-func (uc *CreateUsuario) Execute(u *domain.Usuario) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+func (uc *SaveUser) Execute(ctx context.Context, in SaveUserInput) (int, error) {
+	in.Email = strings.TrimSpace(strings.ToLower(in.Email))
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	u.Password = string(hash)
-	u.CreatedAt = time.Now()
-	u.UpdatedAt = time.Now()
-	u.Eliminado = false
+	u := &entities.Usuario{
+		Nombre:       strings.TrimSpace(in.Nombre),
+		Email:        in.Email,
+		PasswordHash: string(hash),
+		RolID:        in.RolID,
+	}
 
-	return uc.repo.Create(u)
+	return uc.repo.Create(ctx, u)
 }

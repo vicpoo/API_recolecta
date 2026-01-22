@@ -1,15 +1,19 @@
 package application
 
-import "github.com/vicpoo/API_recolecta/src/usuario/domain"
+import (
+	"context"
 
-type DeleteUsuario struct {
+	"github.com/vicpoo/API_recolecta/src/usuario/domain"
+)
+
+type DeleteUser struct {
 	repo domain.UsuarioRepository
 }
 
-func NewDeleteUsuario(repo domain.UsuarioRepository) *DeleteUsuario {
-	return &DeleteUsuario{repo}
+func NewDeleteUser(repo domain.UsuarioRepository) *DeleteUser {
+	return &DeleteUser{repo: repo}
 }
 
-func (uc *DeleteUsuario) Execute(id int) error {
-	return uc.repo.Delete(id)
+func (uc *DeleteUser) Execute(ctx context.Context, id int) error {
+	return uc.repo.Delete(ctx, id)
 }
