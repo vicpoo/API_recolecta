@@ -11,10 +11,12 @@ import (
 )
 
 type SaveUserInput struct {
-	Nombre   string
-	Email    string
-	Password string
-	RolID    int
+	Nombre   string  `json:"nombre"`
+    Alias    *string `json:"alias,omitempty"`
+    Telefono *string `json:"telefono,omitempty"`
+    Email    string  `json:"email"`
+    Password string  `json:"password"`
+    RolID    int     `json:"role_id"`
 }
 
 type SaveUser struct {
