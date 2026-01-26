@@ -44,8 +44,8 @@ func NewRegistroVaciadoRoutes(
 func (r *RegistroVaciadoRoutes) Run() {
 	group := r.engine.Group("/api/registro-vaciado")
 	{
-		group.POST("", r.createController.Run)
-		group.GET("", r.getAllController.Run)
+		group.POST("/", r.createController.Run)
+		group.GET("/", r.getAllController.Run)
 		group.GET("/:id", r.getByIDController.Run)
 		group.GET("/relleno/:relleno_id", r.getByRellenoIDController.Run)
 		group.GET("/ruta-camion/:ruta_camion_id", r.getByRutaCamionIDController.Run)

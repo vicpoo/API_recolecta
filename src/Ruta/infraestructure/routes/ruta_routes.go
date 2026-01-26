@@ -13,6 +13,7 @@ type RutaRoutes struct {
 	getByIdController *controllers.GetRutaByIdController
 	updateController  *controllers.UpdateRutaController
 	deleteController  *controllers.DeleteRutaController
+	getActivas *controllers.GetRutaActivasController
 }
 
 func NewRutaRoutes(
@@ -22,6 +23,7 @@ func NewRutaRoutes(
 	getByIdController *controllers.GetRutaByIdController,
 	updateController *controllers.UpdateRutaController,
 	deleteController *controllers.DeleteRutaController,
+	getActivasController *controllers.GetRutaActivasController,
 ) *RutaRoutes {
 	return &RutaRoutes{
 		engine: engine,
@@ -31,6 +33,7 @@ func NewRutaRoutes(
 		getByIdController: getByIdController,
 		updateController:  updateController,
 		deleteController:  deleteController,
+		getActivas: getActivasController,
 	}
 }
 
@@ -42,5 +45,6 @@ func (r *RutaRoutes) Run() {
 		routes.GET("/:id", r.getByIdController.Run)
 		routes.PUT("/:id", r.updateController.Run)
 		routes.DELETE("/:id", r.deleteController.Run)
+		routes.GET("/activas", r.getActivas.Run)
 	}
 }

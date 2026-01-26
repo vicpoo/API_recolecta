@@ -27,6 +27,7 @@ func NewPostgres() *Postgres {
 // CREATE
 //
 func (pg *Postgres) Save(rutaCamion *entities.RutaCamion) (*entities.RutaCamion, error) {
+	rutaCamion.CreatedAt = time.Now()
 	sql := `
 	INSERT INTO ruta_camion
 	(
