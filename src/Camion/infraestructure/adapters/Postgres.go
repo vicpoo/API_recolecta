@@ -3,7 +3,7 @@ package adapters
 import (
 	"context"
 	"errors"
-
+	"time"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/vicpoo/API_recolecta/src/Camion/domain/entities"
@@ -22,6 +22,7 @@ func NewPostgres() *Postgres {
 }
 
 func (pg *Postgres) Save(camion *entities.Camion) (*entities.Camion, error) {
+	camion.CreatedAt = time.Now()
 	sql := `
 	INSERT INTO camion
 	(
@@ -29,13 +30,13 @@ func (pg *Postgres) Save(camion *entities.Camion) (*entities.Camion, error) {
 		modelo,
 		tipo_camion_id,
 		es_rentado,
-		disponibilidad_id,
 		nombre_disponibilidad,
 		color_disponibilidad,
-		created_at
+		created_at,
+		updated_at
 	)
-	VALUES ($1,$2,$3,$4,$5,$6,$7, $8)
-	RETURNING camion_id
+	VALUES ($1,$2,$3,$4,$5,$6,$7, NULL)
+	RETURNING camion_id, disponibilidad_id
 	`
 
 	err := pg.conn.QueryRow(
@@ -45,13 +46,18 @@ func (pg *Postgres) Save(camion *entities.Camion) (*entities.Camion, error) {
 		camion.Modelo,
 		camion.TipoCamionID,
 		camion.EsRentado,
-		camion.DisponibilidadID,
 		camion.NombreDisponibilidad,
 		camion.ColorDisponibilidad,
-	).Scan(&camion.CamionID)
+		camion.CreatedAt,
+	).Scan(&camion.CamionID, &camion.DisponibilidadID)
 
-	return camion, err
+	if err != nil {
+		return nil, err
+	}
+
+	return camion, nil
 }
+
 
 func (pg *Postgres) ListAll() ([]entities.Camion, error) {
 	rows, err := pg.conn.Query(context.Background(),
@@ -147,6 +153,7 @@ func (pg *Postgres) GetByID(id int32) (*entities.Camion, error) {
 
 
 func (pg *Postgres) Update(id int32, camion *entities.Camion) (*entities.Camion, error) {
+	camion.UpdatedAt = time.Now()
 	sql := `
 	UPDATE camion
 	SET 

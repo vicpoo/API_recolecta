@@ -80,7 +80,7 @@ func InitDependencies() {
 	db := core.GetBD()
 
 	//tipo camion
-	tipoCamionRepository := tipoCamionAdapters.NewPosgres()
+	tipoCamionRepository := tipoCamionAdapters.NewPostgres()
 	saveTipoCamionUc := tipoCamionUseCases.NewSaveTipoCamionUseCase(tipoCamionRepository)
 	listAllTipoCamionUc := tipoCamionUseCases.NewListAllTipoCamion(tipoCamionRepository)
 	getTipoCamionUc := tipoCamionUseCases.NewGetTipoCamionByNameUseCase(tipoCamionRepository)
@@ -220,12 +220,14 @@ func InitDependencies() {
 	getRutaByIdUc := rutaUseCases.NewGetRutaByIdUseCase(rutaRepository)
 	updateRutaUc := rutaUseCases.NewUpdateRutaUseCase(rutaRepository)
 	deleteRutaUc := rutaUseCases.NewDeleteRutaUseCase(rutaRepository)
+	getRutasActivasUc := rutaUseCases.NewGetRutaActivasUseCase(rutaRepository)
 
 	createRutaCtr := rutaControllers.NewCreateRutaController(createRutaUc)
 	getAllRutaCtr := rutaControllers.NewGetAllRutaController(getAllRutaUc)
 	getRutaByIdCtr := rutaControllers.NewGetRutaByIdController(getRutaByIdUc)
 	updateRutaCtr := rutaControllers.NewUpdateRutaController(updateRutaUc)
 	deleteRutaCtr := rutaControllers.NewDeleteRutaController(deleteRutaUc)
+	getRutasActivasCtr := rutaControllers.NewGetRutaActivasController(getRutasActivasUc)
 
 	rutaRoutes := rutaRoutes.NewRutaRoutes(
 		engine,
@@ -234,6 +236,7 @@ func InitDependencies() {
 		getRutaByIdCtr,
 		updateRutaCtr,
 		deleteRutaCtr,
+		getRutasActivasCtr,
 	)
 
 	rutaRoutes.Run()

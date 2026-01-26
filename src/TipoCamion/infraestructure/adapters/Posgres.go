@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -16,7 +16,7 @@ type Postgres struct {
 	conn *pgxpool.Pool
 }
 
-func NewPosgres() *Postgres {
+func NewPostgres() *Postgres {
 	conn, _ := core.ConnectPostgres()
 	return &Postgres{
 		conn: conn,
@@ -25,6 +25,7 @@ func NewPosgres() *Postgres {
 
 
 func (postgres *Postgres) Save(tipoCamion *entities.TipoCamion) (*entities.TipoCamion, error) {
+	tipoCamion.CreatedAt = time.Now()
 	sql := `
 	INSERT INTO tipo_camion
 	(
@@ -115,19 +116,17 @@ func (postgres *Postgres) GetByName(nombre string) (*entities.TipoCamion, error)
 	return &tipoCamion, nil
 }
 
-
 func (postgres *Postgres) Delete(id int32) error {
 	sql := "DELETE FROM tipo_camion WHERE tipo_camion_id = $1"
 
-	result, err := postgres.conn.Exec(context.Background(), sql, id); 
-
+	result, err := postgres.conn.Exec(context.Background(), sql, id)
+	
 	if err != nil {
-		fmt.Printf("error: %s", err)
 		return err
 	}
 
 	if result.RowsAffected() == 0 {
-		log.Fatal(errors.New("error no se encontro el tipo de camion"))
+		return errors.New("tipo de camión no encontrado")
 	}
 
 	return nil

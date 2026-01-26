@@ -26,9 +26,9 @@ func NewPostgres() *Postgres {
 //
 func (pg *Postgres) Save(estado *entities.EstadoCamion) (*entities.EstadoCamion, error) {
 	sql := `
-	INSERT INTO estado_camion (camion_id, estado, observaciones)
-	VALUES ($1, $2, $3)
-	RETURNING estado_id, timestamp
+	INSERT INTO estado_camion (camion_id, estado, observaciones, timestamp)
+	VALUES ($1, $2, $3, $4)
+	RETURNING estado_id
 	`
 
 	err := pg.conn.QueryRow(
@@ -37,7 +37,8 @@ func (pg *Postgres) Save(estado *entities.EstadoCamion) (*entities.EstadoCamion,
 		estado.CamionID,
 		estado.Estado,
 		estado.Observaciones,
-	).Scan(&estado.EstadoID, &estado.Timestamp)
+		estado.Timestamp, 
+	).Scan(&estado.EstadoID)
 
 	if err != nil {
 		return nil, err
