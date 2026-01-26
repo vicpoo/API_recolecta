@@ -6,6 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/vicpoo/API_recolecta/src/core"
+	
+	// Agregar esta línea
+	alertaMantenimientoInfra "github.com/vicpoo/API_recolecta/src/alerta_mantenimiento/infrastructure"
+	
 	camionUseCases "github.com/vicpoo/API_recolecta/src/Camion/application"
 	camionAdapters "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/adapters"
 	camionControllers "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/controllers"
@@ -38,10 +42,10 @@ import (
 	tipoCamionAdapters "github.com/vicpoo/API_recolecta/src/TipoCamion/infraestructure/adapters"
 	tipoCamionControllers "github.com/vicpoo/API_recolecta/src/TipoCamion/infraestructure/controllers"
 	tipoCamionRoutes "github.com/vicpoo/API_recolecta/src/TipoCamion/infraestructure/routes"
-    registroVaciadoAdapters "github.com/vicpoo/API_recolecta/src/RegistroVaciado/infraestructure/adapters"
-    registroVaciadoApplication "github.com/vicpoo/API_recolecta/src/RegistroVaciado/application"
-    registroVaciadoControllers "github.com/vicpoo/API_recolecta/src/RegistroVaciado/infraestructure/controllers"
-    registroVaciadoRoutesPkg "github.com/vicpoo/API_recolecta/src/RegistroVaciado/infraestructure/routes"
+	registroVaciadoAdapters "github.com/vicpoo/API_recolecta/src/RegistroVaciado/infraestructure/adapters"
+	registroVaciadoApplication "github.com/vicpoo/API_recolecta/src/RegistroVaciado/application"
+	registroVaciadoControllers "github.com/vicpoo/API_recolecta/src/RegistroVaciado/infraestructure/controllers"
+	registroVaciadoRoutesPkg "github.com/vicpoo/API_recolecta/src/RegistroVaciado/infraestructure/routes"
 
 	anomalia "github.com/vicpoo/API_recolecta/src/anomalia/infrastructure"
 	incidencia "github.com/vicpoo/API_recolecta/src/incidencia/infrastructure"
@@ -60,12 +64,6 @@ import (
 	coloniaHttp "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/http"
 	rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
 	usuarioInfra "github.com/vicpoo/API_recolecta/src/usuario/infrastructure"
-
-
-
-
-	
-
 )
 
 //archivo para hacer las instancias de los controllers, casos de uso y repositories, etc.
@@ -78,6 +76,12 @@ func InitDependencies() {
 	engine.Use(core.CORSMiddleware())
 
 	db := core.GetBD()
+
+	// ================================
+	// ALERTAS MANTENIMIENTO
+	// ================================
+	alertaMantenimientoRoutes := alertaMantenimientoInfra.NewAlertaMantenimientoRouter(engine)
+	alertaMantenimientoRoutes.Run()
 
 	//tipo camion
 	tipoCamionRepository := tipoCamionAdapters.NewPosgres()
@@ -99,7 +103,6 @@ func InitDependencies() {
 		deleteTipoCamionByIdCtr,
 	)
 	tipoCamionRoutes.Run()
-
 
 	//camion
 	camionRepository := camionAdapters.NewPostgres()
@@ -254,7 +257,6 @@ func InitDependencies() {
     getPuntoByRutaCTR := puntoControllers.NewGetPuntoRecoleccionByRutaController(getPuntoByRutaUC)
     deletePuntoCTR := puntoControllers.NewDeletePuntoRecoleccionController(deletePuntoUC)
 
-
     puntoRoutes := puntoRoutes.NewPuntoRecoleccionRoutes(
 	    engine,
 	    createPuntoCTR,
@@ -266,7 +268,6 @@ func InitDependencies() {
     )
 
     puntoRoutes.Run()
-
 
 	rellenoRepo := rsAdapters.NewPostgres()
 
@@ -299,192 +300,177 @@ func InitDependencies() {
 
 	rellenoRoutes.Run()
 
-repository := rutaCamionAdapters.NewPostgres()
+	repository := rutaCamionAdapters.NewPostgres()
 
-// ===============================
-// USE CASES
-// ===============================
-createRutaCamionUC := rutaCamionApp.NewSaveRutaCamionUseCase(repository)
-updateRutaCamionUC := rutaCamionApp.NewUpdateRutaCamionUseCase(repository)
-getAllRutaCamionUC := rutaCamionApp.NewListAllRutaCamionUseCase(repository)
-getRutaCamionByIDUC := rutaCamionApp.NewGetRutaCamionByIDUseCase(repository)
-getRutaCamionByCamionIDUC := rutaCamionApp.NewGetRutaCamionByCamionIDUseCase(repository)
-getRutaCamionByRutaIDUC := rutaCamionApp.NewGetRutaCamionByRutaIDUseCase(repository)
-existsRutaCamionUC := rutaCamionApp.NewExistsRutaCamionByIDUseCase(repository)
-deleteRutaCamionUC := rutaCamionApp.NewDeleteRutaCamionUseCase(repository)
+	// ===============================
+	// USE CASES
+	// ===============================
+	createRutaCamionUC := rutaCamionApp.NewSaveRutaCamionUseCase(repository)
+	updateRutaCamionUC := rutaCamionApp.NewUpdateRutaCamionUseCase(repository)
+	getAllRutaCamionUC := rutaCamionApp.NewListAllRutaCamionUseCase(repository)
+	getRutaCamionByIDUC := rutaCamionApp.NewGetRutaCamionByIDUseCase(repository)
+	getRutaCamionByCamionIDUC := rutaCamionApp.NewGetRutaCamionByCamionIDUseCase(repository)
+	getRutaCamionByRutaIDUC := rutaCamionApp.NewGetRutaCamionByRutaIDUseCase(repository)
+	existsRutaCamionUC := rutaCamionApp.NewExistsRutaCamionByIDUseCase(repository)
+	deleteRutaCamionUC := rutaCamionApp.NewDeleteRutaCamionUseCase(repository)
 
-// ===============================
-// CONTROLLERS
-// ===============================
-createRutaCamionController :=
-	rutaCamionControllers.NewCreateRutaCamionController(createRutaCamionUC)
+	// ===============================
+	// CONTROLLERS
+	// ===============================
+	createRutaCamionController :=
+		rutaCamionControllers.NewCreateRutaCamionController(createRutaCamionUC)
 
-updateRutaCamionController :=
-	rutaCamionControllers.NewUpdateRutaCamionController(updateRutaCamionUC)
+	updateRutaCamionController :=
+		rutaCamionControllers.NewUpdateRutaCamionController(updateRutaCamionUC)
 
-getAllRutaCamionController :=
-	rutaCamionControllers.NewGetAllRutaCamionController(getAllRutaCamionUC)
+	getAllRutaCamionController :=
+		rutaCamionControllers.NewGetAllRutaCamionController(getAllRutaCamionUC)
 
-getRutaCamionByIDController :=
-	rutaCamionControllers.NewGetRutaCamionByIDController(getRutaCamionByIDUC)
+	getRutaCamionByIDController :=
+		rutaCamionControllers.NewGetRutaCamionByIDController(getRutaCamionByIDUC)
 
-getRutaCamionByCamionIDController :=
-	rutaCamionControllers.NewGetRutaCamionByCamionIDController(getRutaCamionByCamionIDUC)
+	getRutaCamionByCamionIDController :=
+		rutaCamionControllers.NewGetRutaCamionByCamionIDController(getRutaCamionByCamionIDUC)
 
-getRutaCamionByRutaIDController :=
-	rutaCamionControllers.NewGetRutaCamionByRutaIDController(getRutaCamionByRutaIDUC)
+	getRutaCamionByRutaIDController :=
+		rutaCamionControllers.NewGetRutaCamionByRutaIDController(getRutaCamionByRutaIDUC)
 
-existsRutaCamionController :=
-	rutaCamionControllers.NewExistsRutaCamionByIDController(existsRutaCamionUC)
+	existsRutaCamionController :=
+		rutaCamionControllers.NewExistsRutaCamionByIDController(existsRutaCamionUC)
 
-deleteRutaCamionController :=
-	rutaCamionControllers.NewDeleteRutaCamionController(deleteRutaCamionUC)
+	deleteRutaCamionController :=
+		rutaCamionControllers.NewDeleteRutaCamionController(deleteRutaCamionUC)
 
-rutaCamionRoutes := rutaCamionRoutes.NewRutaCamionRoutes(
-	engine,
-	createRutaCamionController,
-	getAllRutaCamionController,
-	getRutaCamionByIDController,
-	getRutaCamionByCamionIDController,
-	getRutaCamionByRutaIDController,
-	existsRutaCamionController,
-	updateRutaCamionController,
-	deleteRutaCamionController,
-)
+	rutaCamionRoutes := rutaCamionRoutes.NewRutaCamionRoutes(
+		engine,
+		createRutaCamionController,
+		getAllRutaCamionController,
+		getRutaCamionByIDController,
+		getRutaCamionByCamionIDController,
+		getRutaCamionByRutaIDController,
+		existsRutaCamionController,
+		updateRutaCamionController,
+		deleteRutaCamionController,
+	)
 
-rutaCamionRoutes.Run()
+	rutaCamionRoutes.Run()
 
+	// ===============================
+	// REGISTRO VACIADO
+	// ===============================
 
-// ===============================
-// REGISTRO VACIADO
-// ===============================
+	// Repository
+	registroVaciadoRepository := registroVaciadoAdapters.NewPostgres()
 
-// Repository
-registroVaciadoRepository := registroVaciadoAdapters.NewPostgres()
+	// ===============================
+	// USE CASES
+	// ===============================
+	createRegistroVaciadoUC := registroVaciadoApplication.NewCreateRegistroVaciadoUseCase(registroVaciadoRepository)
+	getAllRegistroVaciadoUC := registroVaciadoApplication.NewListAllRegistroVaciadoUseCase(registroVaciadoRepository)
+	getRegistroVaciadoByIDUC := registroVaciadoApplication.NewGetRegistroVaciadoByIDUseCase(registroVaciadoRepository)
+	getRegistroVaciadoByRellenoIDUC := registroVaciadoApplication.NewGetRegistroVaciadoByRellenoIDUseCase(registroVaciadoRepository)
+	getRegistroVaciadoByRutaCamionIDUC := registroVaciadoApplication.NewGetRegistroVaciadoByRutaCamionIDUseCase(registroVaciadoRepository)
+	existsRegistroVaciadoUC := registroVaciadoApplication.NewExistsRegistroVaciadoUseCase(registroVaciadoRepository)
+	deleteRegistroVaciadoUC := registroVaciadoApplication.NewDeleteRegistroVaciadoUseCase(registroVaciadoRepository)
 
-// ===============================
-// USE CASES
-// ===============================
-createRegistroVaciadoUC := registroVaciadoApplication.NewCreateRegistroVaciadoUseCase(registroVaciadoRepository)
-getAllRegistroVaciadoUC := registroVaciadoApplication.NewListAllRegistroVaciadoUseCase(registroVaciadoRepository)
-getRegistroVaciadoByIDUC := registroVaciadoApplication.NewGetRegistroVaciadoByIDUseCase(registroVaciadoRepository)
-getRegistroVaciadoByRellenoIDUC := registroVaciadoApplication.NewGetRegistroVaciadoByRellenoIDUseCase(registroVaciadoRepository)
-getRegistroVaciadoByRutaCamionIDUC := registroVaciadoApplication.NewGetRegistroVaciadoByRutaCamionIDUseCase(registroVaciadoRepository)
-existsRegistroVaciadoUC := registroVaciadoApplication.NewExistsRegistroVaciadoUseCase(registroVaciadoRepository)
-deleteRegistroVaciadoUC := registroVaciadoApplication.NewDeleteRegistroVaciadoUseCase(registroVaciadoRepository)
+	// ===============================
+	// CONTROLLERS
+	// ===============================
+	createRegistroVaciadoController := registroVaciadoControllers.NewCreateRegistroVaciadoController(createRegistroVaciadoUC)
+	getAllRegistroVaciadoController := registroVaciadoControllers.NewGetAllRegistroVaciadoController(getAllRegistroVaciadoUC)
+	getRegistroVaciadoByIDController := registroVaciadoControllers.NewGetRegistroVaciadoByIDController(getRegistroVaciadoByIDUC)
+	getRegistroVaciadoByRellenoIDController := registroVaciadoControllers.NewGetRegistroVaciadoByRellenoIDController(getRegistroVaciadoByRellenoIDUC)
+	getRegistroVaciadoByRutaCamionIDController := registroVaciadoControllers.NewGetRegistroVaciadoByRutaCamionIDController(getRegistroVaciadoByRutaCamionIDUC)
+	existsRegistroVaciadoController := registroVaciadoControllers.NewExistsRegistroVaciadoController(existsRegistroVaciadoUC)
+	deleteRegistroVaciadoController := registroVaciadoControllers.NewDeleteRegistroVaciadoController(deleteRegistroVaciadoUC)
 
-// ===============================
-// CONTROLLERS
-// ===============================
-createRegistroVaciadoController := registroVaciadoControllers.NewCreateRegistroVaciadoController(createRegistroVaciadoUC)
-getAllRegistroVaciadoController := registroVaciadoControllers.NewGetAllRegistroVaciadoController(getAllRegistroVaciadoUC)
-getRegistroVaciadoByIDController := registroVaciadoControllers.NewGetRegistroVaciadoByIDController(getRegistroVaciadoByIDUC)
-getRegistroVaciadoByRellenoIDController := registroVaciadoControllers.NewGetRegistroVaciadoByRellenoIDController(getRegistroVaciadoByRellenoIDUC)
-getRegistroVaciadoByRutaCamionIDController := registroVaciadoControllers.NewGetRegistroVaciadoByRutaCamionIDController(getRegistroVaciadoByRutaCamionIDUC)
-existsRegistroVaciadoController := registroVaciadoControllers.NewExistsRegistroVaciadoController(existsRegistroVaciadoUC)
-deleteRegistroVaciadoController := registroVaciadoControllers.NewDeleteRegistroVaciadoController(deleteRegistroVaciadoUC)
+	// ===============================
+	// ROUTES
+	// ===============================
+	registroVaciadoRoutes := registroVaciadoRoutesPkg.NewRegistroVaciadoRoutes(
+		engine,
+		createRegistroVaciadoController,
+		getAllRegistroVaciadoController,
+		getRegistroVaciadoByIDController,
+		getRegistroVaciadoByRellenoIDController,
+		getRegistroVaciadoByRutaCamionIDController,
+		existsRegistroVaciadoController,
+		deleteRegistroVaciadoController,
+	)
 
-// ===============================
-// ROUTES
-// ===============================
-registroVaciadoRoutes := registroVaciadoRoutesPkg.NewRegistroVaciadoRoutes(
-	engine,
-	createRegistroVaciadoController,
-	getAllRegistroVaciadoController,
-	getRegistroVaciadoByIDController,
-	getRegistroVaciadoByRellenoIDController,
-	getRegistroVaciadoByRutaCamionIDController,
-	existsRegistroVaciadoController,
-	deleteRegistroVaciadoController,
-)
+	registroVaciadoRoutes.Run()
 
-registroVaciadoRoutes.Run()
+	// ===============================
+	// COLONIA
+	// ===============================
 
+	coloniaRepository := coloniaPostgres.NewColoniaRepository(core.GetBD())
 
-// ===============================
-// COLONIA
-// ===============================
+	createColoniaUC := coloniaApplication.NewCreateColonia(coloniaRepository)
+	getColoniaUC := coloniaApplication.NewGetColonia(coloniaRepository)
+	listColoniasUC := coloniaApplication.NewListColonias(coloniaRepository)
+	updateColoniaUC := coloniaApplication.NewUpdateColonia(coloniaRepository)
+	deleteColoniaUC := coloniaApplication.NewDeleteColonia(coloniaRepository)
 
-coloniaRepository := coloniaPostgres.NewColoniaRepository(core.GetBD())
+	coloniaController := coloniaHttp.NewColoniaController(
+		createColoniaUC,
+		getColoniaUC,
+		listColoniasUC,
+		updateColoniaUC,
+		deleteColoniaUC,
+	)
 
-createColoniaUC := coloniaApplication.NewCreateColonia(coloniaRepository)
-getColoniaUC := coloniaApplication.NewGetColonia(coloniaRepository)
-listColoniasUC := coloniaApplication.NewListColonias(coloniaRepository)
-updateColoniaUC := coloniaApplication.NewUpdateColonia(coloniaRepository)
-deleteColoniaUC := coloniaApplication.NewDeleteColonia(coloniaRepository)
+	coloniaController.RegisterRoutes(engine)
 
-coloniaController := coloniaHttp.NewColoniaController(
-	createColoniaUC,
-	getColoniaUC,
-	listColoniasUC,
-	updateColoniaUC,
-	deleteColoniaUC,
-)
+	// ===============================
+	// DOMICILIO
+	// ===============================
 
-coloniaController.RegisterRoutes(engine)
+	domicilioRepository := domicilioPostgres.NewDomicilioRepository(core.GetBD())
 
+	createDomicilioUC := domicilioApplication.NewCreateDomicilio(domicilioRepository)
+	getDomicilioUC := domicilioApplication.NewGetDomicilio(domicilioRepository)
+	updateDomicilioUC := domicilioApplication.NewUpdateDomicilio(domicilioRepository)
+	deleteDomicilioUC := domicilioApplication.NewDeleteDomicilio(domicilioRepository)
 
-// ===============================
-// DOMICILIO
-// ===============================
+	domicilioController := domicilioHttp.NewDomicilioController(
+		createDomicilioUC,
+		getDomicilioUC,
+		updateDomicilioUC,
+		deleteDomicilioUC,
+	)
 
-domicilioRepository := domicilioPostgres.NewDomicilioRepository(core.GetBD())
+	domicilioController.RegisterRoutes(engine)
 
-createDomicilioUC := domicilioApplication.NewCreateDomicilio(domicilioRepository)
-getDomicilioUC := domicilioApplication.NewGetDomicilio(domicilioRepository)
-updateDomicilioUC := domicilioApplication.NewUpdateDomicilio(domicilioRepository)
-deleteDomicilioUC := domicilioApplication.NewDeleteDomicilio(domicilioRepository)
+	usuarioDeps := usuarioInfra.NewUsuarioDependencies(db)
+	usuarioInfra.RegisterUsuarioRoutes(engine, usuarioDeps)
 
-domicilioController := domicilioHttp.NewDomicilioController(
-	createDomicilioUC,
-	getDomicilioUC,
-	updateDomicilioUC,
-	deleteDomicilioUC,
-)
+	rolController := rolInfra.NewRolDependencies(db)
+	rolInfra.RegisterRolRoutes(engine, rolController)
 
-domicilioController.RegisterRoutes(engine)
-
-usuarioDeps := usuarioInfra.NewUsuarioDependencies(db)
-usuarioInfra.RegisterUsuarioRoutes(engine, usuarioDeps)
-
-rolController := rolInfra.NewRolDependencies(db)
-rolInfra.RegisterRolRoutes(engine, rolController)
-
-anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
-
+	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
 	anomaliaRoutes.Run()
 
 	incidenciaRoutes := incidencia.NewIncidenciaRouter(engine)
-
 	incidenciaRoutes.Run()
 
 	reporteConductorRoutes := reporteConductor.NewReporteConductorRouter(engine)
-
 	reporteConductorRoutes.Run()
 	
 	registroMantenimientoRoutes := registroMantenimiento.NewRegistroMantenimientoRouter(engine)
-
 	registroMantenimientoRoutes.Run()
 
-
 	reporteFallaCriticaRoutes := reporteFallaCritica.NewReporteFallaCriticaRouter(engine)
-
 	reporteFallaCriticaRoutes.Run()
 
-
 	reporteMantenimientoGeneradoRoutes := reporteMantenimientoGenerado.NewReporteMantenimientoGeneradoRouter(engine)
-
 	reporteMantenimientoGeneradoRoutes.Run()
 
-
 	seguimientoFallaCriticaRoutes := seguimientoFallaCritica.NewSeguimientoFallaCriticaRouter(engine)
-
 	seguimientoFallaCriticaRoutes.Run()
 
-
 	tipoMantenimientoRoutes := tipoMantenimiento.NewTipoMantenimientoRouter(engine)
-
 	tipoMantenimientoRoutes.Run()
 
-	engine.Run(":8080")
+	engine.Run(":8000")
 }
