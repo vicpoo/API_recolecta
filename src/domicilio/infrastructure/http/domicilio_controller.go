@@ -8,12 +8,14 @@ import (
 	"github.com/vicpoo/API_recolecta/src/domicilio/application"
 	"github.com/vicpoo/API_recolecta/src/domicilio/domain"
 	"github.com/vicpoo/API_recolecta/src/core"
+	
 )
 
 type DomicilioController struct {
 	create *application.CreateDomicilio
 	get    *application.GetDomicilio
 	update *application.UpdateDomicilio
+	list   *application.ListDomicilios
 	delete *application.DeleteDomicilio
 }
 
@@ -21,23 +23,26 @@ func NewDomicilioController(
 	create *application.CreateDomicilio,
 	get *application.GetDomicilio,
 	update *application.UpdateDomicilio,
+	list *application.ListDomicilios,
 	delete *application.DeleteDomicilio,
 ) *DomicilioController {
-	return &DomicilioController{create, get, update, delete}
+	return &DomicilioController{create, get, update, list, delete}
 }
 
 func (c *DomicilioController) RegisterRoutes(r *gin.Engine) {
 
-	protected := r.Group(
-		"/domicilios",
+		ciudadano := r.Group(
+		"/api/domicilios",
 		core.JWTAuthMiddleware(),
+		core.RequireRole(core.CIUDADANO),
 	)
 
 	{
-		protected.POST("", c.Create)
-		protected.GET("/:id", c.GetByID)
-		protected.PUT("/:id", c.Update)
-		protected.DELETE("/:id", c.Delete)
+		ciudadano.POST("", c.Create)
+		ciudadano.GET("/:id", c.GetByID)
+		ciudadano.PUT("/:id", c.Update)
+		ciudadano.GET("", c.List)   
+		ciudadano.DELETE("/:id", c.Delete)
 	}
 }
 
@@ -48,6 +53,8 @@ func (c *DomicilioController) Create(ctx *gin.Context) {
 		return
 	}
 
+	body.UsuarioID = ctx.GetInt("user_id")
+
 	if err := c.create.Execute(&body); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -55,6 +62,19 @@ func (c *DomicilioController) Create(ctx *gin.Context) {
 
 	ctx.Status(http.StatusCreated)
 }
+
+func (c *DomicilioController) List(ctx *gin.Context) {
+	usuarioID := ctx.GetInt("user_id")
+
+	domicilios, err := c.list.Execute(usuarioID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, domicilios)
+}
+
 
 func (c *DomicilioController) GetByID(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))

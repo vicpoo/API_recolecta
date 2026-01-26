@@ -60,11 +60,10 @@ import (
 	coloniaHttp "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/http"
 	rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
 	usuarioInfra "github.com/vicpoo/API_recolecta/src/usuario/infrastructure"
+	alertaApplication "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
+	alertaHttp "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/http"
+	alertaPostgres "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/postgres"
 
-
-
-
-	
 
 )
 
@@ -433,16 +432,38 @@ domicilioRepository := domicilioPostgres.NewDomicilioRepository(core.GetBD())
 createDomicilioUC := domicilioApplication.NewCreateDomicilio(domicilioRepository)
 getDomicilioUC := domicilioApplication.NewGetDomicilio(domicilioRepository)
 updateDomicilioUC := domicilioApplication.NewUpdateDomicilio(domicilioRepository)
+listDomiciliosUC := domicilioApplication.NewListDomicilios(domicilioRepository)
 deleteDomicilioUC := domicilioApplication.NewDeleteDomicilio(domicilioRepository)
 
 domicilioController := domicilioHttp.NewDomicilioController(
 	createDomicilioUC,
 	getDomicilioUC,
 	updateDomicilioUC,
+	listDomiciliosUC,
 	deleteDomicilioUC,
 )
 
 domicilioController.RegisterRoutes(engine)
+
+// ===============================
+// ALERTA USUARIO
+// ===============================
+
+alertaRepository := alertaPostgres.NewAlertaRepository(core.GetBD())
+
+createAlertaUC := alertaApplication.NewCreateAlerta(alertaRepository)
+listMisAlertasUC := alertaApplication.NewListMisAlertas(alertaRepository)
+marcarLeidaUC := alertaApplication.NewMarcarLeida(alertaRepository)
+
+alertaController := alertaHttp.NewAlertaController(
+	createAlertaUC,
+	listMisAlertasUC,
+	marcarLeidaUC,
+)
+
+alertaController.RegisterRoutes(engine)
+
+
 
 usuarioDeps := usuarioInfra.NewUsuarioDependencies(db)
 usuarioInfra.RegisterUsuarioRoutes(engine, usuarioDeps)

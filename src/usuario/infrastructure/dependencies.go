@@ -13,6 +13,7 @@ type UsuarioDependencies struct {
 	Delete *usuarioController.DeleteUsersController
 	Get    *usuarioController.ViewOneUsersController
 	List   *usuarioController.ViewAllUsersController
+	Update *usuarioController.UpdateUsersController
 	Login  *usuarioController.LoginUsersController
 }
 
@@ -23,6 +24,7 @@ func NewUsuarioDependencies(db *pgxpool.Pool) *UsuarioDependencies {
 	deleteUC := usuarioApp.NewDeleteUser(repo)
 	getUC := usuarioApp.NewViewOneUser(repo)
 	listUC := usuarioApp.NewViewAllUser(repo)
+	updateUC := usuarioApp.NewUpdateUser(repo)
 	loginUC := usuarioApp.NewLoginUser(repo)
 
 	return &UsuarioDependencies{
@@ -30,6 +32,7 @@ func NewUsuarioDependencies(db *pgxpool.Pool) *UsuarioDependencies {
 		Delete: usuarioController.NewDeleteUsersController(deleteUC),
 		Get:    usuarioController.NewViewOneUsersController(getUC),
 		List:   usuarioController.NewViewAllUsersController(listUC),
+		Update: usuarioController.NewUpdateUsersController(updateUC),
 		Login:  usuarioController.NewLoginUsersController(loginUC),
 	}
 }

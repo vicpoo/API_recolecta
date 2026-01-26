@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/colonia/application"
 	"github.com/vicpoo/API_recolecta/src/colonia/domain"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type ColoniaController struct {
@@ -28,15 +29,27 @@ func NewColoniaController(
 }
 
 func (c *ColoniaController) RegisterRoutes(r *gin.Engine) {
-	group := r.Group("/colonias")
+
+	public := r.Group("/api/colonia")
 	{
-		group.POST("", c.Create)
-		group.GET("", c.List)
-		group.GET("/:id", c.GetByID)
-		group.PUT("/:id", c.Update)
-		group.DELETE("/:id", c.Delete)
+		public.GET("", c.List)
+		public.GET("/:id", c.GetByID)
+	}
+
+	// Rutas protegidas SOLO ADMIN
+	admin := r.Group(
+		"/api/colonia",
+		core.JWTAuthMiddleware(),
+		core.RequireRole(core.ADMIN),
+	)
+	{
+		admin.POST("", c.Create)
+		admin.PUT("/:id", c.Update)
+		admin.DELETE("/:id", c.Delete)
 	}
 }
+	
+
 
 func (c *ColoniaController) Create(ctx *gin.Context) {
 	var body domain.Colonia

@@ -102,3 +102,40 @@ func (r *DomicilioRepository) Update(d *domain.Domicilio) error {
 
 	return err
 }
+
+func (r *DomicilioRepository) GetAllByUsuario(usuarioID int) ([]domain.Domicilio, error) {
+	query := `
+		SELECT domicilio_id, usuario_id, alias, direccion, colonia_id,
+		       eliminado, created_at, updated_at
+		FROM domicilio
+		WHERE usuario_id = $1 AND eliminado = false
+	`
+
+	rows, err := r.db.Query(context.Background(), query, usuarioID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var domicilios []domain.Domicilio
+
+	for rows.Next() {
+		var d domain.Domicilio
+		if err := rows.Scan(
+			&d.DomicilioID,
+			&d.UsuarioID,
+			&d.Alias,
+			&d.Direccion,
+			&d.ColoniaID,
+			&d.Eliminado,
+			&d.CreatedAt,
+			&d.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		domicilios = append(domicilios, d)
+	}
+
+	return domicilios, nil
+}
+

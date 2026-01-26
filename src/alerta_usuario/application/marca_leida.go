@@ -7,7 +7,7 @@ type MarcarLeida struct {
 }
 
 func NewMarcarLeida(repo domain.AlertaUsuarioRepository) *MarcarLeida {
-	return &MarcarLeida{repo}
+	return &MarcarLeida{repo: repo}
 }
 
 func (uc *MarcarLeida) Execute(alertaID int, usuarioID int) error {

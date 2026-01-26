@@ -71,6 +71,16 @@ func (r *UsuarioPostgresRepository) Delete(ctx context.Context, id int) error {
 	return err
 }
 
+func (r *UsuarioPostgresRepository) Update(ctx context.Context, u *entities.Usuario) error {
+	const q = `
+		UPDATE usuario 
+		SET nombre = $1, email = $2, password = $3, role_id = $4, alias = $5, telefono = $6, residencia_id = $7, eliminado = $8, updated_at = NOW()
+		WHERE user_id = $9
+	`
+	_, err := r.db.Exec(ctx, q, u.Nombre, u.Email, u.PasswordHash, u.RolID, u.Alias, u.Telefono, u.ResidenciaID, u.Eliminado, u.ID)
+	return err
+}
+
 func (r *UsuarioPostgresRepository) FindByEmail(ctx context.Context, email string) (*entities.Usuario, error) {
 	const q = `
 		SELECT user_id, nombre, email, password, role_id, alias, telefono, residencia_id, eliminado, created_at, updated_at

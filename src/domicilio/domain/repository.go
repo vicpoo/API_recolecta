@@ -5,4 +5,5 @@ type DomicilioRepository interface {
 	GetByID(id int) (*Domicilio, error)
 	Update(d *Domicilio) error
 	Delete(id int, usuarioID int) error
+	GetAllByUsuario(usuarioID int) ([]Domicilio, error)
 }

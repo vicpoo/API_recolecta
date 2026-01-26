@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/usuario/application"
 )
 
@@ -33,5 +34,14 @@ func (c *LoginUsersController) Handle(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"usuario": usuario})
+	token, err := core.GenerateToken(usuario.ID, usuario.RolID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "error al generar token"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"token":   token,
+		"usuario": usuario,
+	})
 }

@@ -23,8 +23,7 @@ func NewLoginUser(repo domain.UsuarioRepository) *LoginUser {
 	return &LoginUser{repo: repo}
 }
 
-// Devuelve el usuario si las credenciales son válidas.
-// Si tú ya generas JWT en otro lado, aquí es donde lo “enchufas”.
+
 func (uc *LoginUser) Execute(ctx context.Context, in LoginInput) (*entities.Usuario, bool, error) {
 	email := strings.TrimSpace(strings.ToLower(in.Email))
 
