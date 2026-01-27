@@ -5,9 +5,23 @@ CREATE DATABASE proyecto_recolecta;
 \c proyecto_recolecta;
 
 -- =====================
+-- VERIFICACIÓN DE VERSIÓN
+-- =====================
+DO $$ 
+DECLARE
+    version_num INTEGER;
+BEGIN
+    SELECT current_setting('server_version_num')::INTEGER INTO version_num;
+    RAISE NOTICE 'PostgreSQL version: %', current_setting('server_version');
+    IF version_num < 120000 THEN
+        RAISE WARNING 'PostgreSQL version < 12 detectada. Algunas funcionalidades pueden no estar disponibles.';
+    END IF;
+END $$;
+
+-- =====================
 -- TABLA: rol
 -- =====================
-CREATE TABLE rol (
+CREATE TABLE IF NOT EXISTS rol (
   role_id SERIAL PRIMARY KEY,
   nombre VARCHAR(50) NOT NULL,
   eliminado BOOLEAN DEFAULT FALSE
@@ -16,7 +30,7 @@ CREATE TABLE rol (
 -- =====================
 -- TABLA: colonia
 -- =====================
-CREATE TABLE colonia (
+CREATE TABLE IF NOT EXISTS colonia (
   colonia_id SERIAL PRIMARY KEY,
   nombre VARCHAR(255) NOT NULL,
   zona VARCHAR(50),
@@ -26,7 +40,7 @@ CREATE TABLE colonia (
 -- =====================
 -- TABLA: usuario
 -- =====================
-CREATE TABLE usuario (
+CREATE TABLE IF NOT EXISTS usuario (
   user_id SERIAL PRIMARY KEY,
   nombre VARCHAR(255) NOT NULL,
   alias VARCHAR(100),
@@ -45,7 +59,7 @@ CREATE TABLE usuario (
 -- =====================
 -- TABLA: domicilio
 -- =====================
-CREATE TABLE domicilio (
+CREATE TABLE IF NOT EXISTS domicilio (
   domicilio_id SERIAL PRIMARY KEY,
   usuario_id INT,
   alias VARCHAR(100),
@@ -60,15 +74,21 @@ CREATE TABLE domicilio (
     REFERENCES colonia(colonia_id)
 );
 
-ALTER TABLE usuario
-ADD CONSTRAINT fk_usuario_domicilio
-FOREIGN KEY (residencia_id)
-REFERENCES domicilio(domicilio_id);
+-- Constraint idempotente para relación circular usuario<->domicilio
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'fk_usuario_domicilio'
+    ) THEN
+        ALTER TABLE usuario ADD CONSTRAINT fk_usuario_domicilio
+        FOREIGN KEY (residencia_id) REFERENCES domicilio(domicilio_id);
+    END IF;
+END $$;
 
 -- =====================
 -- TABLA: tipo_camion
 -- =====================
-CREATE TABLE tipo_camion (
+CREATE TABLE IF NOT EXISTS tipo_camion (
   tipo_camion_id SERIAL PRIMARY KEY,
   nombre VARCHAR(100),
   descripcion VARCHAR(255),
@@ -78,7 +98,7 @@ CREATE TABLE tipo_camion (
 -- =====================
 -- TABLA: camion
 -- =====================
-CREATE TABLE camion (
+CREATE TABLE IF NOT EXISTS camion (
   camion_id SERIAL PRIMARY KEY,
   placa VARCHAR(20) UNIQUE,
   modelo VARCHAR(100),
@@ -97,7 +117,7 @@ CREATE TABLE camion (
 -- =====================
 -- TABLA: estado_camion
 -- =====================
-CREATE TABLE estado_camion (
+CREATE TABLE IF NOT EXISTS estado_camion (
   estado_id SERIAL PRIMARY KEY,
   camion_id INT,
   estado VARCHAR(50),
@@ -110,7 +130,7 @@ CREATE TABLE estado_camion (
 -- =====================
 -- TABLA: historial_asignacion_camion
 -- =====================
-CREATE TABLE historial_asignacion_camion (
+CREATE TABLE IF NOT EXISTS historial_asignacion_camion (
   id_historial SERIAL PRIMARY KEY,
   id_chofer INT,
   id_camion INT,
@@ -128,7 +148,7 @@ CREATE TABLE historial_asignacion_camion (
 -- =====================
 -- TABLA: ruta
 -- =====================
-CREATE TABLE ruta (
+CREATE TABLE IF NOT EXISTS ruta (
   ruta_id SERIAL PRIMARY KEY,
   nombre VARCHAR(255),
   descripcion VARCHAR(255),
@@ -140,7 +160,7 @@ CREATE TABLE ruta (
 -- =====================
 -- TABLA: punto_recoleccion
 -- =====================
-CREATE TABLE punto_recoleccion (
+CREATE TABLE IF NOT EXISTS punto_recoleccion (
   punto_id SERIAL PRIMARY KEY,
   ruta_id INT,
   cp VARCHAR(20) UNIQUE,
@@ -152,7 +172,7 @@ CREATE TABLE punto_recoleccion (
 -- =====================
 -- TABLA: ruta_camion
 -- =====================
-CREATE TABLE ruta_camion (
+CREATE TABLE IF NOT EXISTS ruta_camion (
   ruta_camion_id SERIAL PRIMARY KEY,
   ruta_id INT,
   camion_id INT,
@@ -168,7 +188,7 @@ CREATE TABLE ruta_camion (
 -- =====================
 -- TABLA: tipo_mantenimiento
 -- =====================
-CREATE TABLE tipo_mantenimiento (
+CREATE TABLE IF NOT EXISTS tipo_mantenimiento (
   tipo_mantenimiento_id SERIAL PRIMARY KEY,
   nombre VARCHAR(100),
   categoria VARCHAR(20),
@@ -178,7 +198,7 @@ CREATE TABLE tipo_mantenimiento (
 -- =====================
 -- TABLA: alerta_mantenimiento
 -- =====================
-CREATE TABLE alerta_mantenimiento (
+CREATE TABLE IF NOT EXISTS alerta_mantenimiento (
   alerta_id SERIAL PRIMARY KEY,
   camion_id INT,
   tipo_mantenimiento_id INT,
@@ -195,7 +215,7 @@ CREATE TABLE alerta_mantenimiento (
 -- =====================
 -- TABLA: registro_mantenimiento
 -- =====================
-CREATE TABLE registro_mantenimiento (
+CREATE TABLE IF NOT EXISTS registro_mantenimiento (
   registro_id SERIAL PRIMARY KEY,
   alerta_id INT,
   camion_id INT,
@@ -216,7 +236,7 @@ CREATE TABLE registro_mantenimiento (
 -- =====================
 -- TABLA: incidencia
 -- =====================
-CREATE TABLE incidencia (
+CREATE TABLE IF NOT EXISTS incidencia (
   incidencia_id SERIAL PRIMARY KEY,
   punto_recoleccion_id INT,
   conductor_id INT,
@@ -233,7 +253,7 @@ CREATE TABLE incidencia (
 -- =====================
 -- TABLA: reporte_falla_critica
 -- =====================
-CREATE TABLE reporte_falla_critica (
+CREATE TABLE IF NOT EXISTS reporte_falla_critica (
   falla_id SERIAL PRIMARY KEY,
   camion_id INT,
   conductor_id INT,
@@ -249,7 +269,7 @@ CREATE TABLE reporte_falla_critica (
 -- =====================
 -- TABLA: seguimiento_falla_critica
 -- =====================
-CREATE TABLE seguimiento_falla_critica (
+CREATE TABLE IF NOT EXISTS seguimiento_falla_critica (
   seguimiento_id SERIAL PRIMARY KEY,
   falla_id INT,
   comentario TEXT,
@@ -261,7 +281,7 @@ CREATE TABLE seguimiento_falla_critica (
 -- =====================
 -- TABLA: anomalia
 -- =====================
-CREATE TABLE anomalia (
+CREATE TABLE IF NOT EXISTS anomalia (
   anomalia_id SERIAL PRIMARY KEY,
   punto_id INT,
   tipo_anomalia VARCHAR(50),
@@ -279,7 +299,7 @@ CREATE TABLE anomalia (
 -- =====================
 -- TABLA: relleno_sanitario
 -- =====================
-CREATE TABLE relleno_sanitario (
+CREATE TABLE IF NOT EXISTS relleno_sanitario (
   relleno_id SERIAL PRIMARY KEY,
   nombre VARCHAR(255),
   direccion VARCHAR(255),
@@ -291,7 +311,7 @@ CREATE TABLE relleno_sanitario (
 -- =====================
 -- TABLA: registro_vaciado
 -- =====================
-CREATE TABLE registro_vaciado (
+CREATE TABLE IF NOT EXISTS registro_vaciado (
   vaciado_id SERIAL PRIMARY KEY,
   relleno_id INT,
   ruta_camion_id INT,
@@ -305,7 +325,7 @@ CREATE TABLE registro_vaciado (
 -- =====================
 -- TABLA: notificacion
 -- =====================
-CREATE TABLE notificacion (
+CREATE TABLE IF NOT EXISTS notificacion (
   notificacion_id SERIAL PRIMARY KEY,
   usuario_id INT,
   tipo VARCHAR(50),
@@ -332,7 +352,7 @@ CREATE TABLE notificacion (
 -- =====================
 -- TABLA: reporte_conductor
 -- =====================
-CREATE TABLE reporte_conductor (
+CREATE TABLE IF NOT EXISTS reporte_conductor (
   reporte_id SERIAL PRIMARY KEY,
   conductor_id INT,
   camion_id INT,
@@ -350,7 +370,7 @@ CREATE TABLE reporte_conductor (
 -- =====================
 -- TABLA: reporte_mantenimiento_generado
 -- =====================
-CREATE TABLE reporte_mantenimiento_generado (
+CREATE TABLE IF NOT EXISTS reporte_mantenimiento_generado (
   reporte_id SERIAL PRIMARY KEY,
   coordinador_id INT,
   fecha_desde TIMESTAMP,
@@ -364,7 +384,7 @@ CREATE TABLE reporte_mantenimiento_generado (
 -- =====================
 -- TABLA: aviso_general
 -- =====================
-CREATE TABLE aviso_general (
+CREATE TABLE IF NOT EXISTS aviso_general (
   aviso_id SERIAL PRIMARY KEY,
   titulo VARCHAR(50),
   mensaje TEXT,
@@ -375,9 +395,44 @@ CREATE TABLE aviso_general (
 -- =====================
 -- TABLA: alerta_usuario
 -- =====================
-CREATE TABLE alerta_usuario (
+CREATE TABLE IF NOT EXISTS alerta_usuario (
   alerta_id SERIAL PRIMARY KEY,
   titulo VARCHAR(50),
   mensaje TEXT,
   created_at TIMESTAMP
 );
+
+-- =====================
+-- ÍNDICES (Solo tablas transaccionales de alto volumen)
+-- =====================
+
+-- notificacion: tabla de eventos/logs, crecimiento continuo
+CREATE INDEX IF NOT EXISTS idx_notificacion_usuario_id ON notificacion(usuario_id);
+CREATE INDEX IF NOT EXISTS idx_notificacion_created_at ON notificacion(created_at DESC);
+
+-- incidencia: reportes diarios, alta escritura
+CREATE INDEX IF NOT EXISTS idx_incidencia_conductor_id ON incidencia(conductor_id);
+CREATE INDEX IF NOT EXISTS idx_incidencia_fecha_reporte ON incidencia(fecha_reporte DESC);
+
+-- estado_camion: tracking continuo
+CREATE INDEX IF NOT EXISTS idx_estado_camion_camion_id ON estado_camion(camion_id);
+CREATE INDEX IF NOT EXISTS idx_estado_camion_timestamp ON estado_camion(timestamp DESC);
+
+-- =====================
+-- MENSAJE DE FINALIZACIÓN
+-- =====================
+DO $$ 
+DECLARE
+    table_count INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO table_count
+    FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_type = 'BASE TABLE';
+    
+    RAISE NOTICE '=========================================';
+    RAISE NOTICE '✅ Script de inicialización completado exitosamente';
+    RAISE NOTICE 'Base de datos: proyecto_recolecta';
+    RAISE NOTICE 'Tablas creadas/verificadas: %', table_count;
+    RAISE NOTICE 'Índices creados: 6 (tablas transaccionales)';
+    RAISE NOTICE '=========================================';
+END $$;
