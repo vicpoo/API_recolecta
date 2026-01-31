@@ -22,6 +22,8 @@ func (router *AlertaMantenimientoRouter) Run() {
 	// Grupo de rutas para alertas de mantenimiento con prefijo /api
 	alertaGroup := router.engine.Group("/api/alertas-mantenimiento")
 	{
+		// Acciones específicas
+		alertaGroup.PATCH("/:id/atender", marcarAtendidaCtrl.Run)
 		// CRUD básico
 		alertaGroup.POST("/", createCtrl.Run)
 		alertaGroup.GET("/", getAllCtrl.Run)
@@ -33,8 +35,6 @@ func (router *AlertaMantenimientoRouter) Run() {
 		alertaGroup.GET("/pendientes", getPendientesCtrl.Run)
 		alertaGroup.GET("/atendidas", getAtendidasCtrl.Run)
 		
-		// Acciones específicas
-		alertaGroup.PATCH("/:id/atender", marcarAtendidaCtrl.Run)
 		
 		// Rutas de filtrado
 		alertaGroup.GET("/camion/:camion_id", getByCamionCtrl.Run)

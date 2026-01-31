@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/vicpoo/API_recolecta/src/Ruta/domain/entities"
@@ -20,6 +22,7 @@ func NewPostgres() *Postgres {
 }
 
 func (pg *Postgres) Save(ruta *entities.Ruta) error {
+	ruta.CreatedAt = time.Now()
 	sql := `
 		INSERT INTO ruta (nombre, descripcion, json_ruta, eliminado, created_at)
 		VALUES ($1, $2, $3, false, $4)

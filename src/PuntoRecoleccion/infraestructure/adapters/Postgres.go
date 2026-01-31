@@ -3,6 +3,7 @@ package adapters
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -23,6 +24,7 @@ func NewPostgres() *Postgres {
 // SAVE
 //
 func (pg *Postgres) Save(p *entities.PuntoRecoleccion) (*entities.PuntoRecoleccion, error) {
+	p.CreatedAt = time.Now()
 	sql := `
 	INSERT INTO punto_recoleccion
 	(

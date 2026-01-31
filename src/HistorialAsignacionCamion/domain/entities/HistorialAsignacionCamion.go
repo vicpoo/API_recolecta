@@ -10,5 +10,5 @@ type HistorialAsignacionCamion struct {
 	FechaBaja       *time.Time `json:"fecha_baja"`
 	Eliminado       bool       `json:"eliminado"`
 	CreatedAt       time.Time  `json:"created_at"`
-	UpdatedAt       *time.Time `json:"updated_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
 }

@@ -3,6 +3,7 @@ package adapters
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -23,6 +24,7 @@ func NewPostgres() *Postgres {
 // CREATE
 //
 func (pg *Postgres) Save(h *entities.HistorialAsignacionCamion) (*entities.HistorialAsignacionCamion, error) {
+	h.CreatedAt = time.Now()
 	sql := `
 	INSERT INTO historial_asignacion_camion
 	(
@@ -31,9 +33,10 @@ func (pg *Postgres) Save(h *entities.HistorialAsignacionCamion) (*entities.Histo
 		fecha_asignacion,
 		fecha_baja,
 		eliminado,
-		created_at
+		created_at,
+		updated_at
 	)
-	VALUES ($1,$2,$3,$4,$5,$6)
+	VALUES ($1, $2, $3, $4, false, $5, NULL)
 	RETURNING id_historial
 	`
 
@@ -42,10 +45,9 @@ func (pg *Postgres) Save(h *entities.HistorialAsignacionCamion) (*entities.Histo
 		sql,
 		h.IDChofer,
 		h.IDCamion,
-		h.FechaAsignacion, 
+		h.FechaAsignacion,
 		h.FechaBaja,
-		h.Eliminado,
-		h.CreatedAt, 
+		h.CreatedAt,
 	).Scan(&h.IDHistorial)
 
 	if err != nil {
@@ -54,6 +56,8 @@ func (pg *Postgres) Save(h *entities.HistorialAsignacionCamion) (*entities.Histo
 
 	return h, nil
 }
+
+
 
 //
 // GET BY ID
@@ -131,6 +135,7 @@ func (pg *Postgres) ListAll() ([]entities.HistorialAsignacionCamion, error) {
 // UPDATE
 //
 func (pg *Postgres) Update(id int32, h *entities.HistorialAsignacionCamion) (*entities.HistorialAsignacionCamion, error) {
+	h.UpdatedAt = time.Now()
 	sql := `
 	UPDATE historial_asignacion_camion
 	SET
