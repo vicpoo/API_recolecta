@@ -9,6 +9,8 @@ import (
 	
 	// Agregar esta línea
 	alertaMantenimientoInfra "github.com/vicpoo/API_recolecta/src/alerta_mantenimiento/infrastructure"
+	notificacionInfra "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
+	
 	
 	camionUseCases "github.com/vicpoo/API_recolecta/src/Camion/application"
 	camionAdapters "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/adapters"
@@ -82,6 +84,14 @@ func InitDependencies() {
 	// ================================
 	alertaMantenimientoRoutes := alertaMantenimientoInfra.NewAlertaMantenimientoRouter(engine)
 	alertaMantenimientoRoutes.Run()
+
+
+	// =================================
+	// NOTIFICACIONES
+	// =================================
+	notificacionRoutes := notificacionInfra.NewNotificacionRouter(engine)
+	notificacionRoutes.Run()
+	
 
 	//tipo camion
 	tipoCamionRepository := tipoCamionAdapters.NewPostgres()
