@@ -208,9 +208,8 @@ BEGIN
     WHERE table_schema = 'public' AND table_type = 'BASE TABLE';
     
     RAISE NOTICE '=========================================';
-    RAISE NOTICE '✅ Script de inicialización completado exitosamente';
+    RAISE NOTICE '✅ Script de inicialización de schema completado exitosamente';
     RAISE NOTICE 'Base de datos: proyecto_recolecta';
     RAISE NOTICE 'Tablas creadas/verificadas: %', table_count;
-    RAISE NOTICE 'Índices creados: 6 (tablas transaccionales)';
     RAISE NOTICE '=========================================';
 END $$;
