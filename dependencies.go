@@ -46,15 +46,22 @@ import (
 	registroVaciadoApplication "github.com/vicpoo/API_recolecta/src/Rutas/application"
 	registroVaciadoControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
 	registroVaciadoRoutesPkg "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
+
+	anomalia "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
+	incidencia "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
+	registroVaciadoAdapters "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/adapters"
+	registroVaciadoApplication "github.com/vicpoo/API_recolecta/src/Rutas/application"
+	registroVaciadoControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
+	registroVaciadoRoutesPkg "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
 	anomalia "github.com/vicpoo/API_recolecta/src/anomalia/infrastructure"
 	incidencia "github.com/vicpoo/API_recolecta/src/incidencia/infrastructure"
 	_ "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
-	reporteConductor "github.com/vicpoo/API_recolecta/src/reporte_conductor/infrastructure"
-	registroMantenimiento "github.com/vicpoo/API_recolecta/src/registro_mantenimiento/infrastructure"
-	reporteFallaCritica "github.com/vicpoo/API_recolecta/src/reporte_falla_critica/infrastructure"
-	reporteMantenimientoGenerado "github.com/vicpoo/API_recolecta/src/reporte_mantenimiento_generado/infrastructure"
-	seguimientoFallaCritica "github.com/vicpoo/API_recolecta/src/seguimiento_falla_critica/infrastructure"
-	tipoMantenimiento "github.com/vicpoo/API_recolecta/src/tipo_mantenimiento/infrastructure"
+	reporteConductor "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
+	registroMantenimiento "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure" // Cambiado: ahora apunta a Mantenimiento
+	reporteFallaCritica "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
+	reporteMantenimientoGenerado "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure"
+	seguimientoFallaCritica "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure" // Cambiado: ahora apunta a Mantenimiento
+	tipoMantenimiento "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure"
 	domicilioApplication "github.com/vicpoo/API_recolecta/src/domicilio/application"
 	domicilioHttp "github.com/vicpoo/API_recolecta/src/domicilio/infrastructure/http"
 	domicilioPostgres "github.com/vicpoo/API_recolecta/src/domicilio/infrastructure/postgres"
@@ -105,12 +112,19 @@ func InitDependencies() {
 		createTipoCamionCtr,
 		getAllTipoCamionCtr,
 		getTipoCamionByNameCtr,
+		engine,
+		createTipoCamionCtr,
+		getAllTipoCamionCtr,
+		getTipoCamionByNameCtr,
 		deleteTipoCamionByIdCtr,
 	)
 	tipoCamionRoutes.Run()
 
+	//camion
+
 	// camion
 	camionRepository := camionAdapters.NewPostgresCamion()
+	saveCamionUc := camionUseCases.NewSaveCamionUseCase(camionRepository)
 	saveCamionUc := camionUseCases.NewSaveCamionUseCase(camionRepository)
 	listAllCamionUc := camionUseCases.NewListCamionUseCase(camionRepository)
 	updateCamionUc := camionUseCases.NewUpdateCamionUseCase(camionRepository)
@@ -126,8 +140,13 @@ func InitDependencies() {
 	getCamionByIdCtr := camionControllers.NewGetCamionByIDController(getCamionByIdUc)
 	getCamionByPlacaCtr := camionControllers.NewGetCamionByPlacaController(getCamionByPlacaUc)
 	getCamionByModeloCtr := camionControllers.NewGetCamionByModeloController(getCamionByModeloUc)
+	getCamionByModeloCtr := camionControllers.NewGetCamionByModeloController(getCamionByModeloUc)
 
 	camionRoutes := camionRoutes.NewCamionRoutes(
+		engine, createCamionCtr,
+		getAllCamionCtr,
+		getCamionByIdCtr,
+		updateCamionCtr,
 		engine, createCamionCtr,
 		getAllCamionCtr,
 		getCamionByIdCtr,
@@ -154,6 +173,7 @@ func InitDependencies() {
 	deleteEstadoCamionCtr := estadoCamionControllers.NewDeleteEstadoCamionController(deleteEstadoCamionUc)
 
 	estadoCamionRoutes := estadoCamionRoutes.NewEstadoCamionRoutes(
+		engine,
 		engine,
 		createEstadoCamionCtr,
 		getAllEstadoCamionCtr,
@@ -250,6 +270,7 @@ func InitDependencies() {
 	rutaRoutes.Run()
 
 	puntoRepository := puntoAdapters.NewPostgresPuntoRecoleccion()
+	puntoRepository := puntoAdapters.NewPostgresPuntoRecoleccion()
 
 	createPuntoUC := puntoUseCases.NewSavePuntoRecoleccionUseCase(puntoRepository)
 	updatePuntoUC := puntoUseCases.NewUpdatePuntoRecoleccionUseCase(puntoRepository)
@@ -257,7 +278,19 @@ func InitDependencies() {
 	getPuntoByIdUC := puntoUseCases.NewGetPuntoRecoleccionByIdUseCase(puntoRepository)
 	getPuntoByRutaUC := puntoUseCases.NewGetPuntoRecoleccionByRutaUseCase(puntoRepository)
 	deletePuntoUC := puntoUseCases.NewDeletePuntoRecoleccionUseCase(puntoRepository)
+	createPuntoUC := puntoUseCases.NewSavePuntoRecoleccionUseCase(puntoRepository)
+	updatePuntoUC := puntoUseCases.NewUpdatePuntoRecoleccionUseCase(puntoRepository)
+	getAllPuntoUC := puntoUseCases.NewListAllPuntoRecoleccionUseCase(puntoRepository)
+	getPuntoByIdUC := puntoUseCases.NewGetPuntoRecoleccionByIdUseCase(puntoRepository)
+	getPuntoByRutaUC := puntoUseCases.NewGetPuntoRecoleccionByRutaUseCase(puntoRepository)
+	deletePuntoUC := puntoUseCases.NewDeletePuntoRecoleccionUseCase(puntoRepository)
 
+	createPuntoCTR := puntoControllers.NewCreatePuntoRecoleccionController(createPuntoUC)
+	updatePuntoCTR := puntoControllers.NewUpdatePuntoRecoleccionController(updatePuntoUC)
+	getAllPuntoCTR := puntoControllers.NewGetAllPuntoRecoleccionController(getAllPuntoUC)
+	getPuntoByIdCTR := puntoControllers.NewGetPuntoRecoleccionByIdController(getPuntoByIdUC)
+	getPuntoByRutaCTR := puntoControllers.NewGetPuntoRecoleccionByRutaController(getPuntoByRutaUC)
+	deletePuntoCTR := puntoControllers.NewDeletePuntoRecoleccionController(deletePuntoUC)
 	createPuntoCTR := puntoControllers.NewCreatePuntoRecoleccionController(createPuntoUC)
 	updatePuntoCTR := puntoControllers.NewUpdatePuntoRecoleccionController(updatePuntoUC)
 	getAllPuntoCTR := puntoControllers.NewGetAllPuntoRecoleccionController(getAllPuntoUC)
@@ -274,7 +307,17 @@ func InitDependencies() {
 		updatePuntoCTR,
 		deletePuntoCTR,
 	)
+	puntoRoutes := puntoRoutes.NewPuntoRecoleccionRoutes(
+		engine,
+		createPuntoCTR,
+		getAllPuntoCTR,
+		getPuntoByIdCTR,
+		getPuntoByRutaCTR,
+		updatePuntoCTR,
+		deletePuntoCTR,
+	)
 
+	puntoRoutes.Run()
 	puntoRoutes.Run()
 
 	rellenoRepo := rsAdapters.NewPostgresRellenoSanitario()
@@ -309,7 +352,19 @@ func InitDependencies() {
 	rellenoRoutes.Run()
 
 	repository := rutaCamionAdapters.NewPostgresRutaCamion()
+	repository := rutaCamionAdapters.NewPostgresRutaCamion()
 
+	// ===============================
+	// USE CASES
+	// ===============================
+	createRutaCamionUC := rutaCamionApp.NewSaveRutaCamionUseCase(repository)
+	updateRutaCamionUC := rutaCamionApp.NewUpdateRutaCamionUseCase(repository)
+	getAllRutaCamionUC := rutaCamionApp.NewListAllRutaCamionUseCase(repository)
+	getRutaCamionByIDUC := rutaCamionApp.NewGetRutaCamionByIDUseCase(repository)
+	getRutaCamionByCamionIDUC := rutaCamionApp.NewGetRutaCamionByCamionIDUseCase(repository)
+	getRutaCamionByRutaIDUC := rutaCamionApp.NewGetRutaCamionByRutaIDUseCase(repository)
+	existsRutaCamionUC := rutaCamionApp.NewExistsRutaCamionByIDUseCase(repository)
+	deleteRutaCamionUC := rutaCamionApp.NewDeleteRutaCamionUseCase(repository)
 	// ===============================
 	// USE CASES
 	// ===============================
@@ -327,25 +382,44 @@ func InitDependencies() {
 	// ===============================
 	createRutaCamionController :=
 		rutaCamionControllers.NewCreateRutaCamionController(createRutaCamionUC)
+	// ===============================
+	// CONTROLLERS
+	// ===============================
+	createRutaCamionController :=
+		rutaCamionControllers.NewCreateRutaCamionController(createRutaCamionUC)
 
+	updateRutaCamionController :=
+		rutaCamionControllers.NewUpdateRutaCamionController(updateRutaCamionUC)
 	updateRutaCamionController :=
 		rutaCamionControllers.NewUpdateRutaCamionController(updateRutaCamionUC)
 
 	getAllRutaCamionController :=
 		rutaCamionControllers.NewGetAllRutaCamionController(getAllRutaCamionUC)
+	getAllRutaCamionController :=
+		rutaCamionControllers.NewGetAllRutaCamionController(getAllRutaCamionUC)
 
+	getRutaCamionByIDController :=
+		rutaCamionControllers.NewGetRutaCamionByIDController(getRutaCamionByIDUC)
 	getRutaCamionByIDController :=
 		rutaCamionControllers.NewGetRutaCamionByIDController(getRutaCamionByIDUC)
 
 	getRutaCamionByCamionIDController :=
 		rutaCamionControllers.NewGetRutaCamionByCamionIDController(getRutaCamionByCamionIDUC)
+	getRutaCamionByCamionIDController :=
+		rutaCamionControllers.NewGetRutaCamionByCamionIDController(getRutaCamionByCamionIDUC)
 
+	getRutaCamionByRutaIDController :=
+		rutaCamionControllers.NewGetRutaCamionByRutaIDController(getRutaCamionByRutaIDUC)
 	getRutaCamionByRutaIDController :=
 		rutaCamionControllers.NewGetRutaCamionByRutaIDController(getRutaCamionByRutaIDUC)
 
 	existsRutaCamionController :=
 		rutaCamionControllers.NewExistsRutaCamionByIDController(existsRutaCamionUC)
+	existsRutaCamionController :=
+		rutaCamionControllers.NewExistsRutaCamionByIDController(existsRutaCamionUC)
 
+	deleteRutaCamionController :=
+		rutaCamionControllers.NewDeleteRutaCamionController(deleteRutaCamionUC)
 	deleteRutaCamionController :=
 		rutaCamionControllers.NewDeleteRutaCamionController(deleteRutaCamionUC)
 
@@ -360,16 +434,43 @@ func InitDependencies() {
 		updateRutaCamionController,
 		deleteRutaCamionController,
 	)
+	rutaCamionRoutes := rutaCamionRoutes.NewRutaCamionRoutes(
+		engine,
+		createRutaCamionController,
+		getAllRutaCamionController,
+		getRutaCamionByIDController,
+		getRutaCamionByCamionIDController,
+		getRutaCamionByRutaIDController,
+		existsRutaCamionController,
+		updateRutaCamionController,
+		deleteRutaCamionController,
+	)
 
 	rutaCamionRoutes.Run()
+	rutaCamionRoutes.Run()
 
+	// ===============================
+	// REGISTRO VACIADO
+	// ===============================
 	// ===============================
 	// REGISTRO VACIADO
 	// ===============================
 
 	// Repository
 	registroVaciadoRepository := registroVaciadoAdapters.NewPostgresRegistroVaciado()
+	// Repository
+	registroVaciadoRepository := registroVaciadoAdapters.NewPostgresRegistroVaciado()
 
+	// ===============================
+	// USE CASES
+	// ===============================
+	createRegistroVaciadoUC := registroVaciadoApplication.NewCreateRegistroVaciadoUseCase(registroVaciadoRepository)
+	getAllRegistroVaciadoUC := registroVaciadoApplication.NewListAllRegistroVaciadoUseCase(registroVaciadoRepository)
+	getRegistroVaciadoByIDUC := registroVaciadoApplication.NewGetRegistroVaciadoByIDUseCase(registroVaciadoRepository)
+	getRegistroVaciadoByRellenoIDUC := registroVaciadoApplication.NewGetRegistroVaciadoByRellenoIDUseCase(registroVaciadoRepository)
+	getRegistroVaciadoByRutaCamionIDUC := registroVaciadoApplication.NewGetRegistroVaciadoByRutaCamionIDUseCase(registroVaciadoRepository)
+	existsRegistroVaciadoUC := registroVaciadoApplication.NewExistsRegistroVaciadoUseCase(registroVaciadoRepository)
+	deleteRegistroVaciadoUC := registroVaciadoApplication.NewDeleteRegistroVaciadoUseCase(registroVaciadoRepository)
 	// Use Cases - CORREGIDOS: Los nombres deben coincidir con lo que esperan los controllers
 	createRegistroVaciadoUC := registroVaciadoApplication.NewCreateRegistroVaciadoUseCase(registroVaciadoRepository)
     getAllRegistroVaciadoUC := registroVaciadoApplication.NewListAllRegistroVaciadoUseCase(registroVaciadoRepository)
@@ -379,6 +480,16 @@ func InitDependencies() {
 	existsRegistroVaciadoUC := registroVaciadoApplication.NewExistsRegistroVaciadoUseCase(registroVaciadoRepository)
 	deleteRegistroVaciadoUC := registroVaciadoApplication.NewDeleteRegistroVaciadoUseCase(registroVaciadoRepository)
 
+	// ===============================
+	// CONTROLLERS
+	// ===============================
+	createRegistroVaciadoController := registroVaciadoControllers.NewCreateRegistroVaciadoController(createRegistroVaciadoUC)
+	getAllRegistroVaciadoController := registroVaciadoControllers.NewGetAllRegistroVaciadoController(getAllRegistroVaciadoUC)
+	getRegistroVaciadoByIDController := registroVaciadoControllers.NewGetRegistroVaciadoByIDController(getRegistroVaciadoByIDUC)
+	getRegistroVaciadoByRellenoIDController := registroVaciadoControllers.NewGetRegistroVaciadoByRellenoIDController(getRegistroVaciadoByRellenoIDUC)
+	getRegistroVaciadoByRutaCamionIDController := registroVaciadoControllers.NewGetRegistroVaciadoByRutaCamionIDController(getRegistroVaciadoByRutaCamionIDUC)
+	existsRegistroVaciadoController := registroVaciadoControllers.NewExistsRegistroVaciadoController(existsRegistroVaciadoUC)
+	deleteRegistroVaciadoController := registroVaciadoControllers.NewDeleteRegistroVaciadoController(deleteRegistroVaciadoUC)
 	// ===============================
 	// CONTROLLERS
 	// ===============================
@@ -403,15 +514,38 @@ func InitDependencies() {
 		existsRegistroVaciadoController,
 		deleteRegistroVaciadoController,
 	)
+	// ===============================
+	// ROUTES
+	// ===============================
+	registroVaciadoRoutes := registroVaciadoRoutesPkg.NewRegistroVaciadoRoutes(
+		engine,
+		createRegistroVaciadoController,
+		getAllRegistroVaciadoController,
+		getRegistroVaciadoByIDController,
+		getRegistroVaciadoByRellenoIDController,
+		getRegistroVaciadoByRutaCamionIDController,
+		existsRegistroVaciadoController,
+		deleteRegistroVaciadoController,
+	)
 
+	registroVaciadoRoutes.Run()
 	registroVaciadoRoutes.Run()
 
 	// ===============================
 	// COLONIA
 	// ===============================
+	// ===============================
+	// COLONIA
+	// ===============================
 
 	coloniaRepository := coloniaPostgres.NewColoniaRepository(core.GetBD())
+	coloniaRepository := coloniaPostgres.NewColoniaRepository(core.GetBD())
 
+	createColoniaUC := coloniaApplication.NewCreateColonia(coloniaRepository)
+	getColoniaUC := coloniaApplication.NewGetColonia(coloniaRepository)
+	listColoniasUC := coloniaApplication.NewListColonias(coloniaRepository)
+	updateColoniaUC := coloniaApplication.NewUpdateColonia(coloniaRepository)
+	deleteColoniaUC := coloniaApplication.NewDeleteColonia(coloniaRepository)
 	createColoniaUC := coloniaApplication.NewCreateColonia(coloniaRepository)
 	getColoniaUC := coloniaApplication.NewGetColonia(coloniaRepository)
 	listColoniasUC := coloniaApplication.NewListColonias(coloniaRepository)
@@ -425,15 +559,31 @@ func InitDependencies() {
 		updateColoniaUC,
 		deleteColoniaUC,
 	)
+	coloniaController := coloniaHttp.NewColoniaController(
+		createColoniaUC,
+		getColoniaUC,
+		listColoniasUC,
+		updateColoniaUC,
+		deleteColoniaUC,
+	)
 
+	coloniaController.RegisterRoutes(engine)
 	coloniaController.RegisterRoutes(engine)
 
 	// ===============================
 	// DOMICILIO
 	// ===============================
+	// ===============================
+	// DOMICILIO
+	// ===============================
 
 	domicilioRepository := domicilioPostgres.NewDomicilioRepository(core.GetBD())
+	domicilioRepository := domicilioPostgres.NewDomicilioRepository(core.GetBD())
 
+	createDomicilioUC := domicilioApplication.NewCreateDomicilio(domicilioRepository)
+	getDomicilioUC := domicilioApplication.NewGetDomicilio(domicilioRepository)
+	updateDomicilioUC := domicilioApplication.NewUpdateDomicilio(domicilioRepository)
+	deleteDomicilioUC := domicilioApplication.NewDeleteDomicilio(domicilioRepository)
 	createDomicilioUC := domicilioApplication.NewCreateDomicilio(domicilioRepository)
 	getDomicilioUC := domicilioApplication.NewGetDomicilio(domicilioRepository)
 	updateDomicilioUC := domicilioApplication.NewUpdateDomicilio(domicilioRepository)
@@ -445,15 +595,27 @@ func InitDependencies() {
 		updateDomicilioUC,
 		deleteDomicilioUC,
 	)
+	domicilioController := domicilioHttp.NewDomicilioController(
+		createDomicilioUC,
+		getDomicilioUC,
+		updateDomicilioUC,
+		deleteDomicilioUC,
+	)
 
 	domicilioController.RegisterRoutes(engine)
+	domicilioController.RegisterRoutes(engine)
 
+	usuarioDeps := usuarioInfra.NewUsuarioDependencies(db)
+	usuarioInfra.RegisterUsuarioRoutes(engine, usuarioDeps)
 	usuarioDeps := usuarioInfra.NewUsuarioDependencies(db)
 	usuarioInfra.RegisterUsuarioRoutes(engine, usuarioDeps)
 
 	rolController := rolInfra.NewRolDependencies(db)
 	rolInfra.RegisterRolRoutes(engine, rolController)
+	rolController := rolInfra.NewRolDependencies(db)
+	rolInfra.RegisterRolRoutes(engine, rolController)
 
+	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
 	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
 	anomaliaRoutes.Run()
 
@@ -462,6 +624,8 @@ func InitDependencies() {
 
 	reporteConductorRoutes := reporteConductor.NewReporteConductorRouter(engine)
 	reporteConductorRoutes.Run()
+
+	// CORREGIDO: Ahora usamos los alias correctos que apuntan a Mantenimiento/infrastructure
 
 	registroMantenimientoRoutes := registroMantenimiento.NewRegistroMantenimientoRouter(engine)
 	registroMantenimientoRoutes.Run()
@@ -472,11 +636,14 @@ func InitDependencies() {
 	reporteMantenimientoGeneradoRoutes := reporteMantenimientoGenerado.NewReporteMantenimientoGeneradoRouter(engine)
 	reporteMantenimientoGeneradoRoutes.Run()
 
+	// CORREGIDO: Ahora usamos el alias correcto que apunta a Mantenimiento/infrastructure
+
 	seguimientoFallaCriticaRoutes := seguimientoFallaCritica.NewSeguimientoFallaCriticaRouter(engine)
 	seguimientoFallaCriticaRoutes.Run()
 
 	tipoMantenimientoRoutes := tipoMantenimiento.NewTipoMantenimientoRouter(engine)
 	tipoMantenimientoRoutes.Run()
 
+	engine.Run(":8000")
 	engine.Run(":8000")
 }
