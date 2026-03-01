@@ -23,6 +23,8 @@ func NewPostgresNotificacionRepository() repositories.INotificacion {
 	return &PostgresNotificacionRepository{pool: pool}
 }
 
+// ==================== CRUD BÁSICO ====================
+
 func (pg *PostgresNotificacionRepository) Save(notificacion *entities.Notificacion) error {
 	query := `
 		INSERT INTO notificacion (
@@ -66,6 +68,90 @@ func (pg *PostgresNotificacionRepository) Save(notificacion *entities.Notificaci
 	
 	notificacion.NotificacionID = id
 	return nil
+}
+
+func (pg *PostgresNotificacionRepository) SaveForMultipleUsers(notificacion *entities.Notificacion, usuarioIDs []int32) error {
+	if len(usuarioIDs) == 0 {
+		return fmt.Errorf("se requiere al menos un usuario destinatario")
+	}
+
+	ctx := context.Background()
+	tx, err := pg.pool.Begin(ctx)
+	if err != nil {
+		log.Println("Error al iniciar transacción:", err)
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	var notificacionID int32
+
+	for _, usuarioID := range usuarioIDs {
+		query := `
+			INSERT INTO notificacion (
+				usuario_id, tipo, titulo, mensaje, activa, 
+				id_camion_relacionado, id_falla_relacionado, 
+				id_mantenimiento_relacionado, creado_por, created_at
+			)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+			RETURNING notificacion_id
+		`
+
+		err = tx.QueryRow(
+			ctx, query,
+			usuarioID,
+			notificacion.Tipo,
+			notificacion.Titulo,
+			notificacion.Mensaje,
+			notificacion.Activa,
+			notificacion.IDCamionRelacionado,
+			notificacion.IDFallaRelacionado,
+			notificacion.IDMantenimientoRelacionado,
+			notificacion.CreadoPor,
+			notificacion.CreatedAt,
+		).Scan(&notificacionID)
+
+		if err != nil {
+			log.Printf("Error al guardar notificación para usuario %d: %v", usuarioID, err)
+			return err
+		}
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		log.Println("Error al hacer commit:", err)
+		return err
+	}
+
+	log.Printf("Notificaciones creadas para %d usuarios", len(usuarioIDs))
+	return nil
+}
+
+func (pg *PostgresNotificacionRepository) SaveForAllUsers(notificacion *entities.Notificacion) error {
+	queryGetUsers := `SELECT user_id FROM usuario WHERE eliminado = false OR eliminado IS NULL`
+	
+	ctx := context.Background()
+	rows, err := pg.pool.Query(ctx, queryGetUsers)
+	if err != nil {
+		log.Println("Error al obtener usuarios:", err)
+		return err
+	}
+	defer rows.Close()
+
+	var usuarioIDs []int32
+	for rows.Next() {
+		var userID int32
+		if err := rows.Scan(&userID); err != nil {
+			log.Println("Error al escanear usuario:", err)
+			return err
+		}
+		usuarioIDs = append(usuarioIDs, userID)
+	}
+
+	if len(usuarioIDs) == 0 {
+		return fmt.Errorf("no hay usuarios disponibles para notificar")
+	}
+
+	return pg.SaveForMultipleUsers(notificacion, usuarioIDs)
 }
 
 func (pg *PostgresNotificacionRepository) Update(notificacion *entities.Notificacion) error {
@@ -933,7 +1019,6 @@ func (pg *PostgresNotificacionRepository) GetByMantenimientoID(mantenimientoID i
 }
 
 func (pg *PostgresNotificacionRepository) GetByFechaRange(fechaInicio, fechaFin string) ([]entities.Notificacion, error) {
-	// Parsear fechas
 	startTime, err := time.Parse("2006-01-02", fechaInicio)
 	if err != nil {
 		return nil, fmt.Errorf("formato de fecha_inicio inválido: %v", err)
@@ -944,7 +1029,6 @@ func (pg *PostgresNotificacionRepository) GetByFechaRange(fechaInicio, fechaFin 
 		return nil, fmt.Errorf("formato de fecha_fin inválido: %v", err)
 	}
 	
-	// Ajustar para incluir todo el día final
 	endTime = endTime.Add(24 * time.Hour)
 	
 	query := `

@@ -402,7 +402,6 @@ CREATE TABLE IF NOT EXISTS alerta_usuario (
 );
 
 -- =====================
-<<<<<<< HEAD
 -- INSERTS: rol
 -- =====================
 INSERT INTO rol (nombre, eliminado) VALUES
@@ -682,38 +681,3 @@ INSERT INTO alerta_usuario (titulo, mensaje) VALUES
 -- Datos basura
 ('', ''),
 ('TituloMuyLargo12345678901234567890123456789012345678901234567890', REPEAT('x', 1000));
-=======
--- ÍNDICES (Solo tablas transaccionales de alto volumen)
--- =====================
-
--- notificacion: tabla de eventos/logs, crecimiento continuo
-CREATE INDEX IF NOT EXISTS idx_notificacion_usuario_id ON notificacion(usuario_id);
-CREATE INDEX IF NOT EXISTS idx_notificacion_created_at ON notificacion(created_at DESC);
-
--- incidencia: reportes diarios, alta escritura
-CREATE INDEX IF NOT EXISTS idx_incidencia_conductor_id ON incidencia(conductor_id);
-CREATE INDEX IF NOT EXISTS idx_incidencia_fecha_reporte ON incidencia(fecha_reporte DESC);
-
--- estado_camion: tracking continuo
-CREATE INDEX IF NOT EXISTS idx_estado_camion_camion_id ON estado_camion(camion_id);
-CREATE INDEX IF NOT EXISTS idx_estado_camion_timestamp ON estado_camion(timestamp DESC);
-
--- =====================
--- MENSAJE DE FINALIZACIÓN
--- =====================
-DO $$ 
-DECLARE
-    table_count INTEGER;
-BEGIN
-    SELECT COUNT(*) INTO table_count
-    FROM information_schema.tables
-    WHERE table_schema = 'public' AND table_type = 'BASE TABLE';
-    
-    RAISE NOTICE '=========================================';
-    RAISE NOTICE '✅ Script de inicialización completado exitosamente';
-    RAISE NOTICE 'Base de datos: proyecto_recolecta';
-    RAISE NOTICE 'Tablas creadas/verificadas: %', table_count;
-    RAISE NOTICE 'Índices creados: 6 (tablas transaccionales)';
-    RAISE NOTICE '=========================================';
-END $$;
->>>>>>> acd0d2e1dd36d7b44339501f260e8255f9b12a9f

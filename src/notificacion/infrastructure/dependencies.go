@@ -54,9 +54,13 @@ func InitNotificacionDependencies() (
 	*MarcarNotificacionComoLeidaController,
 	*MarcarTodasNotificacionesComoLeidasController,
 	
-	// Controladores de Notificación
+	// Controladores de Notificación (Actualizados)
 	*NotificarUsuarioController,
 	*ObtenerNumeroNotificacionesNoLeidasController,
+	
+	// ========== NUEVOS CONTROLADORES ==========
+	*NotificarMultiplesUsuariosController,
+	*NotificarTodosUsuariosController,
 ) {
 	// Repositorio PostgreSQL
 	repo := NewPostgresNotificacionRepository()
@@ -107,6 +111,10 @@ func InitNotificacionDependencies() (
 	// ================== CASOS DE USO DE NOTIFICACIÓN ==================
 	notificarUsuarioUseCase := application.NewNotificarUsuarioUseCase(repo)
 	obtenerNoLeidasUseCase := application.NewObtenerNumeroNotificacionesNoLeidasUseCase(repo)
+	
+	// ================== NUEVOS CASOS DE USO ==================
+	notificarMultiplesUseCase := application.NewNotificarMultiplesUsuariosUseCase(repo)
+	notificarTodosUseCase := application.NewNotificarTodosUsuariosUseCase(repo)
 
 	// ================== CONTROLADORES DE CONTEO ==================
 	countActivasByUsuarioIDController := NewCountNotificacionesActivasByUsuarioIDController(countActivasByUsuarioIDUseCase)
@@ -159,6 +167,10 @@ func InitNotificacionDependencies() (
 	// ================== CONTROLADORES DE NOTIFICACIÓN ==================
 	notificarUsuarioController := NewNotificarUsuarioController(notificarUsuarioUseCase)
 	obtenerNoLeidasController := NewObtenerNumeroNotificacionesNoLeidasController(obtenerNoLeidasUseCase)
+	
+	// ================== NUEVOS CONTROLADORES ==================
+	notificarMultiplesController := NewNotificarMultiplesUsuariosController(notificarMultiplesUseCase)
+	notificarTodosController := NewNotificarTodosUsuariosController(notificarTodosUseCase)
 
 	return countActivasByUsuarioIDController,
 	       countByCamionIDController,
@@ -199,5 +211,8 @@ func InitNotificacionDependencies() (
 	       marcarTodasComoLeidasController,
 	       
 	       notificarUsuarioController,
-	       obtenerNoLeidasController
+	       obtenerNoLeidasController,
+	       
+	       notificarMultiplesController,
+	       notificarTodosController
 }

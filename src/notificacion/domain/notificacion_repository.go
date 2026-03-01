@@ -47,4 +47,8 @@ type INotificacion interface {
 	CrearNotificacionFalla(usuarioID *int32, titulo string, mensaje string, camionID int32, fallaID int32, creadoPor *int32) error
 	CrearNotificacionMantenimiento(usuarioID *int32, titulo string, mensaje string, camionID int32, mantenimientoID int32, creadoPor *int32) error
 	CrearNotificacionEmergencia(usuarioID *int32, titulo string, mensaje string, camionID int32, creadoPor *int32) error
+	
+	// ========== NUEVOS MÉTODOS PARA MÚLTIPLES USUARIOS ==========
+	SaveForMultipleUsers(notificacion *entities.Notificacion, usuarioIDs []int32) error
+	SaveForAllUsers(notificacion *entities.Notificacion) error
 }

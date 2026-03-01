@@ -46,7 +46,9 @@ func (router *NotificacionRouter) Run() {
 	marcarComoLeidaController,
 	marcarTodasComoLeidasController,
 	notificarUsuarioController,
-	obtenerNoLeidasController := InitNotificacionDependencies()
+	obtenerNoLeidasController,
+	notificarMultiplesController,
+	notificarTodosController := InitNotificacionDependencies()
 
 	// Grupo de rutas para notificaciones con prefijo /api
 	notificacionGroup := router.engine.Group("/api/notificaciones")
@@ -69,6 +71,10 @@ func (router *NotificacionRouter) Run() {
 		notificacionGroup.POST("/falla", crearFallaController.Run)
 		notificacionGroup.POST("/mantenimiento", crearMantenimientoController.Run)
 		notificacionGroup.POST("/notificar", notificarUsuarioController.Run)
+		
+		// ========== NUEVAS RUTAS PARA MÚLTIPLES USUARIOS ==========
+		notificacionGroup.POST("/enviar-multiples", notificarMultiplesController.Run)
+		notificacionGroup.POST("/enviar-todos", notificarTodosController.Run)
 		
 		// ================== RUTAS DE ESTADO ==================
 		notificacionGroup.PATCH("/:id/marcar-leida", marcarComoLeidaController.Run)
@@ -100,8 +106,7 @@ func (router *NotificacionRouter) Run() {
 		// ================== RUTAS DE CONSULTA POR FECHAS ==================
 		notificacionGroup.GET("/rango-fecha", getByFechaRangeController.Run)
 		
-		// ================== RUTAS ALTERNATIVAS (DUPLICADOS - CONSIDERAR ELIMINAR) ==================
-		// Esta ruta es DUPLICADA - hace lo mismo que /count/activas/usuario/:usuario_id
+		// ================== RUTAS ALTERNATIVAS (DUPLICADOS) ==================
 		notificacionGroup.GET("/no-leidas/usuario/:usuario_id", obtenerNoLeidasController.Run)
 	}
 }
