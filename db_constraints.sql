@@ -118,7 +118,7 @@ BEGIN
         WHERE constraint_name = 'uq_placa_camion'
     ) THEN
         ALTER TABLE camion ADD CONSTRAINT uq_placa_camion UNIQUE (placa);
-    END IF
+    END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.check_constraints
