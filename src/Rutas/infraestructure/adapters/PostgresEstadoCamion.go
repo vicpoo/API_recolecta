@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/vicpoo/API_recolecta/src/Rutas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/Rutas/domain/ports"
 	"github.com/vicpoo/API_recolecta/src/core"
 )
 
@@ -14,7 +15,7 @@ type PostgresEstadoCamion struct {
 	conn *pgxpool.Pool
 }
 
-func NewPostgresEstadoCamion() *PostgresEstadoCamion {
+func NewPostgresEstadoCamion() ports.IEstadoCamion {
 	conn, _ := core.ConnectPostgres()
 	return &PostgresEstadoCamion{
 		conn: conn,

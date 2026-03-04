@@ -16,6 +16,12 @@ func NewCerrarAsignacionActivaChoferController(uc *application.CerrarAsignacionA
 	return &CerrarAsignacionActivaChoferController{uc: uc}
 }
 
+// @Summary      Cerrar asignación activa de chofer
+// @Tags         HistorialAsignacion
+// @Produce      json
+// @Param        choferId path int true "ID chofer"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/historial-asignacion/cerrar/chofer/{choferId} [put]
 func (ctr *CerrarAsignacionActivaChoferController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("choferId"))
 	if err != nil {

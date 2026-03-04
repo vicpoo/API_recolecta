@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/vicpoo/API_recolecta/src/Rutas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/Rutas/domain/ports"
 	"github.com/vicpoo/API_recolecta/src/core"
 )
 
@@ -15,7 +16,7 @@ type PostgresRegistroVaciado struct {
 	conn *pgxpool.Pool
 }
 
-func NewPostgresRegistroVaciado() *PostgresRegistroVaciado {
+func NewPostgresRegistroVaciado() ports.RegistroVaciadoRepository {
 	conn, _ := core.ConnectPostgres()
 	return &PostgresRegistroVaciado{conn: conn}
 }

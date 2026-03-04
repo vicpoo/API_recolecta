@@ -16,6 +16,12 @@ func NewGetPuntoRecoleccionByIdController(uc *application.GetPuntoRecoleccionByI
 	return &GetPuntoRecoleccionByIdController{uc: uc}
 }
 
+// @Summary      Punto de recolección por ID
+// @Tags         PuntoRecoleccion
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/puntos-recoleccion/{id} [get]
 func (c *GetPuntoRecoleccionByIdController) Run(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)

@@ -41,6 +41,13 @@ func (c *DomicilioController) RegisterRoutes(r *gin.Engine) {
 	}
 }
 
+// @Summary      Crear domicilio
+// @Tags         Domicilio
+// @Accept       json
+// @Produce      json
+// @Param        body body map[string]interface{} true "Domicilio"
+// @Success      201 {object} map[string]interface{}
+// @Router       /domicilios [post]
 func (c *DomicilioController) Create(ctx *gin.Context) {
 	var body domain.Domicilio
 	if err := ctx.ShouldBindJSON(&body); err != nil {
@@ -56,6 +63,12 @@ func (c *DomicilioController) Create(ctx *gin.Context) {
 	ctx.Status(http.StatusCreated)
 }
 
+// @Summary      Domicilio por ID
+// @Tags         Domicilio
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /domicilios/{id} [get]
 func (c *DomicilioController) GetByID(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 	domicilio, err := c.get.Execute(id)
@@ -66,6 +79,13 @@ func (c *DomicilioController) GetByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, domicilio)
 }
 
+// @Summary      Actualizar domicilio
+// @Tags         Domicilio
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /domicilios/{id} [put]
 func (c *DomicilioController) Update(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 
@@ -85,6 +105,12 @@ func (c *DomicilioController) Update(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
+// @Summary      Eliminar domicilio
+// @Tags         Domicilio
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /domicilios/{id} [delete]
 func (c *DomicilioController) Delete(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 

@@ -19,6 +19,13 @@ func NewDeleteIncidenciaController(deleteUseCase *application.DeleteIncidenciaUs
 	}
 }
 
+// @Summary      Eliminar incidencia
+// @Tags         Incidencia
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/incidencias/{id} [delete]
 func (ctrl *DeleteIncidenciaController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

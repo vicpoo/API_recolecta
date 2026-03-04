@@ -19,6 +19,13 @@ func NewGetReporteFallaCriticaByIdController(getByIdUseCase *application.GetRepo
 	}
 }
 
+// @Summary      Reporte falla crítica por ID
+// @Tags         ReporteFallaCritica
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/reportes-falla-critica/{id} [get]
 func (ctrl *GetReporteFallaCriticaByIdController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

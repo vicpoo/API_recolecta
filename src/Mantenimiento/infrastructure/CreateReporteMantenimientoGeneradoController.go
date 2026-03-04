@@ -20,6 +20,13 @@ func NewCreateReporteMantenimientoGeneradoController(createUseCase *application.
 	}
 }
 
+// @Summary      Crear reporte de mantenimiento generado
+// @Tags         ReporteMantenimientoGenerado
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/reportes-mantenimiento-generado/ [post]
 func (ctrl *CreateReporteMantenimientoGeneradoController) Run(c *gin.Context) {
 	var reporteRequest struct {
 		CoordinadorID int32     `json:"coordinador_id" binding:"required"`

@@ -15,6 +15,14 @@ func NewAddUsersController(uc *application.SaveUser) *AddUsersController {
 	return &AddUsersController{uc: uc}
 }
 
+// @Summary      Crear usuario
+// @Tags         Usuario
+// @Accept       json
+// @Produce      json
+// @Param        body body map[string]interface{} true "Datos usuario"
+// @Success      201 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/usuarios [post]
 func (c *AddUsersController) Handle(ctx *gin.Context) {
 	var body application.SaveUserInput
 	if err := ctx.ShouldBindJSON(&body); err != nil {

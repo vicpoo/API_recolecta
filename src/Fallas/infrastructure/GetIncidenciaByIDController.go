@@ -19,6 +19,13 @@ func NewGetIncidenciaByIDController(getByIDUseCase *application.GetIncidenciaByI
 	}
 }
 
+// @Summary      Incidencia por ID
+// @Tags         Incidencia
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/incidencias/{id} [get]
 func (ctrl *GetIncidenciaByIDController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

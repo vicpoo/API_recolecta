@@ -4,18 +4,22 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/domicilio/domain"
 )
 
-type DomicilioRepository struct {
+type PostgresDomicilioRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewDomicilioRepository(db *pgxpool.Pool) *DomicilioRepository {
-	return &DomicilioRepository{db}
+func NewDomicilioRepository() domain.DomicilioRepository {
+	db := core.GetBD()
+	return &PostgresDomicilioRepository{
+		db: db,
+	}
 }
 
-func (r *DomicilioRepository) Create(d *domain.Domicilio) error {
+func (r *PostgresDomicilioRepository) Create(d *domain.Domicilio) error {
 	query := `
 		INSERT INTO domicilio
 		(usuario_id, alias, direccion, colonia_id, created_at, updated_at)
@@ -36,7 +40,7 @@ func (r *DomicilioRepository) Create(d *domain.Domicilio) error {
 	return err
 }
 
-func (r *DomicilioRepository) GetByID(id int) (*domain.Domicilio, error) {
+func (r *PostgresDomicilioRepository) GetByID(id int) (*domain.Domicilio, error) {
 	query := `
 		SELECT domicilio_id, usuario_id, alias, direccion, colonia_id,
 		       eliminado, created_at, updated_at
@@ -65,7 +69,7 @@ func (r *DomicilioRepository) GetByID(id int) (*domain.Domicilio, error) {
 	return &d, nil
 }
 
-func (r *DomicilioRepository)Delete(id int, usuarioID int) error{
+func (r *PostgresDomicilioRepository) Delete(id int, usuarioID int) error {
 	query := `
 		UPDATE domicilio
 		SET eliminado = true, updated_at = NOW()
@@ -80,7 +84,7 @@ func (r *DomicilioRepository)Delete(id int, usuarioID int) error{
 	return err
 }
 
-func (r *DomicilioRepository) Update(d *domain.Domicilio) error {
+func (r *PostgresDomicilioRepository) Update(d *domain.Domicilio) error {
 	query := `
 		UPDATE domicilio
 		SET alias = $1,

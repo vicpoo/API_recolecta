@@ -18,6 +18,14 @@ func NewCreateCamionController(uc *application.SaveCamionUseCase) *CreateCamionC
 	}
 }
 
+// @Summary      Crear camión
+// @Tags         Camion
+// @Accept       json
+// @Produce      json
+// @Param        body body entities.Camion true "Camión"
+// @Success      201 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/camion/ [post]
 func (ctr *CreateCamionController) Run(ctx *gin.Context) {
 	var camion entities.Camion
 

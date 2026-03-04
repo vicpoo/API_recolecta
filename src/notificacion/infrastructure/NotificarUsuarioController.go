@@ -16,6 +16,13 @@ func NewNotificarUsuarioController(useCase *application.NotificarUsuarioUseCase)
 	return &NotificarUsuarioController{useCase: useCase}
 }
 
+// @Summary      Notificar a un usuario
+// @Tags         Notificacion
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/notificaciones/notificar [post]
 func (ctrl *NotificarUsuarioController) Run(c *gin.Context) {
 	var request struct {
 		CreadorID           int32  `json:"creador_id"`

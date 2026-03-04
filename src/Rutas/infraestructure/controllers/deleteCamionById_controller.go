@@ -18,6 +18,12 @@ func NewDeleteCamionController(uc *application.DeleteCamionUseCase) *DeleteCamio
 	}
 }
 
+// @Summary      Eliminar camión
+// @Tags         Camion
+// @Produce      json
+// @Param        id path int true "ID camión"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/camion/{id} [delete]
 func (ctr *DeleteCamionController) Run(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 

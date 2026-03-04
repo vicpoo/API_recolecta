@@ -10,8 +10,8 @@ type UpdateEstadoCamionUseCase struct {
 	IEstadoCamion ports.IEstadoCamion
 }
 
-func NewUpdateEstadoCamionUseCase(IEstadoCamion ports.IEstadoCamion) UpdateEstadoCamionUseCase {
-	return UpdateEstadoCamionUseCase{
+func NewUpdateEstadoCamionUseCase(IEstadoCamion ports.IEstadoCamion) *UpdateEstadoCamionUseCase {
+	return &UpdateEstadoCamionUseCase{
 		IEstadoCamion: IEstadoCamion,
 	}
 }

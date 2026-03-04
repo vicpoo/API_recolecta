@@ -15,6 +15,13 @@ func NewNotificarTodosUsuariosController(useCase *application.NotificarTodosUsua
 	return &NotificarTodosUsuariosController{useCase: useCase}
 }
 
+// @Summary      Notificar a todos los usuarios
+// @Tags         Notificacion
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/notificaciones/enviar-todos [post]
 func (ctrl *NotificarTodosUsuariosController) Run(c *gin.Context) {
 	var req application.NotificarTodosRequest
 	

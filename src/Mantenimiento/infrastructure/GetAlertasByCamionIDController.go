@@ -19,6 +19,12 @@ func NewGetAlertasByCamionIDController(getByCamionUseCase *application.GetAlerta
 	}
 }
 
+// @Summary      Alertas por camión
+// @Tags         AlertaMantenimiento
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/alertas-mantenimiento/camion/{camion_id} [get]
 func (ctrl *GetAlertasByCamionIDController) Run(c *gin.Context) {
 	idParam := c.Param("camion_id")
 	camionID, err := strconv.Atoi(idParam)

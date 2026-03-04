@@ -17,6 +17,14 @@ func NewUpdateHistorialAsignacionCamionController(uc *application.UpdateHistoria
 	return &UpdateHistorialAsignacionCamionController{uc: uc}
 }
 
+// @Summary      Actualizar historial de asignación
+// @Tags         HistorialAsignacion
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "ID historial"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/historial-asignacion/{id} [put]
 func (ctr *UpdateHistorialAsignacionCamionController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

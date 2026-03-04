@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/vicpoo/API_recolecta/src/rol/domain"
 	"github.com/vicpoo/API_recolecta/src/rol/domain/entities"
 )
 
@@ -11,7 +12,7 @@ type RolRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewRolRepository(db *pgxpool.Pool) *RolRepository {
+func NewRolRepository(db *pgxpool.Pool) domain.RolRepository {
 	return &RolRepository{db}
 }
 

@@ -21,6 +21,14 @@ func NewUpdateRegistroMantenimientoController(updateUseCase *application.UpdateR
 	}
 }
 
+// @Summary      Actualizar registro
+// @Tags         RegistroMantenimiento
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/registros-mantenimiento/{id} [put]
 func (ctrl *UpdateRegistroMantenimientoController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

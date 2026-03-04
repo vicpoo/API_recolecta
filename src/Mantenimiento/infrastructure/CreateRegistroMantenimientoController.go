@@ -20,6 +20,13 @@ func NewCreateRegistroMantenimientoController(createUseCase *application.CreateR
 	}
 }
 
+// @Summary      Crear registro de mantenimiento
+// @Tags         RegistroMantenimiento
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/registros-mantenimiento/ [post]
 func (ctrl *CreateRegistroMantenimientoController) Run(c *gin.Context) {
 	var request struct {
 		AlertaID                *int32   `json:"alerta_id"`

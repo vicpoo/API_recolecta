@@ -19,6 +19,12 @@ func NewGetIncidenciasByConductorIDController(getByConductorIDUseCase *applicati
 	}
 }
 
+// @Summary      Incidencias por conductor
+// @Tags         Incidencia
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/incidencias/conductor/{conductor_id} [get]
 func (ctrl *GetIncidenciasByConductorIDController) Run(c *gin.Context) {
 	conductorIDParam := c.Param("conductor_id")
 	conductorID, err := strconv.Atoi(conductorIDParam)

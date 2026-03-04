@@ -16,6 +16,12 @@ func NewGetNotificacionesInactivasController(useCase *application.GetNotificacio
 	return &GetNotificacionesInactivasController{useCase: useCase}
 }
 
+// @Summary      Notificaciones inactivas
+// @Tags         Notificacion
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/notificaciones/inactivas [get]
 func (ctrl *GetNotificacionesInactivasController) Run(c *gin.Context) {
 	result, err := ctrl.useCase.Run()
 	if err != nil {

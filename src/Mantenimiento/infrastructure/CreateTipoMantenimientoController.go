@@ -19,6 +19,13 @@ func NewCreateTipoMantenimientoController(createUseCase *application.CreateTipoM
 	}
 }
 
+// @Summary      Crear tipo de mantenimiento
+// @Tags         TipoMantenimiento
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/tipos-mantenimiento/ [post]
 func (ctrl *CreateTipoMantenimientoController) Run(c *gin.Context) {
 	var request struct {
 		Nombre    string `json:"nombre" binding:"required"`

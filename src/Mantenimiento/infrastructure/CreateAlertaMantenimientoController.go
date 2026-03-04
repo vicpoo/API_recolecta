@@ -19,6 +19,13 @@ func NewCreateAlertaMantenimientoController(createUseCase *application.CreateAle
 	}
 }
 
+// @Summary      Crear alerta de mantenimiento
+// @Tags         AlertaMantenimiento
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/alertas-mantenimiento/ [post]
 func (ctrl *CreateAlertaMantenimientoController) Run(c *gin.Context) {
 	var request struct {
 		CamionID            int32  `json:"camion_id" binding:"required"`

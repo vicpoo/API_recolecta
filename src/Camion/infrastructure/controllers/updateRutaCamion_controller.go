@@ -19,6 +19,13 @@ func NewUpdateRutaCamionController(
 	return &UpdateRutaCamionController{uc}
 }
 
+// @Summary      Actualizar ruta-camión
+// @Tags         RutaCamion
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/ruta-camion/{id} [put]
 func (c *UpdateRutaCamionController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

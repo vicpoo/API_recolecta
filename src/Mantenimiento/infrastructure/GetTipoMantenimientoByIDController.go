@@ -19,6 +19,13 @@ func NewGetTipoMantenimientoByIDController(getByIDUseCase *application.GetTipoMa
 	}
 }
 
+// @Summary      Tipo de mantenimiento por ID
+// @Tags         TipoMantenimiento
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/tipos-mantenimiento/{id} [get]
 func (ctrl *GetTipoMantenimientoByIDController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

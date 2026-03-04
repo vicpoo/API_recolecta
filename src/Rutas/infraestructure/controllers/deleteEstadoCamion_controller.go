@@ -20,6 +20,12 @@ func NewDeleteEstadoCamionController(
 	}
 }
 
+// @Summary      Eliminar estado de camión
+// @Tags         EstadoCamion
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/estado-camion/{id} [delete]
 func (ctr *DeleteEstadoCamionController) Run(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.Atoi(idParam)

@@ -19,6 +19,12 @@ func NewGetSeguimientosFallaCriticaByFallaIDController(getByFallaIDUseCase *appl
 	}
 }
 
+// @Summary      Seguimientos por falla
+// @Tags         SeguimientoFallaCritica
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/seguimientos-falla-critica/falla/{fallaId} [get]
 func (ctrl *GetSeguimientosFallaCriticaByFallaIDController) Run(c *gin.Context) {
 	fallaIDParam := c.Param("fallaId")
 	fallaID, err := strconv.Atoi(fallaIDParam)

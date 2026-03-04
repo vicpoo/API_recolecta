@@ -38,6 +38,13 @@ func (c *ColoniaController) RegisterRoutes(r *gin.Engine) {
 	}
 }
 
+// @Summary      Crear colonia
+// @Tags         Colonia
+// @Accept       json
+// @Produce      json
+// @Param        body body map[string]interface{} true "Colonia"
+// @Success      201 {object} map[string]interface{}
+// @Router       /colonias [post]
 func (c *ColoniaController) Create(ctx *gin.Context) {
 	var body domain.Colonia
 	if err := ctx.ShouldBindJSON(&body); err != nil {
@@ -53,6 +60,12 @@ func (c *ColoniaController) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, body)
 }
 
+// @Summary      Colonia por ID
+// @Tags         Colonia
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /colonias/{id} [get]
 func (c *ColoniaController) GetByID(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -69,6 +82,11 @@ func (c *ColoniaController) GetByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, colonia)
 }
 
+// @Summary      Listar colonias
+// @Tags         Colonia
+// @Produce      json
+// @Success      200 {array} map[string]interface{}
+// @Router       /colonias [get]
 func (c *ColoniaController) List(ctx *gin.Context) {
 	colonias, err := c.list.Execute()
 	if err != nil {
@@ -79,6 +97,13 @@ func (c *ColoniaController) List(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, colonias)
 }
 
+// @Summary      Actualizar colonia
+// @Tags         Colonia
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /colonias/{id} [put]
 func (c *ColoniaController) Update(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -102,6 +127,12 @@ func (c *ColoniaController) Update(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
+// @Summary      Eliminar colonia
+// @Tags         Colonia
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /colonias/{id} [delete]
 func (c *ColoniaController) Delete(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

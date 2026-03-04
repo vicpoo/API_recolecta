@@ -18,6 +18,12 @@ func NewGetIncidenciasByFechaRangeController(getByFechaRangeUseCase *application
 	}
 }
 
+// @Summary      Incidencias por fecha
+// @Tags         Incidencia
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/incidencias/fecha [get]
 func (ctrl *GetIncidenciasByFechaRangeController) Run(c *gin.Context) {
 	fechaInicio := c.Query("fecha_inicio")
 	fechaFin := c.Query("fecha_fin")
