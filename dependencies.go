@@ -489,5 +489,7 @@ anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
 
 	tipoMantenimientoRoutes.Run()
 
+	core.RegisterHealthEndpoint(engine)
+
 	engine.Run(":8080")
 }
