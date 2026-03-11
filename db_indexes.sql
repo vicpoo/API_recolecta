@@ -72,7 +72,7 @@ BEGIN
         SELECT 1 FROM pg_indexes
         WHERE indexname = 'idx_fecha_desasignacion_historial'
     ) THEN
-        CREATE INDEX idx_fecha_desasignacion_historial ON historial_asignacion(fecha_desasignacion);
+        CREATE INDEX idx_fecha_desasignacion_historial ON historial_asignacion(fecha_baja);
     END IF;
 
     IF NOT EXISTS (
@@ -106,14 +106,14 @@ BEGIN
         SELECT 1 FROM pg_indexes
         WHERE indexname = 'idx_fecha_registro_mantencion'
     ) THEN
-        CREATE INDEX idx_fecha_registro_mantencion ON registro_mantenimiento(fecha);
+        CREATE INDEX idx_fecha_registro_mantencion ON registro_mantenimiento(fecha_reporte);
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM pg_indexes
         WHERE indexname = 'idx_tipo_mantencion_registro'
     ) THEN
-        CREATE INDEX idx_tipo_mantencion_registro ON registro_mantenimiento(tipo_id);
+        CREATE INDEX idx_tipo_mantencion_registro ON registro_mantenimiento(tipo_mantenimiento);
     END IF;
 END $$;
 
@@ -192,13 +192,6 @@ BEGIN
         WHERE indexname = 'idx_alias_domicilio'
     ) THEN
         CREATE INDEX idx_alias_domicilio ON domicilio(alias);
-    END IF;
-
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_indexes
-        WHERE indexname = 'idx_calle_domicilio'
-    ) THEN
-        CREATE INDEX idx_calle_domicilio ON domicilio(calle);
     END IF;
 
     IF NOT EXISTS (
