@@ -19,6 +19,11 @@ func NewGetAllEstadoCamionController(
 	}
 }
 
+// @Summary      Listar estados de camión
+// @Tags         EstadoCamion
+// @Produce      json
+// @Success      200 {array} map[string]interface{}
+// @Router       /api/estado-camion/ [get]
 func (ctr *GetAllEstadoCamionController) Run(ctx *gin.Context) {
 	estadosCamion, err := ctr.uc.Run()
 	if err != nil {

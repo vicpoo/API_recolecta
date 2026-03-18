@@ -19,6 +19,12 @@ func NewGetAlertasByFechaRangeController(getByFechaRangeUseCase *application.Get
 	}
 }
 
+// @Summary      Alertas por rango de fecha
+// @Tags         AlertaMantenimiento
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/alertas-mantenimiento/fecha [get]
 func (ctrl *GetAlertasByFechaRangeController) Run(c *gin.Context) {
 	var request struct {
 		FechaInicio string `form:"fecha_inicio" binding:"required"`

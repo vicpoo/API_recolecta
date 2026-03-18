@@ -19,6 +19,13 @@ func NewCreateNotificacionController(createUseCase *application.CreateNotificaci
 	}
 }
 
+// @Summary      Crear notificación
+// @Tags         Notificacion
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/notificaciones/ [post]
 func (ctrl *CreateNotificacionController) Run(c *gin.Context) {
 	var request struct {
 		UsuarioID                  *int32  `json:"usuario_id"`

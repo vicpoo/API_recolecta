@@ -19,6 +19,13 @@ func NewCreateReporteConductorController(createUseCase *application.CreateReport
 	}
 }
 
+// @Summary      Crear reporte conductor
+// @Tags         ReporteConductor
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/reportes-conductor/ [post]
 func (ctrl *CreateReporteConductorController) Run(c *gin.Context) {
 	var reporteRequest struct {
 		ConductorID int32  `json:"conductor_id" binding:"required"`

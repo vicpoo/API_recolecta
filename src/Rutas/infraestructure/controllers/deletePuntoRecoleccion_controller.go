@@ -16,6 +16,12 @@ func NewDeletePuntoRecoleccionController(uc *application.DeletePuntoRecoleccionU
 	return &DeletePuntoRecoleccionController{uc: uc}
 }
 
+// @Summary      Eliminar punto de recolección
+// @Tags         PuntoRecoleccion
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/puntos-recoleccion/{id} [delete]
 func (c *DeletePuntoRecoleccionController) Run(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)

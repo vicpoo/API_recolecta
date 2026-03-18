@@ -19,6 +19,13 @@ func NewCreateReporteFallaCriticaController(createUseCase *application.CreateRep
 	}
 }
 
+// @Summary      Crear reporte falla crítica
+// @Tags         ReporteFallaCritica
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/reportes-falla-critica/ [post]
 func (ctrl *CreateReporteFallaCriticaController) Run(c *gin.Context) {
 	var request struct {
 		CamionID    int32  `json:"camion_id" binding:"required"`

@@ -16,6 +16,12 @@ func NewGetRellenoSanitarioByIDController(uc *application.GetRellenoSanitarioByI
 	return &GetRellenoSanitarioByIDController{uc: uc}
 }
 
+// @Summary      Relleno sanitario por ID
+// @Tags         RellenoSanitario
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/relleno-sanitario/{id} [get]
 func (c *GetRellenoSanitarioByIDController) Execute(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

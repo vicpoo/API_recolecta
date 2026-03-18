@@ -17,6 +17,13 @@ func NewUpdateRutaController(uc *application.UpdateRutaUseCase) *UpdateRutaContr
 	return &UpdateRutaController{uc}
 }
 
+// @Summary      Actualizar ruta
+// @Tags         Ruta
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "ID ruta"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/rutas/{id} [put]
 func (ctr *UpdateRutaController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

@@ -16,6 +16,12 @@ func NewDeleteRutaController(uc *application.DeleteRutaUseCase) *DeleteRutaContr
 	return &DeleteRutaController{uc}
 }
 
+// @Summary      Eliminar ruta
+// @Tags         Ruta
+// @Produce      json
+// @Param        id path int true "ID ruta"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/rutas/{id} [delete]
 func (ctr *DeleteRutaController) Run(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 

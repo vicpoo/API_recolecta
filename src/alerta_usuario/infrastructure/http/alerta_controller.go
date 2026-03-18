@@ -26,14 +26,23 @@ func NewAlertaController(
 
 func (c *AlertaController) RegisterRoutes(r *gin.RouterGroup) {
 	r.POST(
-	"/alertas",
-	core.RequireRole(core.SUPERVISOR),
-	c.Create,
-)
+		"/alertas",
+		core.RequireRole(core.SUPERVISOR),
+		c.Create,
+	)
 	r.GET("/alertas", c.ListMine)
 	r.PUT("/alertas/:id/leida", c.MarkAsRead)
 }
 
+// @Summary      Crear alerta de usuario
+// @Tags         AlertaUsuario
+// @Accept       json
+// @Produce      json
+// @Param        body body domain.AlertaUsuario true "Datos de la alerta"
+// @Success      201
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /api/alertas [post]
 func (c *AlertaController) Create(ctx *gin.Context) {
 	var body struct {
 		Titulo    string `json:"titulo"`
@@ -61,6 +70,12 @@ func (c *AlertaController) Create(ctx *gin.Context) {
 	ctx.Status(http.StatusCreated)
 }
 
+// @Summary      Listar mis alertas
+// @Tags         AlertaUsuario
+// @Produce      json
+// @Success      200 {array} domain.AlertaUsuario
+// @Failure      500 {object} map[string]interface{}
+// @Router       /api/alertas [get]
 func (c *AlertaController) ListMine(ctx *gin.Context) {
 	alertas, err := c.list.Execute(ctx.GetInt("user_id"))
 	if err != nil {
@@ -71,6 +86,13 @@ func (c *AlertaController) ListMine(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, alertas)
 }
 
+// @Summary      Marcar alerta como leída
+// @Tags         AlertaUsuario
+// @Produce      json
+// @Param        id path int true "ID de la alerta"
+// @Success      200
+// @Failure      403 {object} map[string]interface{}
+// @Router       /api/alertas/{id}/leida [put]
 func (c *AlertaController) MarkAsRead(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 

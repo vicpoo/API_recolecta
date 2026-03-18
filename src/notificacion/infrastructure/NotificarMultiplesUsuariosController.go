@@ -15,6 +15,13 @@ func NewNotificarMultiplesUsuariosController(useCase *application.NotificarMulti
 	return &NotificarMultiplesUsuariosController{useCase: useCase}
 }
 
+// @Summary      Notificar a múltiples usuarios
+// @Tags         Notificacion
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/notificaciones/enviar-multiples [post]
 func (ctrl *NotificarMultiplesUsuariosController) Run(c *gin.Context) {
 	var req application.NotificarMultiplesRequest
 	

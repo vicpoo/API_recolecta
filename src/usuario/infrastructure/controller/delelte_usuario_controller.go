@@ -16,6 +16,12 @@ func NewDeleteUsersController(uc *application.DeleteUser) *DeleteUsersController
 	return &DeleteUsersController{uc: uc}
 }
 
+// @Summary      Eliminar usuario
+// @Tags         Usuario
+// @Produce      json
+// @Param        id path int true "ID usuario"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/usuarios/{id} [delete]
 func (c *DeleteUsersController) Handle(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil || id <= 0 {

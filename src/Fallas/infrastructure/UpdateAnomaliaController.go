@@ -21,6 +21,14 @@ func NewUpdateAnomaliaController(updateUseCase *application.UpdateAnomaliaUseCas
 	}
 }
 
+// @Summary      Actualizar anomalía
+// @Tags         Anomalia
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/anomalias/{id} [put]
 func (ctrl *UpdateAnomaliaController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

@@ -19,6 +19,13 @@ func NewGetAlertaMantenimientoByIDController(getByIDUseCase *application.GetAler
 	}
 }
 
+// @Summary      Alerta por ID
+// @Tags         AlertaMantenimiento
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/alertas-mantenimiento/{id} [get]
 func (ctrl *GetAlertaMantenimientoByIDController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

@@ -19,6 +19,13 @@ func NewDeleteAnomaliaController(deleteUseCase *application.DeleteAnomaliaUseCas
 	}
 }
 
+// @Summary      Eliminar anomalía
+// @Tags         Anomalia
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/anomalias/{id} [delete]
 func (ctrl *DeleteAnomaliaController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

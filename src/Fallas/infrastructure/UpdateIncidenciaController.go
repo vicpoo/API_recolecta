@@ -21,6 +21,14 @@ func NewUpdateIncidenciaController(updateUseCase *application.UpdateIncidenciaUs
 	}
 }
 
+// @Summary      Actualizar incidencia
+// @Tags         Incidencia
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/incidencias/{id} [put]
 func (ctrl *UpdateIncidenciaController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

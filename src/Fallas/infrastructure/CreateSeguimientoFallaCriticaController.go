@@ -19,6 +19,13 @@ func NewCreateSeguimientoFallaCriticaController(createUseCase *application.Creat
 	}
 }
 
+// @Summary      Crear seguimiento falla crítica
+// @Tags         SeguimientoFallaCritica
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/seguimientos-falla-critica/ [post]
 func (ctrl *CreateSeguimientoFallaCriticaController) Run(c *gin.Context) {
 	var request struct {
 		FallaID    int32  `json:"falla_id" binding:"required"`

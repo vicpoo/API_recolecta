@@ -15,6 +15,11 @@ func NewGetAllPuntoRecoleccionController(uc *application.ListAllPuntoRecoleccion
 	return &GetAllPuntoRecoleccionController{uc: uc}
 }
 
+// @Summary      Listar puntos de recolección
+// @Tags         PuntoRecoleccion
+// @Produce      json
+// @Success      200 {array} map[string]interface{}
+// @Router       /api/puntos-recoleccion/ [get]
 func (c *GetAllPuntoRecoleccionController) Run(ctx *gin.Context) {
 	result, err := c.uc.Execute()
 	if err != nil {

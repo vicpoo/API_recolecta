@@ -20,6 +20,11 @@ func NewGetAllTipoCamionController(
 	}
 }
 
+// @Summary      Listar tipos de camión
+// @Tags         TipoCamion
+// @Produce      json
+// @Success      200 {array}  entities.TipoCamion
+// @Router       /api/tipo-camion/ [get]
 func (ctr *GetAllTipoCamionController) Run(ctx *gin.Context) {
 	tiposCamion, err := ctr.uc.Run()
 

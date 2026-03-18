@@ -18,6 +18,12 @@ func NewExistsRellenoSanitarioByIdController(
 	return &ExistsRellenoSanitarioByIdController{uc: uc}
 }
 
+// @Summary      Verificar existencia relleno sanitario
+// @Tags         RellenoSanitario
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/relleno-sanitario/exists/{id} [get]
 func (c *ExistsRellenoSanitarioByIdController) Execute(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

@@ -18,6 +18,12 @@ func NewGetReportesConductorByFechaRangeController(getByFechaRangeUseCase *appli
 	}
 }
 
+// @Summary      Reportes conductor por fecha
+// @Tags         ReporteConductor
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/reportes-conductor/fecha [get]
 func (ctrl *GetReportesConductorByFechaRangeController) Run(c *gin.Context) {
 	fechaInicio := c.Query("fecha_inicio")
 	fechaFin := c.Query("fecha_fin")

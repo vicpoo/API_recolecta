@@ -20,6 +20,13 @@ func NewCreateEstadoCamionController(
 	}
 }
 
+// @Summary      Crear estado de camión
+// @Tags         EstadoCamion
+// @Accept       json
+// @Produce      json
+// @Success      201 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/estado-camion/ [post]
 func (ctr *CreateEstadoCamionController) Run(ctx *gin.Context) {
 	var estadoCamion entities.EstadoCamion
 

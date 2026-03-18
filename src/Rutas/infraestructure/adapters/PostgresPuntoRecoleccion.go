@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/vicpoo/API_recolecta/src/Rutas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/Rutas/domain/ports"
 	"github.com/vicpoo/API_recolecta/src/core"
 )
 
@@ -15,7 +16,7 @@ type PostgresPuntoRecoleccion struct {
 	conn *pgxpool.Pool
 }
 
-func NewPostgresPuntoRecoleccion() *PostgresPuntoRecoleccion {
+func NewPostgresPuntoRecoleccion() ports.IPuntoRecoleccion {
 	conn, _ := core.ConnectPostgres()
 	return &PostgresPuntoRecoleccion{conn: conn}
 }

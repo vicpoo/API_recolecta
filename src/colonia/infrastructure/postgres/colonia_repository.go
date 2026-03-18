@@ -5,17 +5,22 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/vicpoo/API_recolecta/src/colonia/domain"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
-type ColoniaRepository struct {
+type PostgresColoniaRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewColoniaRepository(db *pgxpool.Pool) *ColoniaRepository {
-	return &ColoniaRepository{db}
+func NewColoniaRepository() domain.ColoniaRepository {
+	db := core.GetBD()
+
+	return &PostgresColoniaRepository{
+		db: db,
+	}
 }
 
-func (r *ColoniaRepository) Create(c *domain.Colonia) error {
+func (r *PostgresColoniaRepository) Create(c *domain.Colonia) error {
 	query := `
 		INSERT INTO colonia (nombre, zona, created_at)
 		VALUES ($1,$2,$3)
@@ -32,7 +37,7 @@ func (r *ColoniaRepository) Create(c *domain.Colonia) error {
 	return err
 }
 
-func (r *ColoniaRepository) GetByID(id int) (*domain.Colonia, error) {
+func (r *PostgresColoniaRepository) GetByID(id int) (*domain.Colonia, error) {
 	query := `
 		SELECT colonia_id, nombre, zona, created_at
 		FROM colonia
@@ -56,7 +61,7 @@ func (r *ColoniaRepository) GetByID(id int) (*domain.Colonia, error) {
 	return &c, nil
 }
 
-func (r *ColoniaRepository) GetAll() ([]domain.Colonia, error) {
+func (r *PostgresColoniaRepository) GetAll() ([]domain.Colonia, error) {
 	query := `
 		SELECT colonia_id, nombre, zona, created_at
 		FROM colonia
@@ -87,7 +92,7 @@ func (r *ColoniaRepository) GetAll() ([]domain.Colonia, error) {
 	return colonias, nil
 }
 
-func (r *ColoniaRepository) Update(c *domain.Colonia) error {
+func (r *PostgresColoniaRepository) Update(c *domain.Colonia) error {
 	query := `
 		UPDATE colonia
 		SET nombre = $1,
@@ -106,7 +111,7 @@ func (r *ColoniaRepository) Update(c *domain.Colonia) error {
 	return err
 }
 
-func (r *ColoniaRepository) Delete(id int) error {
+func (r *PostgresColoniaRepository) Delete(id int) error {
 	query := `
 		UPDATE colonia
 		SET eliminado = true

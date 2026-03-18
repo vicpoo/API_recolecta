@@ -19,6 +19,13 @@ func NewCreateAnomaliaController(createUseCase *application.CreateAnomaliaUseCas
 	}
 }
 
+// @Summary      Crear anomalía
+// @Tags         Anomalia
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/anomalias/ [post]
 func (ctrl *CreateAnomaliaController) Run(c *gin.Context) {
 	var request struct {
 		PuntoID      *int32  `json:"punto_id"`

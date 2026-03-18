@@ -19,6 +19,12 @@ func NewGetReportesConductorByRutaIDController(getByRutaIDUseCase *application.G
 	}
 }
 
+// @Summary      Reportes conductor por ruta
+// @Tags         ReporteConductor
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/reportes-conductor/ruta/{ruta_id} [get]
 func (ctrl *GetReportesConductorByRutaIDController) Run(c *gin.Context) {
 	rutaIDParam := c.Param("ruta_id")
 	rutaID, err := strconv.Atoi(rutaIDParam)

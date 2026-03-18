@@ -19,6 +19,13 @@ func NewGetNotificacionByIdController(getByIdUseCase *application.GetNotificacio
 	}
 }
 
+// @Summary      Notificación por ID
+// @Tags         Notificacion
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/notificaciones/{id} [get]
 func (ctrl *GetNotificacionByIdController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

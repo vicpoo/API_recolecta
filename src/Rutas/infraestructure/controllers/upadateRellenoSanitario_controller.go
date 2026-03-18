@@ -17,6 +17,13 @@ func NewUpdateRellenoSanitarioController(uc *application.UpdateRellenoSanitarioU
 	return &UpdateRellenoSanitarioController{uc: uc}
 }
 
+// @Summary      Actualizar relleno sanitario
+// @Tags         RellenoSanitario
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/relleno-sanitario/{id} [put]
 func (c *UpdateRellenoSanitarioController) Execute(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

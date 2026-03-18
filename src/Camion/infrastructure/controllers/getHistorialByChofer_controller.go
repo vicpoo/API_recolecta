@@ -16,6 +16,12 @@ func NewGetHistorialByChoferController(uc *application.GetHistorialByChoferUseCa
 	return &GetHistorialByChoferController{uc: uc}
 }
 
+// @Summary      Historial por chofer
+// @Tags         HistorialAsignacion
+// @Produce      json
+// @Param        choferId path int true "ID chofer"
+// @Success      200 {array} map[string]interface{}
+// @Router       /api/historial-asignacion/chofer/{choferId} [get]
 func (ctr *GetHistorialByChoferController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("choferId"))
 	if err != nil {

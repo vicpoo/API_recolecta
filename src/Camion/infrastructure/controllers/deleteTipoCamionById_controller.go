@@ -20,6 +20,13 @@ func NewDeleteTipoCamionController(
 	}
 }
 
+// @Summary      Eliminar tipo de camión
+// @Tags         TipoCamion
+// @Produce      json
+// @Param        id path int true "ID tipo camión"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/tipo-camion/{id} [delete]
 func (ctr *DeleteTipoCamionController) Run(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 

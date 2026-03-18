@@ -19,6 +19,12 @@ func NewGetRegistrosByCamionIDController(getByCamionIDUseCase *application.GetRe
 	}
 }
 
+// @Summary      Registros por camión
+// @Tags         RegistroMantenimiento
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/registros-mantenimiento/camion/{camion_id} [get]
 func (ctrl *GetRegistrosByCamionIDController) Run(c *gin.Context) {
 	camionIDParam := c.Param("camion_id")
 	camionID, err := strconv.Atoi(camionIDParam)

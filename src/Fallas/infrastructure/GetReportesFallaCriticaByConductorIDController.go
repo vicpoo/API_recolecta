@@ -19,6 +19,12 @@ func NewGetReportesFallaCriticaByConductorIDController(getByConductorIDUseCase *
 	}
 }
 
+// @Summary      Reportes falla crítica por conductor
+// @Tags         ReporteFallaCritica
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/reportes-falla-critica/conductor/{conductorId} [get]
 func (ctrl *GetReportesFallaCriticaByConductorIDController) Run(c *gin.Context) {
 	conductorIDParam := c.Param("conductorId")
 	conductorID, err := strconv.Atoi(conductorIDParam)

@@ -18,6 +18,13 @@ func NewCreateRutaController(uc *application.CreateRutaUseCase) *CreateRutaContr
 	return &CreateRutaController{uc}
 }
 
+// @Summary      Crear ruta
+// @Tags         Ruta
+// @Accept       json
+// @Produce      json
+// @Success      201 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/rutas/ [post]
 func (ctr *CreateRutaController) Run(ctx *gin.Context) {
 	var req struct {
 		Nombre      string          `json:"nombre" binding:"required"`

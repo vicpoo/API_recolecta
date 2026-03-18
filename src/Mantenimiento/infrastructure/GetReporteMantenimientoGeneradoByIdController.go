@@ -19,6 +19,13 @@ func NewGetReporteMantenimientoGeneradoByIdController(getByIdUseCase *applicatio
 	}
 }
 
+// @Summary      Reporte generado por ID
+// @Tags         ReporteMantenimientoGenerado
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/reportes-mantenimiento-generado/{id} [get]
 func (ctrl *GetReporteMantenimientoGeneradoByIdController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

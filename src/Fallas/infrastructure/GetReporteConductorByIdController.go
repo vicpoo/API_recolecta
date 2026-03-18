@@ -19,6 +19,13 @@ func NewGetReporteConductorByIdController(getByIdUseCase *application.GetReporte
 	}
 }
 
+// @Summary      Reporte conductor por ID
+// @Tags         ReporteConductor
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/reportes-conductor/{id} [get]
 func (ctrl *GetReporteConductorByIdController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
