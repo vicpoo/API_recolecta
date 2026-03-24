@@ -8,7 +8,19 @@ Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-chang
 
 ---
 
-# 0.1.0-alpha - 2026-01-20
+# 0.2.0-alpha - 2026-03-24
+## Rodrigo Mijangos [Issue #23](https://github.com/RodrigoMijangos/recolecta_web/issues/23)
+### Added
+- Implementación de entidad para logs de notificaciones push.
+- Implementación de entidad para envio de notificaciones push.
+- Repositorio de logs de notificaciones push usando Redis.
+- Servicio de notificaciones push con lógica de negocio para enviar notificaciones y registrar logs.
+- Servicio de almacenamiento para logs de notificaiones push.
+
+### Changed
+- Corrección de fecha de implementación del changelog en la versión 0.1.0-alpha.
+
+# 0.1.0-alpha - 2026-03-24
 ## Rodrigo Mijangos [Issue #X](https://github.com/RodrigoMijangos/recolecta_web/issues/X)
 ### Added
 - Archivo de configuración para variables de entorno.
