@@ -45,7 +45,7 @@ import (
 
 	anomalia "github.com/vicpoo/API_recolecta/src/anomalia/infrastructure"
 	incidencia "github.com/vicpoo/API_recolecta/src/incidencia/infrastructure"
-	_ "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
+	pushNotifInfra "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
 	reporteConductor "github.com/vicpoo/API_recolecta/src/reporte_conductor/infrastructure"
 	registroMantenimiento "github.com/vicpoo/API_recolecta/src/registro_mantenimiento/infrastructure"
 	reporteFallaCritica "github.com/vicpoo/API_recolecta/src/reporte_falla_critica/infrastructure"
@@ -60,6 +60,7 @@ import (
 	coloniaHttp "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/http"
 	rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
 	usuarioInfra "github.com/vicpoo/API_recolecta/src/usuario/infrastructure"
+	ciudadanoInfra "github.com/vicpoo/API_recolecta/src/ciudadano/infrastructure"
 
 
 
@@ -450,7 +451,10 @@ domicilioController.RegisterRoutes(engine)
 usuarioDeps := usuarioInfra.NewUsuarioDependencies(db)
 usuarioInfra.RegisterUsuarioRoutes(engine, usuarioDeps)
 
-rolController := rolInfra.NewRolDependencies(db)
+	// Adicion de ciudadanos como parte de usuarios
+
+	ciudadanoDeps := ciudadanoInfra.NewCiudadanoDependencies(db, core.GetRedis())
+	ciudadanoInfra.RegisterCiudadanoRoutes(engine, ciudadanoDeps)
 rolInfra.RegisterRolRoutes(engine, rolController)
 
 anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
@@ -488,6 +492,9 @@ anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
 	tipoMantenimientoRoutes := tipoMantenimiento.NewTipoMantenimientoRouter(engine)
 
 	tipoMantenimientoRoutes.Run()
+
+	pushNotificationRoutes := pushNotifInfra.NewPushNotificationRouter(engine)
+	pushNotificationRoutes.Run()
 
 	core.RegisterHealthEndpoint(engine)
 
