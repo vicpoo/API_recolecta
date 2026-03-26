@@ -8,6 +8,14 @@ Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-chang
 
 ---
 
+# 0.3.0-alpha - 2026-03-25
+## Rodrigo Mijangos [Issue #24](https://github.com/RodrigoMijangos/recolecta_web/issues/24)
+### Added
+- Implementación de Caso de uso y Endopoint para mandar notificaciones a FCM.
+- Implementación de Caso de uso y Endopoint para guardar logs de notificaciones push.
+- Logging de mensajes de error en el servicio de notificaciones push.
+
+
 # 0.2.0-alpha - 2026-03-24
 ## Rodrigo Mijangos [Issue #23](https://github.com/RodrigoMijangos/recolecta_web/issues/23)
 ### Added
