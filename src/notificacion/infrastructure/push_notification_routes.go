@@ -30,7 +30,8 @@ func (r *PushNotificationRouter) Run() {
 	rulesCtrl := NewNotificationRulesController(rulesUc)
 	traceRepo := NewRedisEventTraceRepository(core.GetRedis())
 	processEventUc := application.NewProcessTruckStateEventUseCase(rulesRepo, traceRepo)
-	processEventCtrl := NewTruckStateEventController(processEventUc)
+	queryEventTraceUc := application.NewQueryEventTraceUseCase(traceRepo)
+	processEventCtrl := NewTruckStateEventController(processEventUc, queryEventTraceUc)
 	adminRealtimeRepo := NewRedisAdminRealtimeSessionRepository(core.GetRedis())
 	adminRealtimeUc := application.NewManageAdminRealtimeSessionUseCase(adminRealtimeRepo)
 	adminRealtimeCtrl := NewAdminRealtimeSessionController(adminRealtimeUc)
@@ -39,6 +40,8 @@ func (r *PushNotificationRouter) Run() {
 	{
 		group.POST("/citizens/send", ctrl.Run)
 		group.POST("/events/truck-state", processEventCtrl.Process)
+		group.GET("/events/traces/:event_id", processEventCtrl.GetByEventID)
+		group.GET("/events/traces/truck/:truck_id", processEventCtrl.ListByTruckID)
 	}
 
 	rulesGroup := r.engine.Group("/api/notifications/rules", core.JWTAuthMiddleware())
@@ -54,6 +57,7 @@ func (r *PushNotificationRouter) Run() {
 		realtimeGroup.POST("/upgrade-token", core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN), adminRealtimeCtrl.IssueUpgradeToken)
 		realtimeGroup.POST("/sessions/consume", adminRealtimeCtrl.ConsumeUpgradeToken)
 		realtimeGroup.POST("/sessions/:session_id/heartbeat", core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN), adminRealtimeCtrl.Heartbeat)
+		realtimeGroup.GET("/sessions/:session_id", core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN), adminRealtimeCtrl.GetSession)
 		realtimeGroup.DELETE("/sessions/:session_id", core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN), adminRealtimeCtrl.Disconnect)
 	}
 }

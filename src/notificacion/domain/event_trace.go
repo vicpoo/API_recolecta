@@ -22,4 +22,6 @@ type EventTraceRecord struct {
 type EventTraceRepository interface {
 	TryAcquireDeduplication(ctx context.Context, eventHash string, event *TruckStateEvent) (bool, error)
 	SaveTrace(ctx context.Context, trace *EventTraceRecord) error
+	GetByEventID(ctx context.Context, eventID string) (*EventTraceRecord, error)
+	ListByTruckID(ctx context.Context, truckID int32, limit int64) ([]EventTraceRecord, error)
 }

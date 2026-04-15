@@ -57,3 +57,12 @@ func (ctrl *AdminRealtimeSessionController) Disconnect(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "session cerrada"})
 }
+
+func (ctrl *AdminRealtimeSessionController) GetSession(c *gin.Context) {
+	session, err := ctrl.uc.GetSession(c.Request.Context(), c.Param("session_id"))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"session": session})
+}

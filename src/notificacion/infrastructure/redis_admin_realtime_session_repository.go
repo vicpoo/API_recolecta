@@ -167,6 +167,39 @@ func (r *RedisAdminRealtimeSessionRepository) TouchSession(ctx context.Context, 
 	return nil
 }
 
+func (r *RedisAdminRealtimeSessionRepository) GetSession(ctx context.Context, sessionID string) (*domain.AdminWSSession, error) {
+	key := fmt.Sprintf(wsSessionKeyFmt, sessionID)
+	values, err := r.rdb.HGetAll(ctx, key).Result()
+	if err != nil {
+		return nil, fmt.Errorf("no se pudo leer session: %w", err)
+	}
+	if len(values) == 0 {
+		return nil, fmt.Errorf("session no encontrada")
+	}
+
+	adminID, err := strconv.Atoi(values["admin_id"])
+	if err != nil {
+		return nil, fmt.Errorf("admin_id invalido en session: %w", err)
+	}
+	lastSeenAt, err := time.Parse(time.RFC3339, values["last_seen_at"])
+	if err != nil {
+		return nil, fmt.Errorf("last_seen_at invalido en session: %w", err)
+	}
+	connectedAt, err := time.Parse(time.RFC3339, values["connected_at"])
+	if err != nil {
+		return nil, fmt.Errorf("connected_at invalido en session: %w", err)
+	}
+
+	return &domain.AdminWSSession{
+		SessionID:   sessionID,
+		AdminID:     int32(adminID),
+		ServerEpoch: values["server_epoch"],
+		LastSeenAt:  lastSeenAt,
+		ConnectedAt: connectedAt,
+		Status:      values["status"],
+	}, nil
+}
+
 func (r *RedisAdminRealtimeSessionRepository) InvalidateSession(ctx context.Context, sessionID string) error {
 	key := fmt.Sprintf(wsSessionKeyFmt, sessionID)
 	if err := r.rdb.HSet(ctx, key, "status", "closed").Err(); err != nil {

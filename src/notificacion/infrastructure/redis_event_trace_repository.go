@@ -90,3 +90,75 @@ func (r *RedisEventTraceRepository) SaveTrace(ctx context.Context, trace *domain
 
 	return nil
 }
+
+func (r *RedisEventTraceRepository) GetByEventID(ctx context.Context, eventID string) (*domain.EventTraceRecord, error) {
+	values, err := r.rdb.HGetAll(ctx, fmt.Sprintf(eventTraceKeyFmt, eventID)).Result()
+	if err != nil {
+		return nil, fmt.Errorf("no se pudo leer traza %s: %w", eventID, err)
+	}
+	if len(values) == 0 {
+		return nil, fmt.Errorf("traza no encontrada para event_id %s", eventID)
+	}
+	trace, err := mapToEventTrace(values)
+	if err != nil {
+		return nil, err
+	}
+	return &trace, nil
+}
+
+func (r *RedisEventTraceRepository) ListByTruckID(ctx context.Context, truckID int32, limit int64) ([]domain.EventTraceRecord, error) {
+	if limit <= 0 {
+		limit = 20
+	}
+	indexKey := fmt.Sprintf(eventTraceTruckKeyFmt, truckID)
+	eventIDs, err := r.rdb.ZRevRange(ctx, indexKey, 0, limit-1).Result()
+	if err != nil {
+		return nil, fmt.Errorf("no se pudo listar trazas de truck_id %d: %w", truckID, err)
+	}
+	if len(eventIDs) == 0 {
+		return []domain.EventTraceRecord{}, nil
+	}
+
+	traces := make([]domain.EventTraceRecord, 0, len(eventIDs))
+	for _, eventID := range eventIDs {
+		trace, getErr := r.GetByEventID(ctx, eventID)
+		if getErr != nil {
+			return nil, getErr
+		}
+		traces = append(traces, *trace)
+	}
+	return traces, nil
+}
+
+func mapToEventTrace(values map[string]string) (domain.EventTraceRecord, error) {
+	truckID, err := strconv.Atoi(values["truck_id"])
+	if err != nil {
+		return domain.EventTraceRecord{}, fmt.Errorf("truck_id invalido en traza: %w", err)
+	}
+	adminNotified, err := strconv.ParseBool(values["admin_notified"])
+	if err != nil {
+		return domain.EventTraceRecord{}, fmt.Errorf("admin_notified invalido en traza: %w", err)
+	}
+	citizenFanoutCount, err := strconv.Atoi(values["citizen_fanout_count"])
+	if err != nil {
+		return domain.EventTraceRecord{}, fmt.Errorf("citizen_fanout_count invalido en traza: %w", err)
+	}
+	createdAt, err := time.Parse(time.RFC3339, values["created_at"])
+	if err != nil {
+		return domain.EventTraceRecord{}, fmt.Errorf("created_at invalido en traza: %w", err)
+	}
+
+	return domain.EventTraceRecord{
+		EventID:            values["event_id"],
+		EventHash:          values["event_hash"],
+		EventType:          values["event_type"],
+		EventVersion:       values["event_version"],
+		TruckID:            int32(truckID),
+		StateCode:          values["state_code"],
+		ResolvedAction:     values["resolved_action"],
+		AdminNotified:      adminNotified,
+		CitizenFanoutCount: citizenFanoutCount,
+		Result:             values["result"],
+		CreatedAt:          createdAt,
+	}, nil
+}
