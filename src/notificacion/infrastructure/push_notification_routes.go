@@ -28,10 +28,14 @@ func (r *PushNotificationRouter) Run() {
 	rulesRepo := NewRedisNotificationRuleRepository(core.GetRedis())
 	rulesUc := application.NewManageNotificationRulesUseCase(rulesRepo)
 	rulesCtrl := NewNotificationRulesController(rulesUc)
+	traceRepo := NewRedisEventTraceRepository(core.GetRedis())
+	processEventUc := application.NewProcessTruckStateEventUseCase(rulesRepo, traceRepo)
+	processEventCtrl := NewTruckStateEventController(processEventUc)
 
 	group := r.engine.Group("/api/notifications")
 	{
 		group.POST("/citizens/send", ctrl.Run)
+		group.POST("/events/truck-state", processEventCtrl.Process)
 	}
 
 	rulesGroup := r.engine.Group("/api/notifications/rules", core.JWTAuthMiddleware())

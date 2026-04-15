@@ -8,6 +8,16 @@ Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-chang
 
 ---
 
+# [0.7.0-alpha] - 2026-04-15
+## Rodrigo Mijangos [Issue #10](https://github.com/RodrigoMijangos/recolecta_web/issues/10)
+### Added
+- Caso de uso para procesar eventos `TruckStateEvent` con deduplicación por hash.
+- Persistencia de deduplicación y trazabilidad de eventos en Redis (`event_deduplication:*`, `event_trace:*`).
+- Endpoint `POST /api/notifications/events/truck-state` para orquestar resolución de regla por estado.
+
+### Changed
+- El enrutador de notificaciones integra el flujo de orquestación de eventos con reglas dinámicas.
+
 # [0.6.0-alpha] - 2026-04-15
 ## Rodrigo Mijangos [Issue #9](https://github.com/RodrigoMijangos/recolecta_web/issues/9)
 ### Added
