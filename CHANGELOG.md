@@ -17,6 +17,7 @@ Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-chang
 
 ### Changed
 - Se define una frontera clara server-owned para payloads de movilidad y canal realtime de administración.
+- Se alinean dependencias del módulo de notificaciones en `go.mod`/`go.sum` para compilación consistente de FCM y Redis.
 
 # [0.4.0-alpha] - 2026-03-26
 ## Rodrigo Mijangos [Issue #X](https://github.com/RodrigoMijangos/recolecta_web/issues/X)
