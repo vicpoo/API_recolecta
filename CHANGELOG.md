@@ -16,6 +16,7 @@ Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-chang
 
 ### Changed
 - El módulo de notificaciones/realtime expone una vista operativa resumida para monitoreo.
+- Inicialización FCM reforzada para usar credenciales explícitas (`FCM_CREDENTIALS_FILE`/`GOOGLE_APPLICATION_CREDENTIALS`) y `ProjectID` opcional por entorno.
 
 # [0.10.0-alpha] - 2026-04-15
 ## Rodrigo Mijangos [Issue #14](https://github.com/RodrigoMijangos/recolecta_web/issues/14)

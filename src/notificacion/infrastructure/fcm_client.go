@@ -3,11 +3,14 @@ package infrastructure
 import (
 	"context"
 	"fmt"
+	"os"
 	"sort"
+	"strings"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
 	"github.com/vicpoo/API_recolecta/src/notificacion/domain"
+	"google.golang.org/api/option"
 )
 
 type FCMClient struct {
@@ -15,9 +18,22 @@ type FCMClient struct {
 }
 
 func NewFCMClient() (*FCMClient, error) {
-	app, err := firebase.NewApp(context.Background(), nil)
+	credentialsPath := resolveCredentialsPath()
+	if credentialsPath == "" {
+		return nil, fmt.Errorf("no se definio archivo de credenciales FCM (FCM_CREDENTIALS_FILE o GOOGLE_APPLICATION_CREDENTIALS)")
+	}
+	if _, err := os.Stat(credentialsPath); err != nil {
+		return nil, fmt.Errorf("archivo de credenciales FCM no accesible en %s: %w", credentialsPath, err)
+	}
+
+	cfg := &firebase.Config{}
+	if projectID := resolveProjectID(); projectID != "" {
+		cfg.ProjectID = projectID
+	}
+
+	app, err := firebase.NewApp(context.Background(), cfg, option.WithCredentialsFile(credentialsPath))
 	if err != nil {
-		return nil, fmt.Errorf("error initializing firebase app via ADC: %w", err)
+		return nil, fmt.Errorf("error initializing firebase app: %w", err)
 	}
 
 	client, err := app.Messaging(context.Background())
@@ -26,6 +42,33 @@ func NewFCMClient() (*FCMClient, error) {
 	}
 
 	return &FCMClient{client: client}, nil
+}
+
+func resolveCredentialsPath() string {
+	candidates := []string{
+		strings.TrimSpace(os.Getenv("FCM_CREDENTIALS_FILE")),
+		strings.TrimSpace(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")),
+	}
+	for _, candidate := range candidates {
+		if candidate != "" {
+			return candidate
+		}
+	}
+	return ""
+}
+
+func resolveProjectID() string {
+	candidates := []string{
+		strings.TrimSpace(os.Getenv("FIREBASE_PROJECT_ID")),
+		strings.TrimSpace(os.Getenv("GOOGLE_CLOUD_PROJECT")),
+		strings.TrimSpace(os.Getenv("GCLOUD_PROJECT")),
+	}
+	for _, candidate := range candidates {
+		if candidate != "" {
+			return candidate
+		}
+	}
+	return ""
 }
 
 func (c *FCMClient) Send(ctx context.Context, userTokens map[string]string, notification *domain.PushNotification) (map[string]domain.SendResult, error) {
