@@ -8,6 +8,16 @@ Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-chang
 
 ---
 
+# [0.8.0-alpha] - 2026-04-15
+## Rodrigo Mijangos [Issue #11](https://github.com/RodrigoMijangos/recolecta_web/issues/11)
+### Added
+- Emisión de token exclusivo de upgrade websocket para administrador (`/api/realtime/ws/upgrade-token`).
+- Consumo one-time del token de upgrade y creación de sesión realtime (`/api/realtime/ws/sessions/consume`).
+- Endpoints de heartbeat y cierre de sesión realtime para administrador.
+
+### Changed
+- Se incorpora repositorio Redis para `realtime:server_epoch:current`, `ws:upgrade:*` y `ws:session:*`.
+
 # [0.7.0-alpha] - 2026-04-15
 ## Rodrigo Mijangos [Issue #10](https://github.com/RodrigoMijangos/recolecta_web/issues/10)
 ### Added
