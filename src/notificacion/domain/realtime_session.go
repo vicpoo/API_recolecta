@@ -21,5 +21,6 @@ type AdminRealtimeSessionRepository interface {
 	UpsertSession(ctx context.Context, session *AdminWSSession, ttl time.Duration) error
 	TouchSession(ctx context.Context, sessionID string, lastSeenAt time.Time, ttl time.Duration) error
 	GetSession(ctx context.Context, sessionID string) (*AdminWSSession, error)
+	CountActiveSessions(ctx context.Context) (int64, error)
 	InvalidateSession(ctx context.Context, sessionID string) error
 }

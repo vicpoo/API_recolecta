@@ -35,6 +35,8 @@ func (r *PushNotificationRouter) Run() {
 	adminRealtimeRepo := NewRedisAdminRealtimeSessionRepository(core.GetRedis())
 	adminRealtimeUc := application.NewManageAdminRealtimeSessionUseCase(adminRealtimeRepo)
 	adminRealtimeCtrl := NewAdminRealtimeSessionController(adminRealtimeUc)
+	observabilityUc := application.NewGetObservabilitySummaryUseCase(traceRepo, adminRealtimeRepo)
+	observabilityCtrl := NewObservabilityController(observabilityUc)
 
 	group := r.engine.Group("/api/notifications")
 	{
@@ -50,6 +52,11 @@ func (r *PushNotificationRouter) Run() {
 		rulesGroup.GET("/:state_code", rulesCtrl.GetByStateCode)
 		rulesGroup.PUT("/:state_code", rulesCtrl.Upsert)
 		rulesGroup.DELETE("/:state_code", rulesCtrl.Delete)
+	}
+
+	observabilityGroup := r.engine.Group("/api/notifications/observability", core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN))
+	{
+		observabilityGroup.GET("/:truck_id", observabilityCtrl.Summary)
 	}
 
 	realtimeGroup := r.engine.Group("/api/realtime/ws")

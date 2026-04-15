@@ -200,6 +200,34 @@ func (r *RedisAdminRealtimeSessionRepository) GetSession(ctx context.Context, se
 	}, nil
 }
 
+func (r *RedisAdminRealtimeSessionRepository) CountActiveSessions(ctx context.Context) (int64, error) {
+	var (
+		cursor uint64
+		total  int64
+	)
+
+	for {
+		keys, nextCursor, err := r.rdb.Scan(ctx, cursor, "ws:session:*", 100).Result()
+		if err != nil {
+			return 0, fmt.Errorf("no se pudieron listar sesiones ws: %w", err)
+		}
+		for _, key := range keys {
+			status, statusErr := r.rdb.HGet(ctx, key, "status").Result()
+			if statusErr != nil && statusErr != goredis.Nil {
+				return 0, fmt.Errorf("no se pudo leer status de %s: %w", key, statusErr)
+			}
+			if status == "active" {
+				total++
+			}
+		}
+		cursor = nextCursor
+		if cursor == 0 {
+			break
+		}
+	}
+	return total, nil
+}
+
 func (r *RedisAdminRealtimeSessionRepository) InvalidateSession(ctx context.Context, sessionID string) error {
 	key := fmt.Sprintf(wsSessionKeyFmt, sessionID)
 	if err := r.rdb.HSet(ctx, key, "status", "closed").Err(); err != nil {

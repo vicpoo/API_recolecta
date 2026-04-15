@@ -130,6 +130,14 @@ func (r *RedisEventTraceRepository) ListByTruckID(ctx context.Context, truckID i
 	return traces, nil
 }
 
+func (r *RedisEventTraceRepository) CountByTruckID(ctx context.Context, truckID int32) (int64, error) {
+	total, err := r.rdb.ZCard(ctx, fmt.Sprintf(eventTraceTruckKeyFmt, truckID)).Result()
+	if err != nil {
+		return 0, fmt.Errorf("no se pudo contar trazas de truck_id %d: %w", truckID, err)
+	}
+	return total, nil
+}
+
 func mapToEventTrace(values map[string]string) (domain.EventTraceRecord, error) {
 	truckID, err := strconv.Atoi(values["truck_id"])
 	if err != nil {
