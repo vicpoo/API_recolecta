@@ -8,6 +8,15 @@ Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-chang
 
 ---
 
+# [0.10.0-alpha] - 2026-04-15
+## Rodrigo Mijangos [Issue #14](https://github.com/RodrigoMijangos/recolecta_web/issues/14)
+### Added
+- Pruebas unitarias para repositorio Redis de trazabilidad de eventos (`event_deduplication`, `event_trace`).
+- Pruebas unitarias para repositorio Redis de sesiones realtime admin (`ws:upgrade`, `ws:session`, `server_epoch`).
+
+### Changed
+- Se fortalece validación de regresiones en flujos de dedupe/traza y lifecycle de sesión realtime.
+
 # [0.9.0-alpha] - 2026-04-15
 ## Rodrigo Mijangos [Issue #12](https://github.com/RodrigoMijangos/recolecta_web/issues/12)
 ### Added
