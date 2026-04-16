@@ -58,6 +58,7 @@ import (
 	coloniaPostgres "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/postgres"
 	coloniaApplication "github.com/vicpoo/API_recolecta/src/colonia/application"
 	coloniaHttp "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/http"
+	ciudadanoInfra "github.com/vicpoo/API_recolecta/src/ciudadano/infrastructure"
 	rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
 	usuarioInfra "github.com/vicpoo/API_recolecta/src/usuario/infrastructure"
 
