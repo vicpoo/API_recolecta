@@ -455,9 +455,8 @@ usuarioInfra.RegisterUsuarioRoutes(engine, usuarioDeps)
 
 	ciudadanoDeps := ciudadanoInfra.NewCiudadanoDependencies(db, core.GetRedis())
 	ciudadanoInfra.RegisterCiudadanoRoutes(engine, ciudadanoDeps)
-
-	rolDeps := rolInfra.NewRolDependencies(db)
-	rolInfra.RegisterRolRoutes(engine, rolDeps)
+	rolController := rolInfra.NewRolDependencies(db)
+	rolInfra.RegisterRolRoutes(engine, rolController)
 
 anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
 

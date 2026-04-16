@@ -8,6 +8,17 @@ Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-chang
 
 ---
 
+# [0.6.0-alpha] - 2026-04-15
+## Rodrigo Mijangos [Issue #9](https://github.com/RodrigoMijangos/recolecta_web/issues/9)
+### Added
+- Motor dinámico de reglas de notificación en Redis por `state_code`.
+- Nuevos endpoints para administrar reglas: listar, consultar por estado, crear/actualizar y eliminar.
+- Control de versionado de reglas en Redis con clave global `rules:version`.
+
+### Changed
+- El módulo de notificaciones incorpora un repositorio dedicado para `rules:state:{state_code}`.
+- Se agrega validación de payload para reglas (estado, acción y radio mínimo).
+
 # [0.5.0-alpha] - 2026-04-15
 ## Rodrigo Mijangos [Issue #53](https://github.com/RodrigoMijangos/recolecta_web/issues/53)
 ### Added

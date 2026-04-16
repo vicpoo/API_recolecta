@@ -31,9 +31,20 @@ func (r *PushNotificationRouter) Run() {
 	redisRepo := NewRedisNotificationRepository(core.GetRedis())
 	uc := application.NewSendCitizenNotificationUseCase(fcmClient, redisRepo)
 	ctrl := NewSendCitizenNotificationController(uc)
+	rulesRepo := NewRedisNotificationRuleRepository(core.GetRedis())
+	rulesUc := application.NewManageNotificationRulesUseCase(rulesRepo)
+	rulesCtrl := NewNotificationRulesController(rulesUc)
 
 	group := r.engine.Group("/api/notifications")
 	{
 		group.POST("/citizens/send", ctrl.Run)
+	}
+
+	rulesGroup := r.engine.Group("/api/notifications/rules", core.JWTAuthMiddleware())
+	{
+		rulesGroup.GET("", rulesCtrl.List)
+		rulesGroup.GET("/:state_code", rulesCtrl.GetByStateCode)
+		rulesGroup.PUT("/:state_code", rulesCtrl.Upsert)
+		rulesGroup.DELETE("/:state_code", rulesCtrl.Delete)
 	}
 }
