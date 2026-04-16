@@ -450,8 +450,12 @@ domicilioController.RegisterRoutes(engine)
 usuarioDeps := usuarioInfra.NewUsuarioDependencies(db)
 usuarioInfra.RegisterUsuarioRoutes(engine, usuarioDeps)
 
-rolController := rolInfra.NewRolDependencies(db)
-rolInfra.RegisterRolRoutes(engine, rolController)
+	// Adicion de ciudadanos como parte de usuarios
+
+	ciudadanoDeps := ciudadanoInfra.NewCiudadanoDependencies(db, core.GetRedis())
+	ciudadanoInfra.RegisterCiudadanoRoutes(engine, ciudadanoDeps)
+	rolController := rolInfra.NewRolDependencies(db)
+	rolInfra.RegisterRolRoutes(engine, rolController)
 
 anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
 
