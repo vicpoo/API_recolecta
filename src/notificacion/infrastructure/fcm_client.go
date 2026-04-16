@@ -36,7 +36,20 @@ func NewFCMClient() (*FCMClient, error) {
 		return nil, fmt.Errorf("error initializing firebase app: %w", err)
 	}
 
-	client, err := app.Messaging(context.Background())
+	info, err := os.Stat(credentialPath)
+	if err != nil {
+		return nil, fmt.Errorf("fcm credentials file not found at '%s': %w", credentialPath, err)
+	}
+	if info.IsDir() {
+		return nil, fmt.Errorf("fcm credentials path points to a directory, expected file: '%s'", credentialPath)
+	}
+
+	app, err := firebase.NewApp(ctx, nil, option.WithCredentialsFile(credentialPath))
+	if err != nil {
+		return nil, fmt.Errorf("error initializing firebase app with credentials file '%s': %w", credentialPath, err)
+	}
+
+	client, err := app.Messaging(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error creating firebase messaging client: %w", err)
 	}
