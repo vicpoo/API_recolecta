@@ -8,6 +8,17 @@ Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-chang
 
 ---
 
+# [0.5.0-alpha] - 2026-04-15
+## Rodrigo Mijangos [Issue #53](https://github.com/RodrigoMijangos/recolecta_web/issues/53)
+### Added
+- Contratos base de eventos de estado de camión (`TruckStateEvent`) con control de versión (`v1`).
+- Contrato base para token exclusivo de upgrade websocket de administrador (`AdminWSUpgradeTokenClaim`).
+- Catálogo inicial de estados operativos/críticos y acciones de orquestación para notificaciones.
+
+### Changed
+- Se define una frontera clara server-owned para payloads de movilidad y canal realtime de administración.
+- Se alinean dependencias del módulo de notificaciones en `go.mod`/`go.sum` para compilación consistente de FCM y Redis.
+
 # [0.4.0-alpha] - 2026-03-26
 ## Rodrigo Mijangos [Issue #X](https://github.com/RodrigoMijangos/recolecta_web/issues/X)
 ### Added
