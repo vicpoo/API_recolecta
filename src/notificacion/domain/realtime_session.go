@@ -20,5 +20,6 @@ type AdminRealtimeSessionRepository interface {
 	ConsumeUpgradeToken(ctx context.Context, jti string) (*AdminWSUpgradeTokenClaim, error)
 	UpsertSession(ctx context.Context, session *AdminWSSession, ttl time.Duration) error
 	TouchSession(ctx context.Context, sessionID string, lastSeenAt time.Time, ttl time.Duration) error
+	GetSession(ctx context.Context, sessionID string) (*AdminWSSession, error)
 	InvalidateSession(ctx context.Context, sessionID string) error
 }

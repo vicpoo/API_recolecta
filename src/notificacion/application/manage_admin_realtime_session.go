@@ -123,3 +123,11 @@ func (uc *ManageAdminRealtimeSessionUseCase) Disconnect(ctx context.Context, ses
 	}
 	return uc.repo.InvalidateSession(ctx, normalized)
 }
+
+func (uc *ManageAdminRealtimeSessionUseCase) GetSession(ctx context.Context, sessionID string) (*domain.AdminWSSession, error) {
+	normalized := strings.TrimSpace(sessionID)
+	if normalized == "" {
+		return nil, fmt.Errorf("session_id es obligatorio")
+	}
+	return uc.repo.GetSession(ctx, normalized)
+}

@@ -8,6 +8,16 @@ Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-chang
 
 ---
 
+# [0.9.0-alpha] - 2026-04-15
+## Rodrigo Mijangos [Issue #12](https://github.com/RodrigoMijangos/recolecta_web/issues/12)
+### Added
+- Endpoints de consulta de trazas de eventos: `GET /api/notifications/events/traces/:event_id` y `GET /api/notifications/events/traces/truck/:truck_id`.
+- Endpoint de consulta de sesión realtime: `GET /api/realtime/ws/sessions/:session_id`.
+- Lectura tipada de trazas y sesiones desde Redis para observabilidad operativa.
+
+### Changed
+- El router de notificaciones/realtime expone capacidades de inspección para soporte y auditoría.
+
 # [0.8.0-alpha] - 2026-04-15
 ## Rodrigo Mijangos [Issue #11](https://github.com/RodrigoMijangos/recolecta_web/issues/11)
 ### Added
