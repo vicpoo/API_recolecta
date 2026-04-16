@@ -1,2 +1,4 @@
 .env
 mirol.txt
+tmp/
+tmp/server
