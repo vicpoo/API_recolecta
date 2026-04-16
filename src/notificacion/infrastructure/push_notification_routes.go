@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/vicpoo/API_recolecta/config"
 	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/notificacion/application"
 )
@@ -17,7 +18,12 @@ func NewPushNotificationRouter(engine *gin.Engine) *PushNotificationRouter {
 }
 
 func (r *PushNotificationRouter) Run() {
-	fcmClient, err := NewFCMClient()
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("no se pudo cargar la configuración: %v", err)
+	}
+
+	fcmClient, err := NewFCMClient(cfg.FCMCredentialsFile)
 	if err != nil {
 		log.Fatalf("no se pudo inicializar el cliente FCM: %v", err)
 	}
