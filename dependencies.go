@@ -1,8 +1,6 @@
 package main
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/vicpoo/API_recolecta/src/core"
@@ -71,9 +69,8 @@ import (
 
 //archivo para hacer las instancias de los controllers, casos de uso y repositories, etc.
 func InitDependencies() {
-	if errEnv := godotenv.Load(); errEnv != nil {
-		log.Fatal("error al cargar el .env")
-	}
+	// En producción las variables vienen inyectadas por Docker; .env es opcional.
+	_ = godotenv.Load()
 
 	engine := gin.Default()
 	engine.Use(core.CORSMiddleware())
