@@ -17,6 +17,12 @@ func NewObtenerNumeroNotificacionesNoLeidasController(useCase *application.Obten
 	return &ObtenerNumeroNotificacionesNoLeidasController{useCase: useCase}
 }
 
+// @Summary      Número de notificaciones no leídas
+// @Tags         Notificacion
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/notificaciones/no-leidas/usuario/{usuario_id} [get]
 func (ctrl *ObtenerNumeroNotificacionesNoLeidasController) Run(c *gin.Context) {
 	usuarioIDParam := c.Param("usuario_id")
 	usuarioID, err := strconv.Atoi(usuarioIDParam)

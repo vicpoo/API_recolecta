@@ -17,6 +17,12 @@ func NewGetRutaByIdController(uc *application.GetRutaByIdUseCase) *GetRutaByIdCo
 	return &GetRutaByIdController{uc: uc}
 }
 
+// @Summary      Obtener ruta por ID
+// @Tags         Ruta
+// @Produce      json
+// @Param        id path int true "ID ruta"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/rutas/{id} [get]
 func (ctr *GetRutaByIdController) Run(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.Atoi(idParam)

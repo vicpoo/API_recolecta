@@ -17,6 +17,13 @@ func NewUpdatePuntoRecoleccionController(uc *application.UpdatePuntoRecoleccionU
 	return &UpdatePuntoRecoleccionController{uc: uc}
 }
 
+// @Summary      Actualizar punto de recolección
+// @Tags         PuntoRecoleccion
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/puntos-recoleccion/{id} [put]
 func (c *UpdatePuntoRecoleccionController) Run(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)

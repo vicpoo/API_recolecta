@@ -1,0 +1,38 @@
+// GetAllReportesMantenimientoGeneradoController.go
+package infrastructure
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+)
+
+type GetAllReportesMantenimientoGeneradoController struct {
+	getAllUseCase *application.GetAllReportesMantenimientoGeneradoUseCase
+}
+
+func NewGetAllReportesMantenimientoGeneradoController(getAllUseCase *application.GetAllReportesMantenimientoGeneradoUseCase) *GetAllReportesMantenimientoGeneradoController {
+	return &GetAllReportesMantenimientoGeneradoController{
+		getAllUseCase: getAllUseCase,
+	}
+}
+
+// @Summary      Listar reportes generados
+// @Tags         ReporteMantenimientoGenerado
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/reportes-mantenimiento-generado/ [get]
+func (ctrl *GetAllReportesMantenimientoGeneradoController) Run(c *gin.Context) {
+	reportes, err := ctrl.getAllUseCase.Run()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "No se pudieron obtener los reportes de mantenimiento",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, reportes)
+}

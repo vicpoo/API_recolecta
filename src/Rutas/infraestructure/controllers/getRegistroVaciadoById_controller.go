@@ -16,6 +16,12 @@ func NewGetRegistroVaciadoByIDController(uc *application.GetRegistroVaciadoByIDU
 	return &GetRegistroVaciadoByIDController{uc: uc}
 }
 
+// @Summary      Registro vaciado por ID
+// @Tags         RegistroVaciado
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/registro-vaciado/{id} [get]
 func (c *GetRegistroVaciadoByIDController) Run(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 

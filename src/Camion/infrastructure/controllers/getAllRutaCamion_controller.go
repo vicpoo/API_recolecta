@@ -17,6 +17,11 @@ func NewGetAllRutaCamionController(
 	return &GetAllRutaCamionController{uc}
 }
 
+// @Summary      Listar rutas-camión
+// @Tags         RutaCamion
+// @Produce      json
+// @Success      200 {array} map[string]interface{}
+// @Router       /api/ruta-camion/ [get]
 func (c *GetAllRutaCamionController) Run(ctx *gin.Context) {
 	result, err := c.uc.Execute()
 	if err != nil {

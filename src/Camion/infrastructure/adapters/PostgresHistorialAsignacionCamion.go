@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/vicpoo/API_recolecta/src/Camion/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/Camion/domain/ports"
 	"github.com/vicpoo/API_recolecta/src/core"
 )
 
@@ -15,7 +16,7 @@ type PostgresHistorialAsignacionCamion struct {
 	conn *pgxpool.Pool
 }
 
-func NewPostgresHistorialAsignacionCamion() *PostgresHistorialAsignacionCamion {
+func NewPostgresHistorialAsignacionCamion() ports.IHistorialAsignacionCamion {
 	conn, _ := core.ConnectPostgres()
 	return &PostgresHistorialAsignacionCamion{conn: conn}
 }

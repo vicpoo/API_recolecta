@@ -16,6 +16,12 @@ func NewDeleteRegistroVaciadoController(uc *application.DeleteRegistroVaciadoUse
 	return &DeleteRegistroVaciadoController{uc: uc}
 }
 
+// @Summary      Eliminar registro de vaciado
+// @Tags         RegistroVaciado
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/registro-vaciado/{id} [delete]
 func (c *DeleteRegistroVaciadoController) Run(ctx *gin.Context) {
 	id, _ := strconv.Atoi(ctx.Param("id"))
 

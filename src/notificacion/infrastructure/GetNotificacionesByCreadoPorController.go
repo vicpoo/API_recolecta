@@ -17,6 +17,12 @@ func NewGetNotificacionesByCreadoPorController(useCase *application.GetNotificac
 	return &GetNotificacionesByCreadoPorController{useCase: useCase}
 }
 
+// @Summary      Notificaciones por creador
+// @Tags         Notificacion
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/notificaciones/creado-por/{creado_por} [get]
 func (ctrl *GetNotificacionesByCreadoPorController) Run(c *gin.Context) {
 	idParam := c.Param("creado_por")
 	id, err := strconv.Atoi(idParam)

@@ -20,6 +20,14 @@ type loginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
+// @Summary      Login de usuario
+// @Tags         Usuario
+// @Accept       json
+// @Produce      json
+// @Param        body body map[string]interface{} true "Credenciales"
+// @Success      200 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Router       /api/usuarios/login [post]
 func (c *LoginUsersController) Handle(ctx *gin.Context) {
 	var body loginRequest
 	if err := ctx.ShouldBindJSON(&body); err != nil {

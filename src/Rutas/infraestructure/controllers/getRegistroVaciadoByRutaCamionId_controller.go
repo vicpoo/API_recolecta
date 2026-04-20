@@ -18,6 +18,12 @@ func NewGetRegistroVaciadoByRutaCamionIDController(
 	return &GetRegistroVaciadoByRutaCamionIDController{uc: uc}
 }
 
+// @Summary      Registros vaciado por ruta-camión
+// @Tags         RegistroVaciado
+// @Produce      json
+// @Param        ruta_camion_id path int true "ID ruta-camión"
+// @Success      200 {array} map[string]interface{}
+// @Router       /api/registro-vaciado/ruta-camion/{ruta_camion_id} [get]
 func (c *GetRegistroVaciadoByRutaCamionIDController) Run(ctx *gin.Context) {
 	rutaCamionID, err := strconv.Atoi(ctx.Param("ruta_camion_id"))
 	if err != nil {

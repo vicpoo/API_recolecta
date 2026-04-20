@@ -1,0 +1,3975 @@
+basePath: /
+definitions:
+  domain.AlertaUsuario:
+    properties:
+      alertaID:
+        type: integer
+      creadoPor:
+        type: integer
+      createdAt:
+        type: string
+      leida:
+        type: boolean
+      mensaje:
+        type: string
+      titulo:
+        type: string
+      usuarioID:
+        type: integer
+    type: object
+  entities.Camion:
+    properties:
+      camion_id:
+        type: integer
+      color_disponibilidad:
+        type: string
+      created_at:
+        type: string
+      disponibilidad_id:
+        type: integer
+      es_rentado:
+        type: boolean
+      modelo:
+        type: string
+      nombre_disponibilidad:
+        type: string
+      placa:
+        type: string
+      tipo_camion_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  entities.TipoCamion:
+    properties:
+      created_at:
+        type: string
+      descripcion:
+        type: string
+      nombre:
+        type: string
+      tipo_camion_id:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API para gestión de recolección de residuos
+  title: API Recolecta
+  version: "1.0"
+paths:
+  /api/alertas:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.AlertaUsuario'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar mis alertas
+      tags:
+      - AlertaUsuario
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Datos de la alerta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.AlertaUsuario'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear alerta de usuario
+      tags:
+      - AlertaUsuario
+  /api/alertas-mantenimiento/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar alertas de mantenimiento
+      tags:
+      - AlertaMantenimiento
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear alerta de mantenimiento
+      tags:
+      - AlertaMantenimiento
+  /api/alertas-mantenimiento/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar alerta
+      tags:
+      - AlertaMantenimiento
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Alerta por ID
+      tags:
+      - AlertaMantenimiento
+    put:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar alerta
+      tags:
+      - AlertaMantenimiento
+  /api/alertas-mantenimiento/{id}/atender:
+    patch:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Marcar alerta como atendida
+      tags:
+      - AlertaMantenimiento
+  /api/alertas-mantenimiento/atendidas:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Alertas atendidas
+      tags:
+      - AlertaMantenimiento
+  /api/alertas-mantenimiento/camion/{camion_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Alertas por camión
+      tags:
+      - AlertaMantenimiento
+  /api/alertas-mantenimiento/fecha:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Alertas por rango de fecha
+      tags:
+      - AlertaMantenimiento
+  /api/alertas-mantenimiento/pendientes:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Alertas pendientes
+      tags:
+      - AlertaMantenimiento
+  /api/alertas-mantenimiento/tipo/{tipo_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Alertas por tipo de mantenimiento
+      tags:
+      - AlertaMantenimiento
+  /api/alertas/{id}/leida:
+    put:
+      parameters:
+      - description: ID de la alerta
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Marcar alerta como leída
+      tags:
+      - AlertaUsuario
+  /api/anomalias/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar anomalías
+      tags:
+      - Anomalia
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear anomalía
+      tags:
+      - Anomalia
+  /api/anomalias/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar anomalía
+      tags:
+      - Anomalia
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Anomalía por ID
+      tags:
+      - Anomalia
+    put:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar anomalía
+      tags:
+      - Anomalia
+  /api/anomalias/chofer/{choferId}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Anomalías por chofer
+      tags:
+      - Anomalia
+  /api/anomalias/estado:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Anomalías por estado
+      tags:
+      - Anomalia
+  /api/anomalias/por-fecha:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Anomalías por rango de fecha
+      tags:
+      - Anomalia
+  /api/anomalias/punto/{puntoId}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Anomalías por punto
+      tags:
+      - Anomalia
+  /api/anomalias/tipo:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Anomalías por tipo
+      tags:
+      - Anomalia
+  /api/camion/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Camion'
+            type: array
+      summary: Listar camiones
+      tags:
+      - Camion
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Camión
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.Camion'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear camión
+      tags:
+      - Camion
+  /api/camion/{id}:
+    delete:
+      parameters:
+      - description: ID camión
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar camión
+      tags:
+      - Camion
+    get:
+      parameters:
+      - description: ID camión
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Camion'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Obtener camión por ID
+      tags:
+      - Camion
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID camión
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar camión
+      tags:
+      - Camion
+  /api/camion/modelo:
+    get:
+      parameters:
+      - description: Modelo
+        in: query
+        name: modelo
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.Camion'
+            type: array
+      summary: Buscar camiones por modelo
+      tags:
+      - Camion
+  /api/camion/placa/{placa}:
+    get:
+      parameters:
+      - description: Placa
+        in: path
+        name: placa
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.Camion'
+      summary: Buscar camión por placa
+      tags:
+      - Camion
+  /api/estado-camion/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Listar estados de camión
+      tags:
+      - EstadoCamion
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear estado de camión
+      tags:
+      - EstadoCamion
+  /api/estado-camion/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar estado de camión
+      tags:
+      - EstadoCamion
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar estado de camión
+      tags:
+      - EstadoCamion
+  /api/estado-camion/camion/{id}:
+    get:
+      parameters:
+      - description: ID camión
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Estado de camión por ID
+      tags:
+      - EstadoCamion
+  /api/historial-asignacion/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Listar historiales de asignación
+      tags:
+      - HistorialAsignacion
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear historial de asignación de camión
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/{id}:
+    delete:
+      parameters:
+      - description: ID historial
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar historial de asignación
+      tags:
+      - HistorialAsignacion
+    get:
+      parameters:
+      - description: ID historial
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Obtener historial por ID
+      tags:
+      - HistorialAsignacion
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID historial
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar historial de asignación
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/activo/camion/{camionId}:
+    get:
+      parameters:
+      - description: ID camión
+        in: path
+        name: camionId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Asignación activa por camión
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/activo/chofer/{choferId}:
+    get:
+      parameters:
+      - description: ID chofer
+        in: path
+        name: choferId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Asignación activa por chofer
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/baja/{id}:
+    put:
+      parameters:
+      - description: ID historial
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Dar de baja historial
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/camion/{camionId}:
+    get:
+      parameters:
+      - description: ID camión
+        in: path
+        name: camionId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Historial por camión
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/cerrar/camion/{camionId}:
+    put:
+      parameters:
+      - description: ID camión
+        in: path
+        name: camionId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Cerrar asignación activa de camión
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/cerrar/chofer/{choferId}:
+    put:
+      parameters:
+      - description: ID chofer
+        in: path
+        name: choferId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Cerrar asignación activa de chofer
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/chofer/{choferId}:
+    get:
+      parameters:
+      - description: ID chofer
+        in: path
+        name: choferId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Historial por chofer
+      tags:
+      - HistorialAsignacion
+  /api/incidencias/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar incidencias
+      tags:
+      - Incidencia
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear incidencia
+      tags:
+      - Incidencia
+  /api/incidencias/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar incidencia
+      tags:
+      - Incidencia
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Incidencia por ID
+      tags:
+      - Incidencia
+    put:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar incidencia
+      tags:
+      - Incidencia
+  /api/incidencias/conductor/{conductor_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Incidencias por conductor
+      tags:
+      - Incidencia
+  /api/incidencias/fecha:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Incidencias por fecha
+      tags:
+      - Incidencia
+  /api/incidencias/punto/{punto_recoleccion_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Incidencias por punto
+      tags:
+      - Incidencia
+  /api/notificaciones/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar notificaciones
+      tags:
+      - Notificacion
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear notificación
+      tags:
+      - Notificacion
+  /api/notificaciones/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar notificación
+      tags:
+      - Notificacion
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificación por ID
+      tags:
+      - Notificacion
+    put:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar notificación
+      tags:
+      - Notificacion
+  /api/notificaciones/{id}/marcar-leida:
+    patch:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Marcar notificación como leída
+      tags:
+      - Notificacion
+  /api/notificaciones/{id}/reactivar:
+    patch:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reactivar notificación
+      tags:
+      - Notificacion
+  /api/notificaciones/activas:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificaciones activas
+      tags:
+      - Notificacion
+  /api/notificaciones/activas/usuario/{usuario_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificaciones activas por usuario
+      tags:
+      - Notificacion
+  /api/notificaciones/camion/{camion_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificaciones por camión
+      tags:
+      - Notificacion
+  /api/notificaciones/camion/{camion_id}/tipo/{tipo}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificaciones por camión y tipo
+      tags:
+      - Notificacion
+  /api/notificaciones/count/activas/usuario/{usuario_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Contar notificaciones activas por usuario
+      tags:
+      - Notificacion
+  /api/notificaciones/count/camion/{camion_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Contar notificaciones por camión
+      tags:
+      - Notificacion
+  /api/notificaciones/count/tipo/{tipo}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Contar notificaciones por tipo
+      tags:
+      - Notificacion
+  /api/notificaciones/count/usuario/{usuario_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Contar notificaciones por usuario
+      tags:
+      - Notificacion
+  /api/notificaciones/creado-por/{creado_por}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificaciones por creador
+      tags:
+      - Notificacion
+  /api/notificaciones/emergencia:
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear notificación de emergencia
+      tags:
+      - Notificacion
+  /api/notificaciones/enviar-multiples:
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificar a múltiples usuarios
+      tags:
+      - Notificacion
+  /api/notificaciones/enviar-todos:
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificar a todos los usuarios
+      tags:
+      - Notificacion
+  /api/notificaciones/falla:
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear notificación de falla
+      tags:
+      - Notificacion
+  /api/notificaciones/falla/{falla_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificaciones por falla
+      tags:
+      - Notificacion
+  /api/notificaciones/globales:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificaciones globales
+      tags:
+      - Notificacion
+  /api/notificaciones/inactivas:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificaciones inactivas
+      tags:
+      - Notificacion
+  /api/notificaciones/mantenimiento:
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear notificación de mantenimiento
+      tags:
+      - Notificacion
+  /api/notificaciones/mantenimiento/{mantenimiento_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificaciones por mantenimiento
+      tags:
+      - Notificacion
+  /api/notificaciones/no-leidas/usuario/{usuario_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Número de notificaciones no leídas
+      tags:
+      - Notificacion
+  /api/notificaciones/notificar:
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificar a un usuario
+      tags:
+      - Notificacion
+  /api/notificaciones/rango-fecha:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificaciones por rango de fecha
+      tags:
+      - Notificacion
+  /api/notificaciones/tipo/{tipo}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificaciones por tipo
+      tags:
+      - Notificacion
+  /api/notificaciones/usuario/{usuario_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificaciones por usuario
+      tags:
+      - Notificacion
+  /api/notificaciones/usuario/{usuario_id}/marcar-todas-leidas:
+    patch:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Marcar todas como leídas
+      tags:
+      - Notificacion
+  /api/notificaciones/usuario/{usuario_id}/tipo/{tipo}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Notificaciones por usuario y tipo
+      tags:
+      - Notificacion
+  /api/puntos-recoleccion/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Listar puntos de recolección
+      tags:
+      - PuntoRecoleccion
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear punto de recolección
+      tags:
+      - PuntoRecoleccion
+  /api/puntos-recoleccion/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar punto de recolección
+      tags:
+      - PuntoRecoleccion
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Punto de recolección por ID
+      tags:
+      - PuntoRecoleccion
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar punto de recolección
+      tags:
+      - PuntoRecoleccion
+  /api/puntos-recoleccion/ruta/{rutaId}:
+    get:
+      parameters:
+      - description: ID ruta
+        in: path
+        name: rutaId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Puntos de recolección por ruta
+      tags:
+      - PuntoRecoleccion
+  /api/registro-vaciado/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Listar registros de vaciado
+      tags:
+      - RegistroVaciado
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear registro de vaciado
+      tags:
+      - RegistroVaciado
+  /api/registro-vaciado/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar registro de vaciado
+      tags:
+      - RegistroVaciado
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Registro vaciado por ID
+      tags:
+      - RegistroVaciado
+  /api/registro-vaciado/exists/{id}:
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Verificar existencia registro vaciado
+      tags:
+      - RegistroVaciado
+  /api/registro-vaciado/relleno/{relleno_id}:
+    get:
+      parameters:
+      - description: ID relleno
+        in: path
+        name: relleno_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Registros vaciado por relleno
+      tags:
+      - RegistroVaciado
+  /api/registro-vaciado/ruta-camion/{ruta_camion_id}:
+    get:
+      parameters:
+      - description: ID ruta-camión
+        in: path
+        name: ruta_camion_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Registros vaciado por ruta-camión
+      tags:
+      - RegistroVaciado
+  /api/registros-mantenimiento/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar registros de mantenimiento
+      tags:
+      - RegistroMantenimiento
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear registro de mantenimiento
+      tags:
+      - RegistroMantenimiento
+  /api/registros-mantenimiento/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar registro
+      tags:
+      - RegistroMantenimiento
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Registro por ID
+      tags:
+      - RegistroMantenimiento
+    put:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar registro
+      tags:
+      - RegistroMantenimiento
+  /api/registros-mantenimiento/alerta/{alerta_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Registros por alerta
+      tags:
+      - RegistroMantenimiento
+  /api/registros-mantenimiento/camion/{camion_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Registros por camión
+      tags:
+      - RegistroMantenimiento
+  /api/registros-mantenimiento/coordinador/{coordinador_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Registros por coordinador
+      tags:
+      - RegistroMantenimiento
+  /api/registros-mantenimiento/fecha:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Registros por rango de fecha
+      tags:
+      - RegistroMantenimiento
+  /api/relleno-sanitario/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Listar rellenos sanitarios
+      tags:
+      - RellenoSanitario
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear relleno sanitario
+      tags:
+      - RellenoSanitario
+  /api/relleno-sanitario/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar relleno sanitario
+      tags:
+      - RellenoSanitario
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Relleno sanitario por ID
+      tags:
+      - RellenoSanitario
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar relleno sanitario
+      tags:
+      - RellenoSanitario
+  /api/relleno-sanitario/buscar:
+    get:
+      parameters:
+      - description: Nombre
+        in: query
+        name: nombre
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Buscar relleno sanitario por nombre
+      tags:
+      - RellenoSanitario
+  /api/relleno-sanitario/exists/{id}:
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Verificar existencia relleno sanitario
+      tags:
+      - RellenoSanitario
+  /api/reportes-conductor/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar reportes conductor
+      tags:
+      - ReporteConductor
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear reporte conductor
+      tags:
+      - ReporteConductor
+  /api/reportes-conductor/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar reporte conductor
+      tags:
+      - ReporteConductor
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reporte conductor por ID
+      tags:
+      - ReporteConductor
+    put:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar reporte conductor
+      tags:
+      - ReporteConductor
+  /api/reportes-conductor/camion/{camion_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reportes conductor por camión
+      tags:
+      - ReporteConductor
+  /api/reportes-conductor/conductor/{conductor_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reportes conductor por conductor
+      tags:
+      - ReporteConductor
+  /api/reportes-conductor/fecha:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reportes conductor por fecha
+      tags:
+      - ReporteConductor
+  /api/reportes-conductor/ruta/{ruta_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reportes conductor por ruta
+      tags:
+      - ReporteConductor
+  /api/reportes-falla-critica/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar reportes falla crítica
+      tags:
+      - ReporteFallaCritica
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear reporte falla crítica
+      tags:
+      - ReporteFallaCritica
+  /api/reportes-falla-critica/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar reporte falla crítica
+      tags:
+      - ReporteFallaCritica
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reporte falla crítica por ID
+      tags:
+      - ReporteFallaCritica
+    put:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar reporte falla crítica
+      tags:
+      - ReporteFallaCritica
+  /api/reportes-falla-critica/camion/{camionId}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reportes falla crítica por camión
+      tags:
+      - ReporteFallaCritica
+  /api/reportes-falla-critica/conductor/{conductorId}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reportes falla crítica por conductor
+      tags:
+      - ReporteFallaCritica
+  /api/reportes-falla-critica/por-fecha:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reportes falla crítica por fecha
+      tags:
+      - ReporteFallaCritica
+  /api/reportes-mantenimiento-generado/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar reportes generados
+      tags:
+      - ReporteMantenimientoGenerado
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear reporte de mantenimiento generado
+      tags:
+      - ReporteMantenimientoGenerado
+  /api/reportes-mantenimiento-generado/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar reporte generado
+      tags:
+      - ReporteMantenimientoGenerado
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reporte generado por ID
+      tags:
+      - ReporteMantenimientoGenerado
+    put:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar reporte generado
+      tags:
+      - ReporteMantenimientoGenerado
+  /api/reportes-mantenimiento-generado/coordinador/{coordinador_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reportes por coordinador
+      tags:
+      - ReporteMantenimientoGenerado
+  /api/reportes-mantenimiento-generado/fecha:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reportes por rango de fecha
+      tags:
+      - ReporteMantenimientoGenerado
+  /api/reportes-mantenimiento-generado/fecha-generacion:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reportes por fecha de generación
+      tags:
+      - ReporteMantenimientoGenerado
+  /api/roles:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Listar roles
+      tags:
+      - Rol
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Nombre del rol
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear rol
+      tags:
+      - Rol
+  /api/roles/{id}:
+    delete:
+      parameters:
+      - description: ID rol
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar rol
+      tags:
+      - Rol
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID rol
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar rol
+      tags:
+      - Rol
+  /api/ruta-camion/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Listar rutas-camión
+      tags:
+      - RutaCamion
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear ruta-camión
+      tags:
+      - RutaCamion
+  /api/ruta-camion/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar ruta-camión
+      tags:
+      - RutaCamion
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Obtener ruta-camión por ID
+      tags:
+      - RutaCamion
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar ruta-camión
+      tags:
+      - RutaCamion
+  /api/ruta-camion/camion/{camion_id}:
+    get:
+      parameters:
+      - description: ID camión
+        in: path
+        name: camion_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Rutas-camión por ID de camión
+      tags:
+      - RutaCamion
+  /api/ruta-camion/exists/{id}:
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Verificar existencia ruta-camión
+      tags:
+      - RutaCamion
+  /api/ruta-camion/ruta/{ruta_id}:
+    get:
+      parameters:
+      - description: ID ruta
+        in: path
+        name: ruta_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Rutas-camión por ID de ruta
+      tags:
+      - RutaCamion
+  /api/rutas/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Listar rutas
+      tags:
+      - Ruta
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear ruta
+      tags:
+      - Ruta
+  /api/rutas/{id}:
+    delete:
+      parameters:
+      - description: ID ruta
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar ruta
+      tags:
+      - Ruta
+    get:
+      parameters:
+      - description: ID ruta
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Obtener ruta por ID
+      tags:
+      - Ruta
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID ruta
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar ruta
+      tags:
+      - Ruta
+  /api/rutas/activas:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Listar rutas activas
+      tags:
+      - Ruta
+  /api/seguimientos-falla-critica/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar seguimientos falla crítica
+      tags:
+      - SeguimientoFallaCritica
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear seguimiento falla crítica
+      tags:
+      - SeguimientoFallaCritica
+  /api/seguimientos-falla-critica/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar seguimiento falla crítica
+      tags:
+      - SeguimientoFallaCritica
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Seguimiento falla crítica por ID
+      tags:
+      - SeguimientoFallaCritica
+    put:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar seguimiento falla crítica
+      tags:
+      - SeguimientoFallaCritica
+  /api/seguimientos-falla-critica/falla/{fallaId}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Seguimientos por falla
+      tags:
+      - SeguimientoFallaCritica
+  /api/seguimientos-falla-critica/por-fecha:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Seguimientos falla crítica por fecha
+      tags:
+      - SeguimientoFallaCritica
+  /api/tipo-camion/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.TipoCamion'
+            type: array
+      summary: Listar tipos de camión
+      tags:
+      - TipoCamion
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Tipo de camión
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.TipoCamion'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear tipo de camión
+      tags:
+      - TipoCamion
+  /api/tipo-camion/{id}:
+    delete:
+      parameters:
+      - description: ID tipo camión
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar tipo de camión
+      tags:
+      - TipoCamion
+  /api/tipo-camion/nombre/{nombre}:
+    get:
+      parameters:
+      - description: Nombre del tipo
+        in: path
+        name: nombre
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.TipoCamion'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Obtener tipo de camión por nombre
+      tags:
+      - TipoCamion
+  /api/tipos-mantenimiento/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar tipos de mantenimiento
+      tags:
+      - TipoMantenimiento
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear tipo de mantenimiento
+      tags:
+      - TipoMantenimiento
+  /api/tipos-mantenimiento/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar tipo de mantenimiento
+      tags:
+      - TipoMantenimiento
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Tipo de mantenimiento por ID
+      tags:
+      - TipoMantenimiento
+    put:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar tipo de mantenimiento
+      tags:
+      - TipoMantenimiento
+  /api/usuarios:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Listar usuarios
+      tags:
+      - Usuario
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Datos usuario
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear usuario
+      tags:
+      - Usuario
+  /api/usuarios/{id}:
+    delete:
+      parameters:
+      - description: ID usuario
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar usuario
+      tags:
+      - Usuario
+    get:
+      parameters:
+      - description: ID usuario
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Obtener usuario por ID
+      tags:
+      - Usuario
+  /api/usuarios/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Credenciales
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login de usuario
+      tags:
+      - Usuario
+  /colonias:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: Listar colonias
+      tags:
+      - Colonia
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Colonia
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear colonia
+      tags:
+      - Colonia
+  /colonias/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar colonia
+      tags:
+      - Colonia
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Colonia por ID
+      tags:
+      - Colonia
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar colonia
+      tags:
+      - Colonia
+  /domicilios:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Domicilio
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Crear domicilio
+      tags:
+      - Domicilio
+  /domicilios/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Eliminar domicilio
+      tags:
+      - Domicilio
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Domicilio por ID
+      tags:
+      - Domicilio
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Actualizar domicilio
+      tags:
+      - Domicilio
+swagger: "2.0"

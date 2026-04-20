@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/vicpoo/API_recolecta/src/Camion/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/Camion/domain/ports"
 	"github.com/vicpoo/API_recolecta/src/core"
 )
 
@@ -16,7 +17,7 @@ type PostgresRutaCamion struct {
 	conn *pgxpool.Pool
 }
 
-func NewPostgresRutaCamion() *PostgresRutaCamion {
+func NewPostgresRutaCamion() ports.RutaCamionRepository {
 	conn, _ := core.ConnectPostgres()
 	return &PostgresRutaCamion{
 		conn: conn,

@@ -20,6 +20,14 @@ func NewUpdateNotificacionController(updateUseCase *application.UpdateNotificaci
 	}
 }
 
+// @Summary      Actualizar notificación
+// @Tags         Notificacion
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/notificaciones/{id} [put]
 func (ctrl *UpdateNotificacionController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

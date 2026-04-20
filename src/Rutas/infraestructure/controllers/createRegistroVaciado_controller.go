@@ -16,6 +16,13 @@ func NewCreateRegistroVaciadoController(uc *application.CreateRegistroVaciadoUse
 	return &CreateRegistroVaciadoController{uc: uc}
 }
 
+// @Summary      Crear registro de vaciado
+// @Tags         RegistroVaciado
+// @Accept       json
+// @Produce      json
+// @Success      201 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/registro-vaciado/ [post]
 func (c *CreateRegistroVaciadoController) Run(ctx *gin.Context) {
 	var registro entities.RegistroVaciado
 

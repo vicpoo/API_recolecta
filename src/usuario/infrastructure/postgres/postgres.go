@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/vicpoo/API_recolecta/src/usuario/domain"
 	"github.com/vicpoo/API_recolecta/src/usuario/domain/entities"
 )
 
@@ -11,7 +12,7 @@ type UsuarioPostgresRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewUsuarioPostgresRepository(db *pgxpool.Pool) *UsuarioPostgresRepository {
+func NewUsuarioPostgresRepository(db *pgxpool.Pool) domain.UsuarioRepository {
 	return &UsuarioPostgresRepository{db: db}
 }
 

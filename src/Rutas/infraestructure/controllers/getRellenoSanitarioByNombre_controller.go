@@ -17,6 +17,12 @@ func NewGetRellenoSanitarioByNombreController(
 	return &GetRellenoSanitarioByNombreController{uc: uc}
 }
 
+// @Summary      Buscar relleno sanitario por nombre
+// @Tags         RellenoSanitario
+// @Produce      json
+// @Param        nombre query string true "Nombre"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/relleno-sanitario/buscar [get]
 func (c *GetRellenoSanitarioByNombreController) Execute(ctx *gin.Context) {
 	nombre := ctx.Query("nombre")
 

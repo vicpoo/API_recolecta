@@ -15,6 +15,11 @@ func NewGetAllRellenoSanitarioController(uc *application.ListRellenoSanitarioUse
 	return &GetAllRellenoSanitarioController{uc: uc}
 }
 
+// @Summary      Listar rellenos sanitarios
+// @Tags         RellenoSanitario
+// @Produce      json
+// @Success      200 {array} map[string]interface{}
+// @Router       /api/relleno-sanitario/ [get]
 func (c *GetAllRellenoSanitarioController) Execute(ctx *gin.Context) {
 	result, err := c.uc.Execute()
 	if err != nil {

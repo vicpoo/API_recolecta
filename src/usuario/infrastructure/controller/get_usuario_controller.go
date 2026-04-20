@@ -16,6 +16,13 @@ func NewViewOneUsersController(uc *application.ViewOneUser) *ViewOneUsersControl
 	return &ViewOneUsersController{uc: uc}
 }
 
+// @Summary      Obtener usuario por ID
+// @Tags         Usuario
+// @Produce      json
+// @Param        id path int true "ID usuario"
+// @Success      200 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /api/usuarios/{id} [get]
 func (c *ViewOneUsersController) Handle(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil || id <= 0 {
