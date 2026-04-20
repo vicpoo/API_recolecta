@@ -8,6 +8,67 @@ Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-chang
 
 ---
 
+# [0.10.0-alpha] - 2026-04-15
+## Rodrigo Mijangos [Issue #14](https://github.com/RodrigoMijangos/recolecta_web/issues/14)
+### Added
+- Pruebas unitarias para repositorio Redis de trazabilidad de eventos (`event_deduplication`, `event_trace`).
+- Pruebas unitarias para repositorio Redis de sesiones realtime admin (`ws:upgrade`, `ws:session`, `server_epoch`).
+
+### Changed
+- Se fortalece validación de regresiones en flujos de dedupe/traza y lifecycle de sesión realtime.
+
+# [0.9.0-alpha] - 2026-04-15
+## Rodrigo Mijangos [Issue #12](https://github.com/RodrigoMijangos/recolecta_web/issues/12)
+### Added
+- Endpoints de consulta de trazas de eventos: `GET /api/notifications/events/traces/:event_id` y `GET /api/notifications/events/traces/truck/:truck_id`.
+- Endpoint de consulta de sesión realtime: `GET /api/realtime/ws/sessions/:session_id`.
+- Lectura tipada de trazas y sesiones desde Redis para observabilidad operativa.
+
+### Changed
+- El router de notificaciones/realtime expone capacidades de inspección para soporte y auditoría.
+
+# [0.8.0-alpha] - 2026-04-15
+## Rodrigo Mijangos [Issue #11](https://github.com/RodrigoMijangos/recolecta_web/issues/11)
+### Added
+- Emisión de token exclusivo de upgrade websocket para administrador (`/api/realtime/ws/upgrade-token`).
+- Consumo one-time del token de upgrade y creación de sesión realtime (`/api/realtime/ws/sessions/consume`).
+- Endpoints de heartbeat y cierre de sesión realtime para administrador.
+
+### Changed
+- Se incorpora repositorio Redis para `realtime:server_epoch:current`, `ws:upgrade:*` y `ws:session:*`.
+
+# [0.7.0-alpha] - 2026-04-15
+## Rodrigo Mijangos [Issue #10](https://github.com/RodrigoMijangos/recolecta_web/issues/10)
+### Added
+- Caso de uso para procesar eventos `TruckStateEvent` con deduplicación por hash.
+- Persistencia de deduplicación y trazabilidad de eventos en Redis (`event_deduplication:*`, `event_trace:*`).
+- Endpoint `POST /api/notifications/events/truck-state` para orquestar resolución de regla por estado.
+
+### Changed
+- El enrutador de notificaciones integra el flujo de orquestación de eventos con reglas dinámicas.
+
+# [0.6.0-alpha] - 2026-04-15
+## Rodrigo Mijangos [Issue #9](https://github.com/RodrigoMijangos/recolecta_web/issues/9)
+### Added
+- Motor dinámico de reglas de notificación en Redis por `state_code`.
+- Nuevos endpoints para administrar reglas: listar, consultar por estado, crear/actualizar y eliminar.
+- Control de versionado de reglas en Redis con clave global `rules:version`.
+
+### Changed
+- El módulo de notificaciones incorpora un repositorio dedicado para `rules:state:{state_code}`.
+- Se agrega validación de payload para reglas (estado, acción y radio mínimo).
+
+# [0.5.0-alpha] - 2026-04-15
+## Rodrigo Mijangos [Issue #53](https://github.com/RodrigoMijangos/recolecta_web/issues/53)
+### Added
+- Contratos base de eventos de estado de camión (`TruckStateEvent`) con control de versión (`v1`).
+- Contrato base para token exclusivo de upgrade websocket de administrador (`AdminWSUpgradeTokenClaim`).
+- Catálogo inicial de estados operativos/críticos y acciones de orquestación para notificaciones.
+
+### Changed
+- Se define una frontera clara server-owned para payloads de movilidad y canal realtime de administración.
+- Se alinean dependencias del módulo de notificaciones en `go.mod`/`go.sum` para compilación consistente de FCM y Redis.
+
 # [0.4.0-alpha] - 2026-03-26
 ## Rodrigo Mijangos [Issue #X](https://github.com/RodrigoMijangos/recolecta_web/issues/X)
 ### Added

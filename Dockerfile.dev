@@ -1,4 +1,4 @@
-FROM golang:1.24-alpine
+FROM golang:1.25-alpine
 
 # Instalar Air para hot-reload
 RUN go install github.com/cosmtrek/air@v1.52.1
@@ -8,4 +8,4 @@ WORKDIR /app
 EXPOSE 8080
 
 # El código fuente se monta como volumen desde docker-compose (no se copia)
-CMD ["air", "-c", ".air.toml"]
+CMD ["air", "-c", "/app/.air.toml"]

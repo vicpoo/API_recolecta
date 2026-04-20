@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   domain.AlertaUsuario:
     properties:
@@ -50,8 +51,12 @@ definitions:
       tipo_camion_id:
         type: integer
     type: object
+host: localhost:8080
 info:
   contact: {}
+  description: API para gestión de recolección de residuos
+  title: API Recolecta
+  version: "1.0"
 paths:
   /api/alertas:
     get:

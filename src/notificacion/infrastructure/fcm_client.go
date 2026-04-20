@@ -3,24 +3,44 @@ package infrastructure
 import (
 	"context"
 	"fmt"
+	"os"
 	"sort"
+	"strings"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
 	"github.com/vicpoo/API_recolecta/src/notificacion/domain"
+	"google.golang.org/api/option"
 )
 
 type FCMClient struct {
 	client *messaging.Client
 }
 
-func NewFCMClient() (*FCMClient, error) {
-	app, err := firebase.NewApp(context.Background(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("error initializing firebase app via ADC: %w", err)
+func NewFCMClient(credentialsFile string) (*FCMClient, error) {
+	ctx := context.Background()
+	credentialPath := strings.TrimSpace(credentialsFile)
+	if credentialPath == "" {
+		credentialPath = strings.TrimSpace(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"))
+	}
+	if credentialPath == "" {
+		return nil, fmt.Errorf("missing FCM credentials path: set FCM_CREDENTIALS_FILE or GOOGLE_APPLICATION_CREDENTIALS")
 	}
 
-	client, err := app.Messaging(context.Background())
+	info, err := os.Stat(credentialPath)
+	if err != nil {
+		return nil, fmt.Errorf("fcm credentials file not found at '%s': %w", credentialPath, err)
+	}
+	if info.IsDir() {
+		return nil, fmt.Errorf("fcm credentials path points to a directory, expected file: '%s'", credentialPath)
+	}
+
+	app, err := firebase.NewApp(ctx, nil, option.WithCredentialsFile(credentialPath))
+	if err != nil {
+		return nil, fmt.Errorf("error initializing firebase app with credentials file '%s': %w", credentialPath, err)
+	}
+
+	client, err := app.Messaging(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error creating firebase messaging client: %w", err)
 	}

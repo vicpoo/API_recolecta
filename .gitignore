@@ -1,4 +1,4 @@
 .env
 mirol.txt
-tmp/
-tmp/server
+/tmp
+*.log

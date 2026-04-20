@@ -184,3 +184,37 @@ La API está pensada para ser consumida por aplicaciones web o móviles
 Facilita la escalabilidad y el mantenimiento gracias a su arquitectura
 
 Ideal para sistemas municipales, de logística o gestión urbana
+
+
+## Documentacion Swagger para equipo mobile
+
+La documentacion OpenAPI/Swagger ya fue generada en la carpeta [docs/swagger.json](docs/swagger.json) y [docs/swagger.yaml](docs/swagger.yaml).
+
+### Como levantar y consultar Swagger UI
+
+1. Levanta la API en local (puerto actual: `8080`).
+2. Abre en navegador: `http://localhost:8080/swagger/index.html`.
+3. Usa esa UI para revisar endpoints, parametros, respuestas y modelos.
+
+### Archivos utiles para integracion mobile
+
+- Especificacion JSON: [docs/swagger.json](docs/swagger.json)
+- Especificacion YAML: [docs/swagger.yaml](docs/swagger.yaml)
+
+Estos archivos pueden importarse directamente en herramientas como Postman, Insomnia o generadores de cliente (OpenAPI Generator / Swagger Codegen).
+
+### Autenticacion para endpoints protegidos
+
+La API usa header `Authorization` con formato:
+
+`Authorization: Bearer <token_jwt>`
+
+Recomendacion para mobile: centralizar el manejo del token en un interceptor/filtro HTTP para adjuntarlo automaticamente a requests autenticadas.
+
+### Regenerar documentacion cuando cambie la API
+
+Ejecuta este comando en la raiz del proyecto:
+
+```bash
+go run github.com/swaggo/swag/cmd/swag@v1.16.6 init -g engine.go -o docs --parseDependency --parseInternal
+```
