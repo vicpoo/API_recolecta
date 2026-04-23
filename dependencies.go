@@ -6,42 +6,42 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/vicpoo/API_recolecta/src/core"
-	camionUseCases "github.com/vicpoo/API_recolecta/src/Camion/application"
-	camionAdapters "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/adapters"
-	camionControllers "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/controllers"
-	camionRoutes "github.com/vicpoo/API_recolecta/src/Camion/infraestructure/routes"
-	estadoCamionUseCases "github.com/vicpoo/API_recolecta/src/EstadoCamion/application"
-	estadoCamionAdapters "github.com/vicpoo/API_recolecta/src/EstadoCamion/infraestructure/adapters"
-	estadoCamionControllers "github.com/vicpoo/API_recolecta/src/EstadoCamion/infraestructure/controllers"
-	estadoCamionRoutes "github.com/vicpoo/API_recolecta/src/EstadoCamion/infraestructure/routes"
-	historialUseCases "github.com/vicpoo/API_recolecta/src/HistorialAsignacionCamion/application"
-	historialAdapters "github.com/vicpoo/API_recolecta/src/HistorialAsignacionCamion/infraestructure/adapters"
-	historialControllers "github.com/vicpoo/API_recolecta/src/HistorialAsignacionCamion/infraestructure/controllers"
-	historialRoutes "github.com/vicpoo/API_recolecta/src/HistorialAsignacionCamion/infraestructure/routes"
-	puntoUseCases "github.com/vicpoo/API_recolecta/src/PuntoRecoleccion/application"
-	puntoAdapters "github.com/vicpoo/API_recolecta/src/PuntoRecoleccion/infraestructure/adapters"
-	puntoControllers "github.com/vicpoo/API_recolecta/src/PuntoRecoleccion/infraestructure/controllers"
-	puntoRoutes "github.com/vicpoo/API_recolecta/src/PuntoRecoleccion/infraestructure/routes"
-	rsApplication "github.com/vicpoo/API_recolecta/src/RellenoSanitario/application"
-	rsAdapters "github.com/vicpoo/API_recolecta/src/RellenoSanitario/infraestructure/adapters"
-	rsControllers "github.com/vicpoo/API_recolecta/src/RellenoSanitario/infraestructure/controllers"
-	rsRoutes "github.com/vicpoo/API_recolecta/src/RellenoSanitario/infraestructure/routes"
-	rutaUseCases "github.com/vicpoo/API_recolecta/src/Ruta/application"
-	rutaAdapters "github.com/vicpoo/API_recolecta/src/Ruta/infraestructure/adapters"
-	rutaControllers "github.com/vicpoo/API_recolecta/src/Ruta/infraestructure/controllers"
-	rutaRoutes "github.com/vicpoo/API_recolecta/src/Ruta/infraestructure/routes"
-	rutaCamionApp "github.com/vicpoo/API_recolecta/src/RutaCamion/application"
-	rutaCamionAdapters "github.com/vicpoo/API_recolecta/src/RutaCamion/infraestructure/adapters"
-	rutaCamionControllers "github.com/vicpoo/API_recolecta/src/RutaCamion/infraestructure/controllers"
-	rutaCamionRoutes "github.com/vicpoo/API_recolecta/src/RutaCamion/infraestructure/routes"
-	tipoCamionUseCases "github.com/vicpoo/API_recolecta/src/TipoCamion/application"
-	tipoCamionAdapters "github.com/vicpoo/API_recolecta/src/TipoCamion/infraestructure/adapters"
-	tipoCamionControllers "github.com/vicpoo/API_recolecta/src/TipoCamion/infraestructure/controllers"
-	tipoCamionRoutes "github.com/vicpoo/API_recolecta/src/TipoCamion/infraestructure/routes"
-    registroVaciadoAdapters "github.com/vicpoo/API_recolecta/src/RegistroVaciado/infraestructure/adapters"
-    registroVaciadoApplication "github.com/vicpoo/API_recolecta/src/RegistroVaciado/application"
-    registroVaciadoControllers "github.com/vicpoo/API_recolecta/src/RegistroVaciado/infraestructure/controllers"
-    registroVaciadoRoutesPkg "github.com/vicpoo/API_recolecta/src/RegistroVaciado/infraestructure/routes"
+	camionUseCases "github.com/vicpoo/API_recolecta/src/Rutas/application"
+	camionAdapters "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/adapters"
+	camionControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
+	camionRoutes "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
+	estadoCamionUseCases "github.com/vicpoo/API_recolecta/src/Rutas/application"
+	estadoCamionAdapters "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/adapters"
+	estadoCamionControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
+	estadoCamionRoutes "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
+	historialUseCases "github.com/vicpoo/API_recolecta/src/Camion/application"
+	historialAdapters "github.com/vicpoo/API_recolecta/src/Camion/infrastructure/adapters"
+	historialControllers "github.com/vicpoo/API_recolecta/src/Camion/infrastructure/controllers"
+	historialRoutes "github.com/vicpoo/API_recolecta/src/Camion/infrastructure/routes"
+	puntoUseCases "github.com/vicpoo/API_recolecta/src/Rutas/application"
+	puntoAdapters "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/adapters"
+	puntoControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
+	puntoRoutes "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
+	rsApplication "github.com/vicpoo/API_recolecta/src/Rutas/application"
+	rsAdapters "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/adapters"
+	rsControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
+	rsRoutes "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
+	rutaUseCases "github.com/vicpoo/API_recolecta/src/Rutas/application"
+	rutaAdapters "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/adapters"
+	rutaControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
+	rutaRoutes "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
+	rutaCamionApp "github.com/vicpoo/API_recolecta/src/Camion/application"
+	rutaCamionAdapters "github.com/vicpoo/API_recolecta/src/Camion/infrastructure/adapters"
+	rutaCamionControllers "github.com/vicpoo/API_recolecta/src/Camion/infrastructure/controllers"
+	rutaCamionRoutes "github.com/vicpoo/API_recolecta/src/Camion/infrastructure/routes"
+	tipoCamionUseCases "github.com/vicpoo/API_recolecta/src/Camion/application"
+	tipoCamionAdapters "github.com/vicpoo/API_recolecta/src/Camion/infrastructure/adapters"
+	tipoCamionControllers "github.com/vicpoo/API_recolecta/src/Camion/infrastructure/controllers"
+	tipoCamionRoutes "github.com/vicpoo/API_recolecta/src/Camion/infrastructure/routes"
+    registroVaciadoAdapters "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/adapters"
+    registroVaciadoApplication "github.com/vicpoo/API_recolecta/src/Rutas/application"
+    registroVaciadoControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
+    registroVaciadoRoutesPkg "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
 
 	anomalia "github.com/vicpoo/API_recolecta/src/anomalia/infrastructure"
 	incidencia "github.com/vicpoo/API_recolecta/src/incidencia/infrastructure"
@@ -52,17 +52,15 @@ import (
 	reporteMantenimientoGenerado "github.com/vicpoo/API_recolecta/src/reporte_mantenimiento_generado/infrastructure"
 	seguimientoFallaCritica "github.com/vicpoo/API_recolecta/src/seguimiento_falla_critica/infrastructure"
 	tipoMantenimiento "github.com/vicpoo/API_recolecta/src/tipo_mantenimiento/infrastructure"
-	domicilioApplication "github.com/vicpoo/API_recolecta/src/domicilio/application"
-	domicilioHttp "github.com/vicpoo/API_recolecta/src/domicilio/infrastructure/http"
-	domicilioPostgres "github.com/vicpoo/API_recolecta/src/domicilio/infrastructure/postgres"
 	coloniaPostgres "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/postgres"
 	coloniaApplication "github.com/vicpoo/API_recolecta/src/colonia/application"
 	coloniaHttp "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/http"
 	rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
-	usuarioInfra "github.com/vicpoo/API_recolecta/src/usuario/infrastructure"
 	alertaApplication "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
 	alertaHttp "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/http"
 	alertaPostgres "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/postgres"
+	ciudadanosInfra "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure"
+	ciudadanosRoutes "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure/routes"
 
 
 )
@@ -79,7 +77,7 @@ func InitDependencies() {
 	db := core.GetBD()
 
 	//tipo camion
-	tipoCamionRepository := tipoCamionAdapters.NewPosgres()
+	tipoCamionRepository := tipoCamionAdapters.NewPostgresTipoCamion()
 	saveTipoCamionUc := tipoCamionUseCases.NewSaveTipoCamionUseCase(tipoCamionRepository)
 	listAllTipoCamionUc := tipoCamionUseCases.NewListAllTipoCamion(tipoCamionRepository)
 	getTipoCamionUc := tipoCamionUseCases.NewGetTipoCamionByNameUseCase(tipoCamionRepository)
@@ -101,7 +99,7 @@ func InitDependencies() {
 
 
 	//camion
-	camionRepository := camionAdapters.NewPostgres()
+	camionRepository := camionAdapters.NewPostgresCamion()
 	saveCamionUc :=  camionUseCases.NewSaveCamionUseCase(camionRepository)
 	listAllCamionUc := camionUseCases.NewListCamionUseCase(camionRepository)
 	updateCamionUc := camionUseCases.NewUpdateCamionUseCase(camionRepository)
@@ -130,7 +128,7 @@ func InitDependencies() {
 	camionRoutes.Run()
 
 	//estado camion
-	estadoCamionRepository := estadoCamionAdapters.NewPostgres()
+	estadoCamionRepository := estadoCamionAdapters.NewPostgresEstadoCamion()
 
 	saveEstadoCamionUc := estadoCamionUseCases.NewSaveEstadoCamionUseCase(estadoCamionRepository)
 	listEstadoCamionUc := estadoCamionUseCases.NewListAllEstadoCamionUseCase(estadoCamionRepository)
@@ -158,7 +156,7 @@ func InitDependencies() {
 	// ================================
 	// HISTORIAL ASIGNACION CAMION
 	// ================================
-	historialRepository := historialAdapters.NewPostgres()
+	historialRepository := historialAdapters.NewPostgresHistorialAsignacionCamion()
 
 	createHistorialUC := historialUseCases.NewSaveHistorialAsignacionCamionUseCase(historialRepository)
 	getAllHistorialUC := historialUseCases.NewListAllHistorialAsignacionCamionUseCase(historialRepository)
@@ -212,19 +210,21 @@ func InitDependencies() {
 	// RUTA
 	// ================================
 
-	rutaRepository := rutaAdapters.NewPostgres()
+	rutaRepository := rutaAdapters.NewPostgresRuta()
 
 	createRutaUc := rutaUseCases.NewCreateRutaUseCase(rutaRepository)
 	getAllRutaUc := rutaUseCases.NewListAllRutaUseCase(rutaRepository)
 	getRutaByIdUc := rutaUseCases.NewGetRutaByIdUseCase(rutaRepository)
 	updateRutaUc := rutaUseCases.NewUpdateRutaUseCase(rutaRepository)
 	deleteRutaUc := rutaUseCases.NewDeleteRutaUseCase(rutaRepository)
+	getRutasActivasUc := rutaUseCases.NewGetRutaActivasUseCase(rutaRepository)
 
 	createRutaCtr := rutaControllers.NewCreateRutaController(createRutaUc)
 	getAllRutaCtr := rutaControllers.NewGetAllRutaController(getAllRutaUc)
 	getRutaByIdCtr := rutaControllers.NewGetRutaByIdController(getRutaByIdUc)
 	updateRutaCtr := rutaControllers.NewUpdateRutaController(updateRutaUc)
 	deleteRutaCtr := rutaControllers.NewDeleteRutaController(deleteRutaUc)
+	getRutasActivasCtr := rutaControllers.NewGetRutaActivasController(getRutasActivasUc)
 
 	rutaRoutes := rutaRoutes.NewRutaRoutes(
 		engine,
@@ -233,11 +233,12 @@ func InitDependencies() {
 		getRutaByIdCtr,
 		updateRutaCtr,
 		deleteRutaCtr,
+		getRutasActivasCtr,
 	)
 
 	rutaRoutes.Run()
 
-    puntoRepository := puntoAdapters.NewPostgres()
+    puntoRepository := puntoAdapters.NewPostgresPuntoRecoleccion()
 
     createPuntoUC := puntoUseCases.NewSavePuntoRecoleccionUseCase(puntoRepository)
     updatePuntoUC := puntoUseCases.NewUpdatePuntoRecoleccionUseCase(puntoRepository)
@@ -267,7 +268,7 @@ func InitDependencies() {
     puntoRoutes.Run()
 
 
-	rellenoRepo := rsAdapters.NewPostgres()
+	rellenoRepo := rsAdapters.NewPostgresRellenoSanitario()
 
 	createRellenoUC := rsApplication.NewSaveRellenoSanitarioUseCase(rellenoRepo)
 	updateRellenoUC := rsApplication.NewUpdateRellenoSanitarioUseCase(rellenoRepo)
@@ -298,7 +299,7 @@ func InitDependencies() {
 
 	rellenoRoutes.Run()
 
-repository := rutaCamionAdapters.NewPostgres()
+repository := rutaCamionAdapters.NewPostgresRutaCamion()
 
 // ===============================
 // USE CASES
@@ -359,7 +360,7 @@ rutaCamionRoutes.Run()
 // ===============================
 
 // Repository
-registroVaciadoRepository := registroVaciadoAdapters.NewPostgres()
+registroVaciadoRepository := registroVaciadoAdapters.NewPostgresRegistroVaciado()
 
 // ===============================
 // USE CASES
@@ -427,23 +428,30 @@ coloniaController.RegisterRoutes(engine)
 // DOMICILIO
 // ===============================
 
-domicilioRepository := domicilioPostgres.NewDomicilioRepository(core.GetBD())
+deps := ciudadanosInfra.InitCiudadanoDependencies(db)
+domicilioDeps := ciudadanosInfra.InitDomicilioDependencies(db)
 
-createDomicilioUC := domicilioApplication.NewCreateDomicilio(domicilioRepository)
-getDomicilioUC := domicilioApplication.NewGetDomicilio(domicilioRepository)
-updateDomicilioUC := domicilioApplication.NewUpdateDomicilio(domicilioRepository)
-listDomiciliosUC := domicilioApplication.NewListDomicilios(domicilioRepository)
-deleteDomicilioUC := domicilioApplication.NewDeleteDomicilio(domicilioRepository)
-
-domicilioController := domicilioHttp.NewDomicilioController(
-	createDomicilioUC,
-	getDomicilioUC,
-	updateDomicilioUC,
-	listDomiciliosUC,
-	deleteDomicilioUC,
+// Registrar rutas
+ciudadanosRoutes.CiudadanoRoutes(
+	engine,
+	deps.CreateCiudadanoController,
+	deps.GetCiudadanoController,
+	deps.ListCiudadanoController,
+	deps.UpdateCiudadanoController,
+	deps.DeleteCiudadanoController,
+	deps.LoginCiudadanoController,
 )
 
-domicilioController.RegisterRoutes(engine)
+ciudadanosRoutes.DomicilioRoutes(
+	engine,
+	domicilioDeps.DomicilioController,
+)
+
+	//==============================
+	//Ciudadano
+
+
+
 
 // ===============================
 // ALERTA USUARIO
@@ -465,8 +473,6 @@ alertaController.RegisterRoutes(engine)
 
 
 
-usuarioDeps := usuarioInfra.NewUsuarioDependencies(db)
-usuarioInfra.RegisterUsuarioRoutes(engine, usuarioDeps)
 
 rolController := rolInfra.NewRolDependencies(db)
 rolInfra.RegisterRolRoutes(engine, rolController)
