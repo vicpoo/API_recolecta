@@ -52,16 +52,22 @@ import (
 	registroMantenimiento "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure"
 	reporteMantenimientoGenerado "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure"
 	tipoMantenimiento "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure"
-	ciudadanoInfra "github.com/vicpoo/API_recolecta/src/ciudadano/infrastructure"
 	coloniaApplication "github.com/vicpoo/API_recolecta/src/colonia/application"
 	coloniaHttp "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/http"
 	coloniaPostgres "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/postgres"
-	domicilioApplication "github.com/vicpoo/API_recolecta/src/domicilio/application"
-	domicilioHttp "github.com/vicpoo/API_recolecta/src/domicilio/infrastructure/http"
-	domicilioPostgres "github.com/vicpoo/API_recolecta/src/domicilio/infrastructure/postgres"
 	_ "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
-	rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
-	usuarioInfra "github.com/vicpoo/API_recolecta/src/usuario/infrastructure"
+	ciudadanosInfra "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure"
+	ciudadanosRoutes "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure/routes"
+	
+	//rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
+	
+	//listMisAlertasUC "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
+	//marcarLeidaUC "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
+	//alertaRepository "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/postgres"
+
+	//ciudadanosInfra "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure"
+	//alertaHttp "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/http"
+	//ciudadanosRoutes "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure/routes"
 )
 
 // archivo para hacer las instancias de los controllers, casos de uso y repositories, etc.
@@ -418,48 +424,73 @@ func InitDependencies() {
 	coloniaController.RegisterRoutes(engine)
 
 	// ===============================
-	// DOMICILIO
-	// ===============================
+	// Ciudadanos
+	//===============================
 
-	domicilioRepository := domicilioPostgres.NewDomicilioRepository()
+	/*
+ciudadanosRoutes.CiudadanoRoutes(
+	engine,
+	ciudadanoDeps.CreateCiudadanoController,
+	ciudadanoDeps.GetCiudadanoController,
+	ciudadanoDeps.ListCiudadanoController,
+	ciudadanoDeps.UpdateCiudadanoController,
+	ciudadanoDeps.DeleteCiudadanoController,
+	ciudadanoDeps.LoginCiudadanoController,
+)
 
-	createDomicilioUC := domicilioApplication.NewCreateDomicilio(domicilioRepository)
-	getDomicilioUC := domicilioApplication.NewGetDomicilio(domicilioRepository)
-	updateDomicilioUC := domicilioApplication.NewUpdateDomicilio(domicilioRepository)
-	deleteDomicilioUC := domicilioApplication.NewDeleteDomicilio(domicilioRepository)
+ciudadanosRoutes.DomicilioRoutes(
+	engine,
+	domicilioDeps.DomicilioController,
+)
 
-	domicilioController := domicilioHttp.NewDomicilioController(
-		createDomicilioUC,
-		getDomicilioUC,
-		updateDomicilioUC,
-		deleteDomicilioUC,
-	)
+*/
+	//==============================
+	//Ciudadano
 
-	domicilioController.RegisterRoutes(engine)
+ciudadanoDeps := ciudadanosInfra.InitCiudadanoDependencies(db)
+domicilioDeps := ciudadanosInfra.InitDomicilioDependencies(db)
 
-	usuarioDeps := usuarioInfra.NewUsuarioDependencies(db)
-	usuarioRoutes := usuarioInfra.NewUsuarioRoutes(usuarioInfra.UsuarioRoutesParams{
-		Router: engine,
-		Create: usuarioDeps.Create,
-		Get:    usuarioDeps.Get,
-		List:   usuarioDeps.List,
-		Delete: usuarioDeps.Delete,
-		Login:  usuarioDeps.Login,
-	})
-	usuarioRoutes.Register()
+ciudadanosRoutes.CiudadanoRoutes(
+	engine,
+	ciudadanoDeps.CreateCiudadanoController,
+	ciudadanoDeps.GetCiudadanoController,
+	ciudadanoDeps.ListCiudadanoController,
+	ciudadanoDeps.UpdateCiudadanoController,
+	ciudadanoDeps.DeleteCiudadanoController,
+	ciudadanoDeps.LoginCiudadanoController,
+)
 
-	// Adicion de ciudadanos como parte de usuarios
+ciudadanosRoutes.DomicilioRoutes(
+	engine,
+	domicilioDeps.DomicilioController,
+)
 
-	ciudadanoDeps := ciudadanoInfra.NewCiudadanoDependencies(db, core.GetRedis())
-	ciudadanoInfra.RegisterCiudadanoRoutes(engine, ciudadanoDeps)
-	rolController := rolInfra.NewRolDependencies()
-	rolRoutes := rolInfra.NewRolRoutes(rolInfra.RolRoutesParams{
-		Router:        engine,
-		RolController: rolController,
-	})
-	rolRoutes.Register()
 
-	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
+// ===============================
+// ALERTA USUARIO
+// ===============================
+/*
+alertaRepository := alertaPostgres.NewAlertaRepository(core.GetBD())
+
+createAlertaUC := alertaApplication.NewCreateAlerta(alertaRepository)
+listMisAlertasUC := alertaApplication.NewListMisAlertas(alertaRepository)
+marcarLeidaUC := alertaApplication.NewMarcarLeida(alertaRepository)
+
+alertaController := alertaHttp.NewAlertaController(
+	createAlertaUC,
+	listMisAlertasUC,
+	marcarLeidaUC,
+)
+
+alertaController.RegisterRoutes(engine)
+
+*/
+
+/*
+rolController := rolInfra.NewRolDependencies(db)
+rolInfra.RegisterRolRoutes(engine, rolController)
+*/
+anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
 
 	anomaliaRoutes.Run()
 

@@ -35,10 +35,7 @@ import (
 	notificacionInfra "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
 
 	coloniaHttp "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/http"
-	domicilioHttp "github.com/vicpoo/API_recolecta/src/domicilio/infrastructure/http"
-
 	rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
-	usuarioInfra "github.com/vicpoo/API_recolecta/src/usuario/infrastructure"
 
 	alertaHttp "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/http"
 )
@@ -85,9 +82,7 @@ func RunServer(
 	notificacion *notificacionInfra.NotificacionRouter,
 
 	coloniaController   *coloniaHttp.ColoniaController,
-	domicilioController *domicilioHttp.DomicilioController,
 
-	usuarioRoutes *usuarioInfra.UsuarioRoutes,
 	rolRoutes     *rolInfra.RolRoutes,
 
 	alertaController *alertaHttp.AlertaController,
@@ -117,9 +112,9 @@ func RunServer(
 	notificacion.Run()
 
 	coloniaController.RegisterRoutes(server)
-	domicilioController.RegisterRoutes(server)
+	//domicilioController.RegisterRoutes(server)
 
-	usuarioRoutes.Register()
+	//usuarioRoutes.Register()
 	rolRoutes.Register()
 
 	// alerta_usuario — grupo /api para mantener consistencia con el resto
