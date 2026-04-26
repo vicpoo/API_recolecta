@@ -18,3 +18,7 @@ func NewListDomicilios(repo domain.DomicilioRepository) *ListDomicilios {
 func (uc *ListDomicilios) Execute(ctx context.Context) ([]entities.Domicilio, error) {
 	return uc.repo.List(ctx)
 }
+
+func (uc *ListDomicilios) ExecuteByCiudadanoID(ctx context.Context, ciudadanoID int) ([]entities.Domicilio, error) {
+	return uc.repo.ListByCiudadanoID(ctx, ciudadanoID)
+}

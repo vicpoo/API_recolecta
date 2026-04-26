@@ -73,34 +73,6 @@ func (r *DomicilioPostgresRepository) GetByID(ctx context.Context, id int) (*ent
 	return &d, nil
 }
 
-func (r *DomicilioPostgresRepository) GetByCiudadanoID(ctx context.Context, ciudadanoID int) (*entities.Domicilio, error) {
-	const q = `
-		SELECT id, ciudadano_id, colonia_id, alias, calle, numero, referencia, created_at
-		FROM domicilio
-		WHERE ciudadano_id = $1
-	`
-
-	var d entities.Domicilio
-	err := r.db.QueryRow(ctx, q, ciudadanoID).Scan(
-		&d.ID,
-		&d.CiudadanoID,
-		&d.ColoniaID,
-		&d.Alias,
-		&d.Calle,
-		&d.Numero,
-		&d.Referencia,
-		&d.CreatedAt,
-	)
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return &d, nil
-}
-
 func (r *DomicilioPostgresRepository) List(ctx context.Context) ([]entities.Domicilio, error) {
 	const q = `
 		SELECT id, ciudadano_id, colonia_id, alias, calle, numero, referencia, created_at
@@ -109,6 +81,42 @@ func (r *DomicilioPostgresRepository) List(ctx context.Context) ([]entities.Domi
 	`
 
 	rows, err := r.db.Query(ctx, q)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var domicilios []entities.Domicilio
+
+	for rows.Next() {
+		var d entities.Domicilio
+		if err := rows.Scan(
+			&d.ID,
+			&d.CiudadanoID,
+			&d.ColoniaID,
+			&d.Alias,
+			&d.Calle,
+			&d.Numero,
+			&d.Referencia,
+			&d.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		domicilios = append(domicilios, d)
+	}
+
+	return domicilios, rows.Err()
+}
+
+func (r *DomicilioPostgresRepository) ListByCiudadanoID(ctx context.Context, ciudadanoID int) ([]entities.Domicilio, error) {
+	const q = `
+		SELECT id, ciudadano_id, colonia_id, alias, calle, numero, referencia, created_at
+		FROM domicilio
+		WHERE ciudadano_id = $1
+		ORDER BY id DESC
+	`
+
+	rows, err := r.db.Query(ctx, q, ciudadanoID)
 	if err != nil {
 		return nil, err
 	}
@@ -158,15 +166,18 @@ func (r *DomicilioPostgresRepository) Update(ctx context.Context, d *entities.Do
 	return nil
 }
 
-func (r *DomicilioPostgresRepository) Delete(ctx context.Context, id int) error {
-	const q = `DELETE FROM domicilio WHERE id = $1`
+func (r *DomicilioPostgresRepository) DeleteByCiudadano(ctx context.Context, id int, ciudadanoID int) error {
+	const q = `
+		DELETE FROM domicilio
+		WHERE id = $1 AND ciudadano_id = $2
+	`
 
-	cmd, err := r.db.Exec(ctx, q, id)
+	cmd, err := r.db.Exec(ctx, q, id, ciudadanoID)
 	if err != nil {
 		return err
 	}
 	if cmd.RowsAffected() == 0 {
-		return errors.New("domicilio no encontrado")
+		return errors.New("domicilio no encontrado o no pertenece al ciudadano")
 	}
 
 	return nil

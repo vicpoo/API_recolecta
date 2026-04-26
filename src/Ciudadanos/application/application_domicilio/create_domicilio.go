@@ -48,14 +48,6 @@ func (uc *CreateDomicilio) Execute(ctx context.Context, in CreateDomicilioInput)
 		return 0, errors.New("numero es requerido")
 	}
 
-	existingByCiudadano, err := uc.repo.GetByCiudadanoID(ctx, in.CiudadanoID)
-	if err != nil {
-		return 0, err
-	}
-	if existingByCiudadano != nil {
-		return 0, errors.New("el ciudadano ya tiene un domicilio registrado")
-	}
-
 	existingByAlias, err := uc.repo.FindByAlias(ctx, in.Alias)
 	if err != nil {
 		return 0, err

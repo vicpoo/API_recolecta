@@ -62,7 +62,9 @@ func (c *DomicilioController) Create(ctx *gin.Context) {
 }
 
 func (c *DomicilioController) List(ctx *gin.Context) {
-	domicilios, err := c.list.Execute(ctx.Request.Context())
+	ciudadanoID := ctx.GetInt("user_id")
+
+	domicilios, err := c.list.ExecuteByCiudadanoID(ctx.Request.Context(), ciudadanoID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
@@ -145,8 +147,10 @@ func (c *DomicilioController) Delete(ctx *gin.Context) {
 		return
 	}
 
-	if err := c.delete.Execute(ctx.Request.Context(), id); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+	ciudadanoID := ctx.GetInt("user_id")
+
+	if err := c.delete.Execute(ctx.Request.Context(), id, ciudadanoID); err != nil {
+		ctx.JSON(http.StatusForbidden, gin.H{
 			"error": err.Error(),
 		})
 		return
