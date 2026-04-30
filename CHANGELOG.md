@@ -7,6 +7,10 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-changelog)
 
 ---
+# [0.10.1-alpha] - 2026-04-30
+# Rodrigo Mijangos [NOT-ISSUED]
+### Fixed
+- La base de datos principal y los archivos de indexes y constrainsts fueron reañadidas.
 
 # [0.10.0-alpha] - 2026-04-15
 ## Rodrigo Mijangos [Issue #14](https://github.com/RodrigoMijangos/recolecta_web/issues/14)
