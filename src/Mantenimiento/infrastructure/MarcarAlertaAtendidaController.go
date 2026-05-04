@@ -1,12 +1,12 @@
-//MarcarAlertaAtendidaController.go
+// MarcarAlertaAtendidaController.go
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type MarcarAlertaAtendidaController struct {
@@ -30,23 +30,21 @@ func (ctrl *MarcarAlertaAtendidaController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "El parámetro 'id' debe ser un número entero válido")
 		return
 	}
 
 	err = ctrl.marcarAtendidaUseCase.Run(int32(id))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo marcar la alerta como atendida",
-			"error":   err.Error(),
-		})
+		if err.Error() == "alerta not found" {
+			core.RespondNotFound(c, "Alerta de mantenimiento", idParam)
+		} else {
+			core.RespondInternalServerError(c, "Error al marcar alerta como atendida", err)
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	core.RespondOK(c, map[string]string{
 		"message": "Alerta marcada como atendida exitosamente",
 	})
 }

@@ -2,11 +2,11 @@
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type DeleteAnomaliaController struct {
@@ -30,23 +30,21 @@ func (ctrl *DeleteAnomaliaController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "El parámetro 'id' debe ser un número entero válido")
 		return
 	}
 
 	errDelete := ctrl.deleteUseCase.Run(int32(id))
 	if errDelete != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo eliminar la anomalía",
-			"error":   errDelete.Error(),
-		})
+		if errDelete.Error() == "anomalia not found" {
+			core.RespondNotFound(c, "Anomalía", idParam)
+		} else {
+			core.RespondInternalServerError(c, "Error al eliminar la anomalía", errDelete)
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": "Anomalía eliminada exitosamente",
+	core.RespondOK(c, map[string]string{
+		"message": "Anomalía eliminada exitosamente",
 	})
 }

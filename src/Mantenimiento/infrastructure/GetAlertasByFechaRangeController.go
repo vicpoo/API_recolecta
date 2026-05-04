@@ -1,12 +1,12 @@
-//GetAlertasByFechaRangeController.go
+// GetAlertasByFechaRangeController.go
 package infrastructure
 
 import (
-	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAlertasByFechaRangeController struct {
@@ -32,9 +32,9 @@ func (ctrl *GetAlertasByFechaRangeController) Run(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindQuery(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Parámetros de fecha inválidos",
-			"error":   err.Error(),
+		core.RespondValidationError(c, "Parámetros de fecha requeridos", map[string]string{
+			"params": "fecha_inicio, fecha_fin",
+			"error":  err.Error(),
 		})
 		return
 	}
@@ -43,18 +43,18 @@ func (ctrl *GetAlertasByFechaRangeController) Run(c *gin.Context) {
 	layout := "2006-01-02"
 	fechaInicio, err := time.Parse(layout, request.FechaInicio)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Formato de fecha inicio inválido. Use YYYY-MM-DD",
-			"error":   err.Error(),
+		core.RespondBadRequest(c, "Formato de fecha_inicio inválido. Use YYYY-MM-DD", map[string]string{
+			"field": "fecha_inicio",
+			"error": err.Error(),
 		})
 		return
 	}
 
 	fechaFin, err := time.Parse(layout, request.FechaFin)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Formato de fecha fin inválido. Use YYYY-MM-DD",
-			"error":   err.Error(),
+		core.RespondBadRequest(c, "Formato de fecha_fin inválido. Use YYYY-MM-DD", map[string]string{
+			"field": "fecha_fin",
+			"error": err.Error(),
 		})
 		return
 	}
@@ -64,12 +64,11 @@ func (ctrl *GetAlertasByFechaRangeController) Run(c *gin.Context) {
 
 	alertas, err := ctrl.getByFechaRangeUseCase.Run(fechaInicio, fechaFin)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener las alertas en el rango de fechas",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "Error al obtener alertas por rango de fechas", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, alertas)
+	core.RespondOK(c, map[string]interface{}{
+		"data": alertas,
+	})
 }

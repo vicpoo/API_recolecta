@@ -1,12 +1,12 @@
-//GetAlertasByCamionIDController.go
+// GetAlertasByCamionIDController.go
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAlertasByCamionIDController struct {
@@ -29,21 +29,17 @@ func (ctrl *GetAlertasByCamionIDController) Run(c *gin.Context) {
 	idParam := c.Param("camion_id")
 	camionID, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID de camión inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "El parámetro 'camion_id' debe ser un número entero válido")
 		return
 	}
 
 	alertas, err := ctrl.getByCamionUseCase.Run(int32(camionID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener las alertas del camión",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "Error al obtener alertas del camión", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, alertas)
+	core.RespondOK(c, map[string]interface{}{
+		"data": alertas,
+	})
 }

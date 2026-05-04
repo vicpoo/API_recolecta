@@ -2,13 +2,13 @@
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
 	"github.com/vicpoo/API_recolecta/src/Fallas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type UpdateAnomaliaController struct {
@@ -33,10 +33,7 @@ func (ctrl *UpdateAnomaliaController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "El parámetro 'id' debe ser un número entero válido")
 		return
 	}
 
@@ -51,9 +48,8 @@ func (ctrl *UpdateAnomaliaController) Run(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Datos inválidos",
-			"error":   err.Error(),
+		core.RespondValidationError(c, "Datos de entrada inválidos", map[string]string{
+			"error": err.Error(),
 		})
 		return
 	}
@@ -61,9 +57,9 @@ func (ctrl *UpdateAnomaliaController) Run(c *gin.Context) {
 	// Parsear fechas
 	fechaReporte, err := parseFecha(request.FechaReporte)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Formato de fecha_reporte inválido",
-			"error":   err.Error(),
+		core.RespondBadRequest(c, "Formato de fecha_reporte inválido. Use ISO 8601", map[string]string{
+			"field": "fecha_reporte",
+			"error": err.Error(),
 		})
 		return
 	}
@@ -72,9 +68,9 @@ func (ctrl *UpdateAnomaliaController) Run(c *gin.Context) {
 	if request.FechaResolucion != nil && *request.FechaResolucion != "" {
 		fechaResolucion, err := parseFecha(*request.FechaResolucion)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "Formato de fecha_resolucion inválido",
-				"error":   err.Error(),
+			core.RespondBadRequest(c, "Formato de fecha_resolucion inválido. Use ISO 8601", map[string]string{
+				"field": "fecha_resolucion",
+				"error": err.Error(),
 			})
 			return
 		}
@@ -94,12 +90,13 @@ func (ctrl *UpdateAnomaliaController) Run(c *gin.Context) {
 
 	updatedAnomalia, err := ctrl.updateUseCase.Run(anomalia)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo actualizar la anomalía",
-			"error":   err.Error(),
-		})
+		if err.Error() == "anomalia not found" {
+			core.RespondNotFound(c, "Anomalía", idParam)
+		} else {
+			core.RespondInternalServerError(c, "Error al actualizar la anomalía", err)
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, updatedAnomalia)
+	core.RespondOK(c, updatedAnomalia)
 }

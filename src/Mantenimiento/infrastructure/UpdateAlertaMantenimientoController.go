@@ -1,13 +1,13 @@
-//UpdateAlertaMantenimientoController.go
+// UpdateAlertaMantenimientoController.go
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type UpdateAlertaMantenimientoController struct {
@@ -32,10 +32,7 @@ func (ctrl *UpdateAlertaMantenimientoController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "El parámetro 'id' debe ser un número entero válido")
 		return
 	}
 
@@ -48,9 +45,8 @@ func (ctrl *UpdateAlertaMantenimientoController) Run(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Datos inválidos",
-			"error":   err.Error(),
+		core.RespondValidationError(c, "Datos de entrada inválidos", map[string]string{
+			"error": err.Error(),
 		})
 		return
 	}
@@ -66,12 +62,13 @@ func (ctrl *UpdateAlertaMantenimientoController) Run(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo actualizar la alerta de mantenimiento",
-			"error":   err.Error(),
-		})
+		if err.Error() == "alerta not found" {
+			core.RespondNotFound(c, "Alerta de mantenimiento", idParam)
+		} else {
+			core.RespondInternalServerError(c, "Error al actualizar la alerta de mantenimiento", err)
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, alerta)
+	core.RespondOK(c, alerta)
 }

@@ -12,6 +12,17 @@ Referencias de como usarlo: [Guia del Changelog](./CHANGELOG.md#-guía-del-chang
 ### Fixed
 - La base de datos principal y los archivos de indexes y constrainsts fueron reañadidas.
 
+# [0.10.2-alpha] - 2026-05-02
+## Regiber Montoya [NOT-ISSUED]
+### Added
+- Login de empleado en `/api/empleados/login` con autenticación por `mail_or_username` o `username`.
+- Seeder de bootstrap para crear un usuario ADMIN inicial a partir de variables de entorno.
+- Modo CLI de arranque con `go run . seed` para ejecutar el bootstrap sin iniciar la API completa.
+
+### Changed
+- El arranque principal ahora detecta argumentos de ejecución y permite correr tareas de bootstrap.
+- El bootstrap inicial asegura la existencia del rol ADMIN antes de crear el usuario semilla.
+
 # [0.10.0-alpha] - 2026-04-15
 ## Rodrigo Mijangos [Issue #14](https://github.com/RodrigoMijangos/recolecta_web/issues/14)
 ### Added

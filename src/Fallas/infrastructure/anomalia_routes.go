@@ -3,6 +3,7 @@ package infrastructure
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type AnomaliaRouter struct {
@@ -18,11 +19,12 @@ func NewAnomaliaRouter(engine *gin.Engine) *AnomaliaRouter {
 func (router *AnomaliaRouter) Run() {
 	// Inicializar dependencias
 	createController, getByIdController, updateController, deleteController,
-	getAllController, getByPuntoIDController, getByChoferIDController,
-	getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController := InitAnomaliaDependencies()
+		getAllController, getByPuntoIDController, getByChoferIDController,
+		getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController := InitAnomaliaDependencies()
 
 	// Grupo de rutas para anomalías con prefijo /api
 	anomaliaGroup := router.engine.Group("/api/anomalias")
+	anomaliaGroup.Use(core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN, core.SUPERVISOR, core.COORDINADOR))
 	{
 		// Rutas CRUD básicas
 		anomaliaGroup.POST("/", createController.Run)
@@ -30,12 +32,12 @@ func (router *AnomaliaRouter) Run() {
 		anomaliaGroup.PUT("/:id", updateController.Run)
 		anomaliaGroup.DELETE("/:id", deleteController.Run)
 		anomaliaGroup.GET("/", getAllController.Run)
-		
+
 		// Rutas específicas
 		anomaliaGroup.GET("/punto/:puntoId", getByPuntoIDController.Run)
 		anomaliaGroup.GET("/chofer/:choferId", getByChoferIDController.Run)
-		anomaliaGroup.GET("/estado", getByEstadoController.Run) // Query param: ?estado=
-		anomaliaGroup.GET("/tipo", getByTipoAnomaliaController.Run) // Query param: ?tipo_anomalia=
+		anomaliaGroup.GET("/estado", getByEstadoController.Run)        // Query param: ?estado=
+		anomaliaGroup.GET("/tipo", getByTipoAnomaliaController.Run)    // Query param: ?tipo_anomalia=
 		anomaliaGroup.GET("/por-fecha", getByFechaRangeController.Run) // Query params: ?fecha_inicio=&fecha_fin=
 	}
 }
