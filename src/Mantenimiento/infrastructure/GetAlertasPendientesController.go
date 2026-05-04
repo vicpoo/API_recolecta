@@ -1,11 +1,10 @@
-//GetAlertasPendientesController.go
+// GetAlertasPendientesController.go
 package infrastructure
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAlertasPendientesController struct {
@@ -27,12 +26,11 @@ func NewGetAlertasPendientesController(getPendientesUseCase *application.GetAler
 func (ctrl *GetAlertasPendientesController) Run(c *gin.Context) {
 	alertas, err := ctrl.getPendientesUseCase.Run()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener las alertas pendientes",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "Error al obtener alertas pendientes", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, alertas)
+	core.RespondOK(c, map[string]interface{}{
+		"data": alertas,
+	})
 }

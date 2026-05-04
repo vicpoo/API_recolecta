@@ -1,12 +1,12 @@
-//DeleteAlertaMantenimientoController.go
+// DeleteAlertaMantenimientoController.go
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type DeleteAlertaMantenimientoController struct {
@@ -30,24 +30,21 @@ func (ctrl *DeleteAlertaMantenimientoController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "El parámetro 'id' debe ser un número entero válido")
 		return
 	}
 
 	errDelete := ctrl.deleteUseCase.Run(int32(id))
 	if errDelete != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo eliminar la alerta de mantenimiento",
-			"error":   errDelete.Error(),
-		})
+		if errDelete.Error() == "alerta not found" {
+			core.RespondNotFound(c, "Alerta de mantenimiento", idParam)
+		} else {
+			core.RespondInternalServerError(c, "Error al eliminar la alerta de mantenimiento", errDelete)
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	core.RespondOK(c, map[string]string{
 		"message": "Alerta de mantenimiento eliminada exitosamente",
 	})
 }
-

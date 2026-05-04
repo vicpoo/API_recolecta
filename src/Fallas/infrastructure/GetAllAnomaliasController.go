@@ -2,10 +2,9 @@
 package infrastructure
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAllAnomaliasController struct {
@@ -27,12 +26,11 @@ func NewGetAllAnomaliasController(getAllUseCase *application.GetAllAnomaliasUseC
 func (ctrl *GetAllAnomaliasController) Run(c *gin.Context) {
 	anomalias, err := ctrl.getAllUseCase.Run()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener las anomalías",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "Error al obtener las anomalías", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, anomalias)
+	core.RespondOK(c, map[string]interface{}{
+		"data": anomalias,
+	})
 }

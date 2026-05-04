@@ -44,6 +44,8 @@ import (
 	rutaRoutes "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
 	"github.com/vicpoo/API_recolecta/src/core"
 
+	ciudadanosInfra "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure"
+	ciudadanosRoutes "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure/routes"
 	anomalia "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
 	incidencia "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
 	reporteConductor "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
@@ -55,16 +57,13 @@ import (
 	coloniaApplication "github.com/vicpoo/API_recolecta/src/colonia/application"
 	coloniaHttp "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/http"
 	coloniaPostgres "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/postgres"
+	empleadoInfra "github.com/vicpoo/API_recolecta/src/empleado/infrastructure"
+	empleadoRoutes "github.com/vicpoo/API_recolecta/src/empleado/infrastructure/routes"
 	_ "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
-	ciudadanosInfra "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure"
-	ciudadanosRoutes "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure/routes"
-	
 	//rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
-	
 	//listMisAlertasUC "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
 	//marcarLeidaUC "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
 	//alertaRepository "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/postgres"
-
 	//ciudadanosInfra "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure"
 	//alertaHttp "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/http"
 	//ciudadanosRoutes "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure/routes"
@@ -428,69 +427,59 @@ func InitDependencies() {
 	//===============================
 
 	/*
-ciudadanosRoutes.CiudadanoRoutes(
-	engine,
-	ciudadanoDeps.CreateCiudadanoController,
-	ciudadanoDeps.GetCiudadanoController,
-	ciudadanoDeps.ListCiudadanoController,
-	ciudadanoDeps.UpdateCiudadanoController,
-	ciudadanoDeps.DeleteCiudadanoController,
-	ciudadanoDeps.LoginCiudadanoController,
-)
+		ciudadanosRoutes.CiudadanoRoutes(
+			engine,
+			ciudadanoDeps.CreateCiudadanoController,
+			ciudadanoDeps.GetCiudadanoController,
+			ciudadanoDeps.ListCiudadanoController,
+			ciudadanoDeps.UpdateCiudadanoController,
+			ciudadanoDeps.DeleteCiudadanoController,
+			ciudadanoDeps.LoginCiudadanoController,
+		)
 
-ciudadanosRoutes.DomicilioRoutes(
-	engine,
-	domicilioDeps.DomicilioController,
-)
+		ciudadanosRoutes.DomicilioRoutes(
+			engine,
+			domicilioDeps.DomicilioController,
+		)
 
-*/
+	*/
 	//==============================
 	//Ciudadano
 
-ciudadanoDeps := ciudadanosInfra.InitCiudadanoDependencies(db)
-domicilioDeps := ciudadanosInfra.InitDomicilioDependencies(db)
+	ciudadanoDeps := ciudadanosInfra.InitCiudadanoDependencies(db)
+	domicilioDeps := ciudadanosInfra.InitDomicilioDependencies(db)
+	empleadoDeps := empleadoInfra.InitEmpleadoDependencies(db)
 
-ciudadanosRoutes.CiudadanoRoutes(
-	engine,
-	ciudadanoDeps.CreateCiudadanoController,
-	ciudadanoDeps.GetCiudadanoController,
-	ciudadanoDeps.ListCiudadanoController,
-	ciudadanoDeps.UpdateCiudadanoController,
-	ciudadanoDeps.DeleteCiudadanoController,
-	ciudadanoDeps.LoginCiudadanoController,
-)
+	ciudadanosRoutes.CiudadanoRoutes(
+		engine,
+		ciudadanoDeps.CreateCiudadanoController,
+		ciudadanoDeps.GetCiudadanoController,
+		ciudadanoDeps.ListCiudadanoController,
+		ciudadanoDeps.UpdateCiudadanoController,
+		ciudadanoDeps.DeleteCiudadanoController,
+		ciudadanoDeps.LoginCiudadanoController,
+	)
 
-ciudadanosRoutes.DomicilioRoutes(
-	engine,
-	domicilioDeps.DomicilioController,
-)
+	ciudadanosRoutes.DomicilioRoutes(
+		engine,
+		domicilioDeps.DomicilioController,
+	)
 
+	empleadoRoutes.EmpleadoRoutes(
+		engine,
+		empleadoDeps.CreateEmpleadoController,
+		empleadoDeps.ListEmpleadoController,
+		empleadoDeps.GetEmpleadoController,
+		empleadoDeps.UpdateEmpleadoController,
+		empleadoDeps.DeleteEmpleadoController,
+		empleadoDeps.LoginEmpleadoController,
+	)
 
-// ===============================
-// ALERTA USUARIO
-// ===============================
-/*
-alertaRepository := alertaPostgres.NewAlertaRepository(core.GetBD())
+	// ===============================
+	// ALERTA USUARIO
+	// ===============================
 
-createAlertaUC := alertaApplication.NewCreateAlerta(alertaRepository)
-listMisAlertasUC := alertaApplication.NewListMisAlertas(alertaRepository)
-marcarLeidaUC := alertaApplication.NewMarcarLeida(alertaRepository)
-
-alertaController := alertaHttp.NewAlertaController(
-	createAlertaUC,
-	listMisAlertasUC,
-	marcarLeidaUC,
-)
-
-alertaController.RegisterRoutes(engine)
-
-*/
-
-/*
-rolController := rolInfra.NewRolDependencies(db)
-rolInfra.RegisterRolRoutes(engine, rolController)
-*/
-anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
+	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
 
 	anomaliaRoutes.Run()
 

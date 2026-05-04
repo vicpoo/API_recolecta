@@ -1,12 +1,11 @@
-//CreateAlertaMantenimientoController.go
+// CreateAlertaMantenimientoController.go
 package infrastructure
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type CreateAlertaMantenimientoController struct {
@@ -35,9 +34,8 @@ func (ctrl *CreateAlertaMantenimientoController) Run(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Datos inválidos",
-			"error":   err.Error(),
+		core.RespondValidationError(c, "Datos de entrada inválidos", map[string]string{
+			"error": err.Error(),
 		})
 		return
 	}
@@ -51,12 +49,9 @@ func (ctrl *CreateAlertaMantenimientoController) Run(c *gin.Context) {
 
 	createdAlerta, err := ctrl.createUseCase.Run(alerta)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo crear la alerta de mantenimiento",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "Error al crear la alerta de mantenimiento", err)
 		return
 	}
 
-	c.JSON(http.StatusCreated, createdAlerta)
+	core.RespondCreated(c, createdAlerta)
 }

@@ -1,12 +1,12 @@
-//GetAlertasByTipoMantenimientoIDController.go
+// GetAlertasByTipoMantenimientoIDController.go
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAlertasByTipoMantenimientoIDController struct {
@@ -29,21 +29,17 @@ func (ctrl *GetAlertasByTipoMantenimientoIDController) Run(c *gin.Context) {
 	idParam := c.Param("tipo_id")
 	tipoID, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID de tipo de mantenimiento inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "El parámetro 'tipo_id' debe ser un número entero válido")
 		return
 	}
 
 	alertas, err := ctrl.getByTipoUseCase.Run(int32(tipoID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener las alertas del tipo de mantenimiento",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "Error al obtener alertas por tipo de mantenimiento", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, alertas)
+	core.RespondOK(c, map[string]interface{}{
+		"data": alertas,
+	})
 }

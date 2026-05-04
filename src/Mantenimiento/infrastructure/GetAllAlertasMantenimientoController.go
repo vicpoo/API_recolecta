@@ -1,11 +1,10 @@
-//GetAllAlertasMantenimientoController.go
+// GetAllAlertasMantenimientoController.go
 package infrastructure
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAllAlertasMantenimientoController struct {
@@ -27,12 +26,11 @@ func NewGetAllAlertasMantenimientoController(getAllUseCase *application.GetAllAl
 func (ctrl *GetAllAlertasMantenimientoController) Run(c *gin.Context) {
 	alertas, err := ctrl.getAllUseCase.Run()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener las alertas de mantenimiento",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "Error al obtener las alertas de mantenimiento", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, alertas)
+	core.RespondOK(c, map[string]interface{}{
+		"data": alertas,
+	})
 }

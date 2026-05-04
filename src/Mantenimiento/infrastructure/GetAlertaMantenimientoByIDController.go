@@ -1,12 +1,12 @@
-//GetAlertaMantenimientoByIDController.go
+// GetAlertaMantenimientoByIDController.go
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAlertaMantenimientoByIDController struct {
@@ -30,21 +30,19 @@ func (ctrl *GetAlertaMantenimientoByIDController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "El parámetro 'id' debe ser un número entero válido")
 		return
 	}
 
 	alerta, err := ctrl.getByIDUseCase.Run(int32(id))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo obtener la alerta de mantenimiento",
-			"error":   err.Error(),
-		})
+		if err.Error() == "alerta not found" || alerta == nil {
+			core.RespondNotFound(c, "Alerta de mantenimiento", idParam)
+		} else {
+			core.RespondInternalServerError(c, "Error al obtener la alerta de mantenimiento", err)
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, alerta)
+	core.RespondOK(c, alerta)
 }
