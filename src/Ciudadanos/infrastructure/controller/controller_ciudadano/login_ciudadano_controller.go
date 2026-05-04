@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/application/application_ciudadano"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type LoginCiudadanoController struct {
@@ -19,24 +20,15 @@ func (c *LoginCiudadanoController) Run(ctx *gin.Context) {
 	var input application_ciudadano.LoginCiudadanoInput
 
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error":  "json inválido",
-			"detail": err.Error(),
-		})
+		core.RespondBadRequest(ctx, "json inválido", map[string]string{"detail": err.Error()})
 		return
 	}
 
 	result, err := c.useCase.Execute(ctx.Request.Context(), input)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"error": err.Error(),
-		})
+		core.RespondError(ctx, http.StatusUnauthorized, core.ErrCodeUnauthorized, "credenciales inválidas", nil)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "login correcto",
-		"token":   result.Token,
-		"data":    result.Ciudadano,
-	})
+	core.RespondOK(ctx, gin.H{"message": "login correcto", "token": result.Token, "data": result.Ciudadano})
 }

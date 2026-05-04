@@ -1,11 +1,12 @@
 package controller_ciudadano
 
 import (
-	"net/http"
+	"database/sql"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/application/application_ciudadano"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type DeleteCiudadanoController struct {
@@ -20,21 +21,19 @@ func (c *DeleteCiudadanoController) Run(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "id inválido",
-		})
+		core.RespondInvalidInput(ctx, "id inválido")
 		return
 	}
 
 	err = c.useCase.Execute(ctx.Request.Context(), id)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		if err == sql.ErrNoRows || err.Error() == "ciudadano no encontrado" {
+			core.RespondNotFound(ctx, "ciudadano", idParam)
+			return
+		}
+		core.RespondInternalServerError(ctx, "no se pudo eliminar ciudadano", err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "ciudadano eliminado correctamente",
-	})
+	core.RespondOK(ctx, gin.H{"message": "ciudadano eliminado correctamente"})
 }
