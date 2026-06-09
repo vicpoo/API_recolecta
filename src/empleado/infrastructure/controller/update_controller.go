@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/empleado/application"
 )
 
@@ -19,13 +19,13 @@ func NewUpdateEmpleadoController(useCase *application.UpdateEmpleado) *UpdateEmp
 func (c *UpdateEmpleadoController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
+		core.RespondBadRequest(ctx, "id inválido", nil)
 		return
 	}
 
 	var input application.UpdateEmpleadoInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "json inválido", "detail": err.Error()})
+		core.RespondBadRequest(ctx, "json inválido", err.Error())
 		return
 	}
 
@@ -33,9 +33,13 @@ func (c *UpdateEmpleadoController) Run(ctx *gin.Context) {
 
 	result, err := c.useCase.Execute(ctx.Request.Context(), input)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if err.Error() == "empleado no encontrado" {
+			core.RespondNotFound(ctx, "empleado", strconv.Itoa(id))
+			return
+		}
+		core.RespondBadRequest(ctx, err.Error(), nil)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "empleado actualizado correctamente", "data": result})
+	core.RespondOK(ctx, gin.H{"message": "empleado actualizado correctamente", "data": result})
 }

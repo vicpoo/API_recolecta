@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/empleado/application"
 )
 
@@ -20,22 +21,21 @@ func (c *LoginEmpleadoController) Run(ctx *gin.Context) {
 	var input application.LoginEmpleadoInput
 
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error":  "json inválido",
-			"detail": err.Error(),
-		})
+		core.RespondBadRequest(ctx, "json inválido", err.Error())
 		return
 	}
 
 	result, err := c.useCase.Execute(ctx.Request.Context(), input)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"error": err.Error(),
-		})
+		if err.Error() == "credenciales inválidas" || err.Error() == "empleado desactivado" {
+			core.RespondError(ctx, http.StatusUnauthorized, core.ErrCodeUnauthorized, err.Error(), nil)
+			return
+		}
+		core.RespondBadRequest(ctx, err.Error(), nil)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
+	core.RespondOK(ctx, gin.H{
 		"message": "login correcto",
 		"token":   result.Token,
 		"data":    result.Empleado,

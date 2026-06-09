@@ -1,13 +1,13 @@
-//CreateRegistroMantenimientoController.go
+// CreateRegistroMantenimientoController.go
 package infrastructure
 
 import (
-	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type CreateRegistroMantenimientoController struct {
@@ -29,20 +29,17 @@ func NewCreateRegistroMantenimientoController(createUseCase *application.CreateR
 // @Router       /api/registros-mantenimiento/ [post]
 func (ctrl *CreateRegistroMantenimientoController) Run(c *gin.Context) {
 	var request struct {
-		AlertaID                *int32   `json:"alerta_id"`
-		CamionID                int32    `json:"camion_id"`
-		CoordinadorID           int32    `json:"coordinador_id"`
-		MecanicoResponsable     string   `json:"mecanico_responsable"`
-		FechaRealizada          string   `json:"fecha_realizada"`
-		KilometrajeMantenimiento float64  `json:"kilometraje_mantenimiento"`
-		Observaciones           string   `json:"observaciones"`
+		AlertaID                 *int32  `json:"alerta_id"`
+		CamionID                 int32   `json:"camion_id"`
+		CoordinadorID            int32   `json:"coordinador_id"`
+		MecanicoResponsable      string  `json:"mecanico_responsable"`
+		FechaRealizada           string  `json:"fecha_realizada"`
+		KilometrajeMantenimiento float64 `json:"kilometraje_mantenimiento"`
+		Observaciones            string  `json:"observaciones"`
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Datos inválidos",
-			"error":   err.Error(),
-		})
+		core.RespondBadRequest(c, "Datos inválidos", map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -52,34 +49,28 @@ func (ctrl *CreateRegistroMantenimientoController) Run(c *gin.Context) {
 		// Intentar con otro formato común
 		fechaRealizada, err = time.Parse("2006-01-02", request.FechaRealizada)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "Formato de fecha inválido. Use YYYY-MM-DD o YYYY-MM-DDTHH:MM:SSZ",
-				"error":   err.Error(),
-			})
+			core.RespondBadRequest(c, "Formato de fecha inválido. Use YYYY-MM-DD o YYYY-MM-DDTHH:MM:SSZ", map[string]string{"error": err.Error()})
 			return
 		}
 	}
 
 	// Crear registro
 	registro := &entities.RegistroMantenimiento{
-		AlertaID:                request.AlertaID,
-		CamionID:                request.CamionID,
-		CoordinadorID:           request.CoordinadorID,
-		MecanicoResponsable:     request.MecanicoResponsable,
-		FechaRealizada:          fechaRealizada,
+		AlertaID:                 request.AlertaID,
+		CamionID:                 request.CamionID,
+		CoordinadorID:            request.CoordinadorID,
+		MecanicoResponsable:      request.MecanicoResponsable,
+		FechaRealizada:           fechaRealizada,
 		KilometrajeMantenimiento: request.KilometrajeMantenimiento,
-		Observaciones:           request.Observaciones,
-		CreatedAt:               time.Now(),
+		Observaciones:            request.Observaciones,
+		CreatedAt:                time.Now(),
 	}
 
 	createdRegistro, err := ctrl.createUseCase.Run(registro)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo crear el registro de mantenimiento",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudo crear el registro de mantenimiento", err)
 		return
 	}
 
-	c.JSON(http.StatusCreated, createdRegistro)
+	core.RespondCreated(c, createdRegistro)
 }

@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
 	"github.com/vicpoo/API_recolecta/src/Rutas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type UpdateEstadoCamionController struct {
@@ -32,33 +33,27 @@ func (ctr *UpdateEstadoCamionController) Run(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil || id <= 0 {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": "id inválido",
-		})
+		core.RespondInvalidInput(ctx, "id inválido")
 		return
 	}
 
 	var estadoCamion entities.EstadoCamion
 	if err := ctx.ShouldBindJSON(&estadoCamion); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": "body inválido",
-			"error":   err.Error(),
-		})
+		core.RespondBadRequest(ctx, "body inválido", map[string]string{"error": err.Error()})
 		return
 	}
 
 	estadoCamionUpdated, err := ctr.uc.Run(int32(id), &estadoCamion)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"message": err.Error(),
-		})
+		if strings.Contains(err.Error(), "no encontrado") {
+			core.RespondNotFound(ctx, "Estado de camión", idParam)
+		} else {
+			core.RespondInternalServerError(ctx, "No se pudo actualizar el estado de camión", err)
+		}
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
+	core.RespondOK(ctx, gin.H{
 		"success": true,
 		"data":    estadoCamionUpdated,
 	})

@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/empleado/application"
 )
 
@@ -19,20 +19,24 @@ func NewGetEmpleadoController(useCase *application.GetEmpleado) *GetEmpleadoCont
 func (c *GetEmpleadoController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
+		core.RespondBadRequest(ctx, "id inválido", nil)
 		return
 	}
 
 	result, err := c.useCase.Execute(ctx.Request.Context(), id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err.Error() == "empleado no encontrado" {
+			core.RespondNotFound(ctx, "empleado", strconv.Itoa(id))
+			return
+		}
+		core.RespondInternalServerError(ctx, "error obteniendo empleado", err)
 		return
 	}
 
 	if result == nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "empleado no encontrado"})
+		core.RespondNotFound(ctx, "empleado", strconv.Itoa(id))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"data": result})
+	core.RespondOK(ctx, gin.H{"data": result})
 }

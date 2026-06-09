@@ -1,4 +1,4 @@
-//UpdateIncidenciaController.go
+// UpdateIncidenciaController.go
 package infrastructure
 
 import (
@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
 	"github.com/vicpoo/API_recolecta/src/Fallas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type UpdateIncidenciaController struct {
@@ -33,26 +34,20 @@ func (ctrl *UpdateIncidenciaController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID de incidencia inválido")
 		return
 	}
 
 	var request struct {
-		PuntoRecoleccionID *int32  `json:"punto_recoleccion_id"`
-		ConductorID        int32   `json:"conductor_id"`
-		Descripcion        string  `json:"descripcion"`
-		JsonRuta           string  `json:"json_ruta"`
-		FechaReporte       string  `json:"fecha_reporte"`
+		PuntoRecoleccionID *int32 `json:"punto_recoleccion_id"`
+		ConductorID        int32  `json:"conductor_id"`
+		Descripcion        string `json:"descripcion"`
+		JsonRuta           string `json:"json_ruta"`
+		FechaReporte       string `json:"fecha_reporte"`
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Datos inválidos",
-			"error":   err.Error(),
-		})
+		core.RespondValidationError(c, "Datos de incidencia inválidos", map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -63,10 +58,7 @@ func (ctrl *UpdateIncidenciaController) Run(c *gin.Context) {
 		if err != nil {
 			fechaReporte, err = time.Parse("2006-01-02", request.FechaReporte)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"message": "Formato de fecha inválido",
-					"error":   err.Error(),
-				})
+				core.RespondValidationError(c, "Formato de fecha inválido", map[string]string{"error": err.Error()})
 				return
 			}
 		}
@@ -87,10 +79,7 @@ func (ctrl *UpdateIncidenciaController) Run(c *gin.Context) {
 
 	updatedIncidencia, err := ctrl.updateUseCase.Run(incidencia)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo actualizar la incidencia",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "Error al actualizar incidencia", err)
 		return
 	}
 

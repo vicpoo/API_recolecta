@@ -2,11 +2,11 @@
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetReportesMantenimientoGeneradoByCoordinadorIDController struct {
@@ -29,21 +29,17 @@ func (ctrl *GetReportesMantenimientoGeneradoByCoordinadorIDController) Run(c *gi
 	coordinadorIDParam := c.Param("coordinador_id")
 	coordinadorID, err := strconv.Atoi(coordinadorIDParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID de coordinador inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID de coordinador inválido")
 		return
 	}
 
 	reportes, err := ctrl.getByCoordinadorIDUseCase.Run(int32(coordinadorID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener los reportes del coordinador",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener los reportes del coordinador", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, reportes)
+	core.RespondOK(c, map[string]interface{}{
+		"data": reportes,
+	})
 }

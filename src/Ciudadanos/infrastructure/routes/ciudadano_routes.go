@@ -22,6 +22,7 @@ func CiudadanoRoutes(
 
 	protected := ciudadanos.Group("")
 	protected.Use(core.JWTAuthMiddleware())
+	protected.Use(core.RequireRole(core.ADMIN))
 	{
 		protected.GET("", listController.Run)
 		protected.GET("/:id", getController.Run)

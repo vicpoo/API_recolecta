@@ -2,10 +2,9 @@
 package infrastructure
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetReportesMantenimientoGeneradoByFechaGeneracionRangeController struct {
@@ -29,20 +28,20 @@ func (ctrl *GetReportesMantenimientoGeneradoByFechaGeneracionRangeController) Ru
 	fechaFin := c.Query("fecha_fin")
 
 	if fechaInicio == "" || fechaFin == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Se requieren ambos parámetros: fecha_inicio y fecha_fin",
+		core.RespondBadRequest(c, "Se requieren ambos parámetros: fecha_inicio y fecha_fin", map[string]string{
+			"fecha_inicio": "requerido",
+			"fecha_fin":    "requerido",
 		})
 		return
 	}
 
 	reportes, err := ctrl.getByFechaGeneracionRangeUseCase.Run(fechaInicio, fechaFin)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener los reportes del rango de fechas de generación",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener los reportes del rango de fechas de generación", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, reportes)
+	core.RespondOK(c, map[string]interface{}{
+		"data": reportes,
+	})
 }

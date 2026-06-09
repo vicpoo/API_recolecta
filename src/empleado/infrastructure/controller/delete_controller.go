@@ -1,10 +1,10 @@
 package controller
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/empleado/application"
 )
 
@@ -19,14 +19,18 @@ func NewDeleteEmpleadoController(useCase *application.DeleteEmpleado) *DeleteEmp
 func (c *DeleteEmpleadoController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
+		core.RespondBadRequest(ctx, "id inválido", nil)
 		return
 	}
 
 	if err := c.useCase.Execute(ctx.Request.Context(), id); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if err.Error() == "empleado no encontrado" {
+			core.RespondNotFound(ctx, "empleado", strconv.Itoa(id))
+			return
+		}
+		core.RespondBadRequest(ctx, err.Error(), nil)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "empleado eliminado correctamente"})
+	core.RespondOK(ctx, gin.H{"message": "empleado eliminado correctamente"})
 }

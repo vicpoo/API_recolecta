@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAnomaliasByChoferIDController struct {
@@ -29,19 +30,13 @@ func (ctrl *GetAnomaliasByChoferIDController) Run(c *gin.Context) {
 	choferIDParam := c.Param("choferId")
 	choferID, err := strconv.Atoi(choferIDParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID de chofer inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID de chofer inválido")
 		return
 	}
 
 	anomalias, err := ctrl.getByChoferIDUseCase.Run(int32(choferID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener las anomalías para el chofer",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener las anomalías para el chofer", err)
 		return
 	}
 

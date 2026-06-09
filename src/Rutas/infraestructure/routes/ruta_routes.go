@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type RutaRoutes struct {
@@ -39,6 +40,7 @@ func NewRutaRoutes(
 
 func (r *RutaRoutes) Run() {
 	routes := r.engine.Group("/api/rutas")
+	routes.Use(core.JWTAuthMiddleware(), core.RequireRole(core.CONDUCTOR, core.SUPERVISOR, core.COORDINADOR))
 	{
 		routes.POST("/", r.createController.Run)
 		routes.GET("/", r.getAllController.Run)

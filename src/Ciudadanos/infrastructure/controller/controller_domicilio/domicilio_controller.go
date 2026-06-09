@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/application/application_domicilio"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type DomicilioController struct {
@@ -36,10 +37,7 @@ func (c *DomicilioController) Create(ctx *gin.Context) {
 	var body application_domicilio.CreateDomicilioInput
 
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "json inválido",
-			"detail": err.Error(),
-		})
+		core.RespondValidationError(ctx, "Datos de domicilio inválidos", map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -49,9 +47,7 @@ func (c *DomicilioController) Create(ctx *gin.Context) {
 
 	id, err := c.create.Execute(ctx.Request.Context(), body)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		core.RespondInternalServerError(ctx, "Error al crear domicilio", err)
 		return
 	}
 
@@ -66,9 +62,7 @@ func (c *DomicilioController) List(ctx *gin.Context) {
 
 	domicilios, err := c.list.ExecuteByCiudadanoID(ctx.Request.Context(), ciudadanoID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		core.RespondInternalServerError(ctx, "Error al listar domicilios", err)
 		return
 	}
 
@@ -80,24 +74,18 @@ func (c *DomicilioController) List(ctx *gin.Context) {
 func (c *DomicilioController) GetByID(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "id inválido",
-		})
+		core.RespondInvalidInput(ctx, "ID de domicilio inválido")
 		return
 	}
 
 	domicilio, err := c.get.Execute(ctx.Request.Context(), id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		core.RespondInternalServerError(ctx, "Error al obtener domicilio", err)
 		return
 	}
 
 	if domicilio == nil {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"error": "domicilio no encontrado",
-		})
+		core.RespondError(ctx, http.StatusNotFound, core.ErrCodeNotFound, "Domicilio no encontrado", nil)
 		return
 	}
 
@@ -109,27 +97,20 @@ func (c *DomicilioController) GetByID(ctx *gin.Context) {
 func (c *DomicilioController) Update(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "id inválido",
-		})
+		core.RespondInvalidInput(ctx, "ID de domicilio inválido")
 		return
 	}
 
 	var body application_domicilio.UpdateDomicilioInput
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "json inválido",
-			"detail": err.Error(),
-		})
+		core.RespondValidationError(ctx, "Datos de domicilio inválidos", map[string]string{"error": err.Error()})
 		return
 	}
 
 	body.ID = id
 
 	if err := c.update.Execute(ctx.Request.Context(), body); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		core.RespondInternalServerError(ctx, "Error al actualizar domicilio", err)
 		return
 	}
 
@@ -141,18 +122,14 @@ func (c *DomicilioController) Update(ctx *gin.Context) {
 func (c *DomicilioController) Delete(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "id inválido",
-		})
+		core.RespondInvalidInput(ctx, "ID de domicilio inválido")
 		return
 	}
 
 	ciudadanoID := ctx.GetInt("user_id")
 
 	if err := c.delete.Execute(ctx.Request.Context(), id, ciudadanoID); err != nil {
-		ctx.JSON(http.StatusForbidden, gin.H{
-			"error": err.Error(),
-		})
+		core.RespondError(ctx, http.StatusForbidden, core.ErrCodeForbidden, "No autorizado para eliminar este domicilio", map[string]string{"error": err.Error()})
 		return
 	}
 

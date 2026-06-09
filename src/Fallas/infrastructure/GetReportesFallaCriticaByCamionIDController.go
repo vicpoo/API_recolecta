@@ -2,11 +2,11 @@
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetReportesFallaCriticaByCamionIDController struct {
@@ -29,21 +29,15 @@ func (ctrl *GetReportesFallaCriticaByCamionIDController) Run(c *gin.Context) {
 	camionIDParam := c.Param("camionId")
 	camionID, err := strconv.Atoi(camionIDParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID de camión inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID de camión inválido")
 		return
 	}
 
 	reportes, err := ctrl.getByCamionIDUseCase.Run(int32(camionID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener los reportes de falla crítica para el camión",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener los reportes de falla crítica para el camión", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, reportes)
+	core.RespondOK(c, reportes)
 }

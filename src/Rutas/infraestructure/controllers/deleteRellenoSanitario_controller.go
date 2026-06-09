@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type DeleteRellenoSanitarioController struct {
@@ -25,14 +25,14 @@ func NewDeleteRellenoSanitarioController(uc *application.DeleteRellenoSanitarioU
 func (c *DeleteRellenoSanitarioController) Execute(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		core.RespondInvalidInput(ctx, "ID inválido")
 		return
 	}
 
 	if err := c.uc.Execute(int32(id)); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		core.RespondInternalServerError(ctx, "Error eliminando relleno sanitario", err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Relleno sanitario eliminado"})
+	core.RespondOK(ctx, gin.H{"message": "Relleno sanitario eliminado"})
 }

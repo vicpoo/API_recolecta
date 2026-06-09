@@ -1,4 +1,4 @@
-//CreateIncidenciaController.go
+// CreateIncidenciaController.go
 package infrastructure
 
 import (
@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
 	"github.com/vicpoo/API_recolecta/src/Fallas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type CreateIncidenciaController struct {
@@ -29,18 +30,15 @@ func NewCreateIncidenciaController(createUseCase *application.CreateIncidenciaUs
 // @Router       /api/incidencias/ [post]
 func (ctrl *CreateIncidenciaController) Run(c *gin.Context) {
 	var request struct {
-		PuntoRecoleccionID *int32  `json:"punto_recoleccion_id"`
-		ConductorID        int32   `json:"conductor_id"`
-		Descripcion        string  `json:"descripcion"`
-		JsonRuta           string  `json:"json_ruta"`
-		FechaReporte       string  `json:"fecha_reporte"`
+		PuntoRecoleccionID *int32 `json:"punto_recoleccion_id"`
+		ConductorID        int32  `json:"conductor_id"`
+		Descripcion        string `json:"descripcion"`
+		JsonRuta           string `json:"json_ruta"`
+		FechaReporte       string `json:"fecha_reporte"`
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Datos inválidos",
-			"error":   err.Error(),
-		})
+		core.RespondValidationError(c, "Datos de incidencia inválidos", map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -50,10 +48,7 @@ func (ctrl *CreateIncidenciaController) Run(c *gin.Context) {
 		// Intentar con otro formato común
 		fechaReporte, err = time.Parse("2006-01-02", request.FechaReporte)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "Formato de fecha inválido. Use YYYY-MM-DD o YYYY-MM-DDTHH:MM:SSZ",
-				"error":   err.Error(),
-			})
+			core.RespondValidationError(c, "Formato de fecha inválido", map[string]string{"error": "Use YYYY-MM-DD o YYYY-MM-DDTHH:MM:SSZ"})
 			return
 		}
 	}
@@ -85,10 +80,7 @@ func (ctrl *CreateIncidenciaController) Run(c *gin.Context) {
 
 	createdIncidencia, err := ctrl.createUseCase.Run(incidencia)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo crear la incidencia",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "Error al crear incidencia", err)
 		return
 	}
 

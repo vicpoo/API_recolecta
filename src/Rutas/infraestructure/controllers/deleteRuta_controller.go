@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type DeleteRutaController struct {
@@ -27,9 +28,13 @@ func (ctr *DeleteRutaController) Run(ctx *gin.Context) {
 
 	err := ctr.uc.Run(int32(id))
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"success": false, "message": err.Error()})
+		if strings.Contains(err.Error(), "no encontrado") || strings.Contains(err.Error(), "no encontrada") {
+			core.RespondNotFound(ctx, "Ruta", ctx.Param("id"))
+			return
+		}
+		core.RespondInternalServerError(ctx, "Error eliminando ruta", err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"success": true, "message": "ruta eliminada"})
+	core.RespondOK(ctx, gin.H{"success": true, "message": "ruta eliminada"})
 }

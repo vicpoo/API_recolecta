@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAnomaliasByPuntoIDController struct {
@@ -29,19 +30,13 @@ func (ctrl *GetAnomaliasByPuntoIDController) Run(c *gin.Context) {
 	puntoIDParam := c.Param("puntoId")
 	puntoID, err := strconv.Atoi(puntoIDParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID de punto inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID de punto inválido")
 		return
 	}
 
 	anomalias, err := ctrl.getByPuntoIDUseCase.Run(int32(puntoID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener las anomalías para el punto",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener las anomalías para el punto", err)
 		return
 	}
 
