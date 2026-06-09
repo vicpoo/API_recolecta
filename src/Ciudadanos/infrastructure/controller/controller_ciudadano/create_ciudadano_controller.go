@@ -1,10 +1,9 @@
 package controller_ciudadano
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/application/application_ciudadano"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type CreateCiudadanoController struct {
@@ -19,23 +18,15 @@ func (c *CreateCiudadanoController) Run(ctx *gin.Context) {
 	var input application_ciudadano.CreateCiudadanoInput
 
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "json inválido",
-			"detail": err.Error(),
-		})
+		core.RespondBadRequest(ctx, "json inválido", map[string]string{"detail": err.Error()})
 		return
 	}
 
 	id, err := c.useCase.Execute(ctx.Request.Context(), input)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		core.RespondBadRequest(ctx, err.Error(), nil)
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{
-		"message": "ciudadano creado correctamente",
-		"id":      id,
-	})
+	core.RespondCreated(ctx, gin.H{"message": "ciudadano creado correctamente", "id": id})
 }

@@ -1,12 +1,13 @@
-//GetRegistroMantenimientoByIDController.go
+// GetRegistroMantenimientoByIDController.go
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetRegistroMantenimientoByIDController struct {
@@ -30,21 +31,19 @@ func (ctrl *GetRegistroMantenimientoByIDController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID inválido")
 		return
 	}
 
 	registro, err := ctrl.getByIDUseCase.Run(int32(id))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "No se pudo encontrar el registro de mantenimiento",
-			"error":   err.Error(),
-		})
+		if strings.Contains(err.Error(), "no encontrado") {
+			core.RespondNotFound(c, "Registro de mantenimiento", idParam)
+		} else {
+			core.RespondInternalServerError(c, "No se pudo obtener el registro de mantenimiento", err)
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, registro)
+	core.RespondOK(c, registro)
 }

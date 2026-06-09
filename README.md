@@ -154,6 +154,14 @@ CORS_ORIGINS=http://localhost:3000,http://localhost:5173,http://localhost:8000
 
 JWT_SECRET=Halo_odt_es_un_gran_juego
 
+Bootstrap inicial de admin:
+
+ADMIN_MAIL=admin@recolecta.com
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
+ADMIN_NOMBRE=Admin
+ADMIN_APELLIDOS=Sistema
+
 
 
 Ejecución del proyecto
@@ -169,7 +177,11 @@ go run .
 
 o
 
-go run main.go
+go run .
+
+Bootstrap del admin inicial:
+
+go run . seed
 
 
 La API quedará disponible en:

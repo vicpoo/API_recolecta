@@ -25,6 +25,9 @@ func NewAlertaController(
 }
 
 func (c *AlertaController) RegisterRoutes(r *gin.RouterGroup) {
+	// Aplicar middleware de autenticación JWT a todas las rutas
+	r.Use(core.JWTAuthMiddleware())
+
 	r.POST(
 		"/alertas",
 		core.RequireRole(core.SUPERVISOR),
@@ -51,19 +54,19 @@ func (c *AlertaController) Create(ctx *gin.Context) {
 	}
 
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		core.RespondValidationError(ctx, "Datos de alerta inválidos", map[string]string{"error": err.Error()})
 		return
 	}
 
 	alerta := domain.AlertaUsuario{
 		Titulo:    body.Titulo,
 		Mensaje:   body.Mensaje,
-		UsuarioID: body.UsuarioID,           
-		CreadoPor: ctx.GetInt("user_id"),    
+		UsuarioID: body.UsuarioID,
+		CreadoPor: ctx.GetInt("user_id"),
 	}
 
 	if err := c.create.Execute(&alerta); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		core.RespondInternalServerError(ctx, "Error al crear la alerta", err)
 		return
 	}
 
@@ -79,7 +82,7 @@ func (c *AlertaController) Create(ctx *gin.Context) {
 func (c *AlertaController) ListMine(ctx *gin.Context) {
 	alertas, err := c.list.Execute(ctx.GetInt("user_id"))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		core.RespondInternalServerError(ctx, "Error al listar alertas", err)
 		return
 	}
 
@@ -96,12 +99,12 @@ func (c *AlertaController) ListMine(ctx *gin.Context) {
 func (c *AlertaController) MarkAsRead(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
+		core.RespondInvalidInput(ctx, "ID de alerta inválido")
 		return
 	}
 
 	if err := c.read.Execute(id, ctx.GetInt("user_id")); err != nil {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "no autorizado"})
+		core.RespondError(ctx, http.StatusForbidden, core.ErrCodeForbidden, "No autorizado para marcar esta alerta como leída", map[string]string{"error": err.Error()})
 		return
 	}
 

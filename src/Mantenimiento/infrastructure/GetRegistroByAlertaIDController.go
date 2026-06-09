@@ -1,12 +1,13 @@
-//GetRegistroByAlertaIDController.go
+// GetRegistroByAlertaIDController.go
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetRegistroByAlertaIDController struct {
@@ -29,21 +30,19 @@ func (ctrl *GetRegistroByAlertaIDController) Run(c *gin.Context) {
 	alertaIDParam := c.Param("alerta_id")
 	alertaID, err := strconv.Atoi(alertaIDParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID de alerta inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID de alerta inválido")
 		return
 	}
 
 	registro, err := ctrl.getByAlertaIDUseCase.Run(int32(alertaID))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "No se encontró registro de mantenimiento para esta alerta",
-			"error":   err.Error(),
-		})
+		if strings.Contains(err.Error(), "no encontrado") {
+			core.RespondNotFound(c, "Registro de mantenimiento", alertaIDParam)
+		} else {
+			core.RespondInternalServerError(c, "No se pudo obtener el registro de mantenimiento para esta alerta", err)
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, registro)
+	core.RespondOK(c, registro)
 }

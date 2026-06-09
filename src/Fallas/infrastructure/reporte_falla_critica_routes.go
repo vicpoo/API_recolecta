@@ -3,6 +3,7 @@ package infrastructure
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type ReporteFallaCriticaRouter struct {
@@ -17,12 +18,13 @@ func NewReporteFallaCriticaRouter(engine *gin.Engine) *ReporteFallaCriticaRouter
 
 func (router *ReporteFallaCriticaRouter) Run() {
 	// Inicializar dependencias
-	createController, getByIdController, updateController, deleteController, 
-	getAllController, getByCamionIDController, getByConductorIDController, 
-	getByFechaRangeController := InitReporteFallaCriticaDependencies()
+	createController, getByIdController, updateController, deleteController,
+		getAllController, getByCamionIDController, getByConductorIDController,
+		getByFechaRangeController := InitReporteFallaCriticaDependencies()
 
 	// Grupo de rutas para reportes de falla crítica con prefijo /api
 	reporteFallaCriticaGroup := router.engine.Group("/api/reportes-falla-critica")
+	reporteFallaCriticaGroup.Use(core.JWTAuthMiddleware(), core.RequireRole(core.CONDUCTOR, core.SUPERVISOR, core.ADMIN, core.COORDINADOR))
 	{
 		// Rutas CRUD básicas
 		reporteFallaCriticaGroup.POST("/", createController.Run)
@@ -30,7 +32,7 @@ func (router *ReporteFallaCriticaRouter) Run() {
 		reporteFallaCriticaGroup.PUT("/:id", updateController.Run)
 		reporteFallaCriticaGroup.DELETE("/:id", deleteController.Run)
 		reporteFallaCriticaGroup.GET("/", getAllController.Run)
-		
+
 		// Rutas específicas
 		reporteFallaCriticaGroup.GET("/camion/:camionId", getByCamionIDController.Run)
 		reporteFallaCriticaGroup.GET("/conductor/:conductorId", getByConductorIDController.Run)

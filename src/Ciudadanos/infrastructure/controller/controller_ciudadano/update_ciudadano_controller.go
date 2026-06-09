@@ -1,11 +1,11 @@
 package controller_ciudadano
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/application/application_ciudadano"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type UpdateCiudadanoController struct {
@@ -19,27 +19,23 @@ func NewUpdateCiudadanoController(useCase *application_ciudadano.UpdateCiudadano
 func (c *UpdateCiudadanoController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
+		core.RespondInvalidInput(ctx, "id inválido")
 		return
 	}
 
 	var input application_ciudadano.UpdateCiudadanoInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error":  "json inválido",
-			"detail": err.Error(),
-		})
+		core.RespondBadRequest(ctx, "json inválido", map[string]string{"detail": err.Error()})
 		return
 	}
 
 	input.ID = id
 
 	if err := c.useCase.Execute(ctx.Request.Context(), input); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		core.RespondBadRequest(ctx, err.Error(), nil)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "ciudadano actualizado correctamente",
-	})
+	core.RespondOK(ctx, gin.H{"message": "ciudadano actualizado correctamente"})
 }
+ 

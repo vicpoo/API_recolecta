@@ -1,10 +1,9 @@
 package controllers
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAllEstadoCamionController struct {
@@ -27,15 +26,11 @@ func NewGetAllEstadoCamionController(
 func (ctr *GetAllEstadoCamionController) Run(ctx *gin.Context) {
 	estadosCamion, err := ctr.uc.Run()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"message": "no se pudieron obtener los estados del camión",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(ctx, "No se pudieron obtener los estados del camión", err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
+	core.RespondOK(ctx, gin.H{
 		"success": true,
 		"data":    estadosCamion,
 	})

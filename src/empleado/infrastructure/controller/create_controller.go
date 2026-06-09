@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/empleado/application"
 )
 
@@ -19,15 +19,15 @@ func (c *CreateEmpleadoController) Run(ctx *gin.Context) {
 	var input application.CreateEmpleadoInput
 
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "json inválido", "detail": err.Error()})
+		core.RespondBadRequest(ctx, "json inválido", err.Error())
 		return
 	}
 
 	result, err := c.useCase.Execute(ctx.Request.Context(), input)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		core.RespondBadRequest(ctx, err.Error(), nil)
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "empleado creado correctamente", "data": result})
+	core.RespondCreated(ctx, gin.H{"message": "empleado creado correctamente", "data": result})
 }

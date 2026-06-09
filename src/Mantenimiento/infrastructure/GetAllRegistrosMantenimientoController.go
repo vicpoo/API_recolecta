@@ -1,11 +1,10 @@
-//GetAllRegistrosMantenimientoController.go
+// GetAllRegistrosMantenimientoController.go
 package infrastructure
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAllRegistrosMantenimientoController struct {
@@ -27,12 +26,11 @@ func NewGetAllRegistrosMantenimientoController(getAllUseCase *application.GetAll
 func (ctrl *GetAllRegistrosMantenimientoController) Run(c *gin.Context) {
 	registros, err := ctrl.getAllUseCase.Run()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener los registros de mantenimiento",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener los registros de mantenimiento", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, registros)
+	core.RespondOK(c, map[string]interface{}{
+		"data": registros,
+	})
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAnomaliasByEstadoController struct {
@@ -27,18 +28,13 @@ func NewGetAnomaliasByEstadoController(getByEstadoUseCase *application.GetAnomal
 func (ctrl *GetAnomaliasByEstadoController) Run(c *gin.Context) {
 	estado := c.Query("estado")
 	if estado == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Se requiere el parámetro estado",
-		})
+		core.RespondValidationError(c, "Parámetro de estado inválido", map[string]string{"estado": "requerido"})
 		return
 	}
 
 	anomalias, err := ctrl.getByEstadoUseCase.Run(estado)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener las anomalías por estado",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener las anomalías por estado", err)
 		return
 	}
 

@@ -3,6 +3,7 @@ package infrastructure
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type IncidenciaRouter struct {
@@ -18,11 +19,12 @@ func NewIncidenciaRouter(engine *gin.Engine) *IncidenciaRouter {
 func (router *IncidenciaRouter) Run() {
 	// Inicializar dependencias
 	createController, getByIdController, updateController, deleteController, getAllController,
-	getByConductorController, getByPuntoController, getByFechaController :=
-	InitIncidenciaDependencies()
+		getByConductorController, getByPuntoController, getByFechaController :=
+		InitIncidenciaDependencies()
 
 	// Grupo de rutas para incidencias con prefijo /api
 	incidenciaGroup := router.engine.Group("/api/incidencias")
+	incidenciaGroup.Use(core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN, core.SUPERVISOR, core.COORDINADOR))
 	{
 		// Rutas CRUD básicas
 		incidenciaGroup.POST("/", createController.Run)
@@ -30,7 +32,7 @@ func (router *IncidenciaRouter) Run() {
 		incidenciaGroup.GET("/:id", getByIdController.Run)
 		incidenciaGroup.PUT("/:id", updateController.Run)
 		incidenciaGroup.DELETE("/:id", deleteController.Run)
-		
+
 		// Rutas específicas por filtros
 		incidenciaGroup.GET("/conductor/:conductor_id", getByConductorController.Run)
 		incidenciaGroup.GET("/punto/:punto_recoleccion_id", getByPuntoController.Run)

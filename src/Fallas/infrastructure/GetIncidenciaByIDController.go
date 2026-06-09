@@ -1,4 +1,4 @@
-//GetIncidenciaByIDController.go
+// GetIncidenciaByIDController.go
 package infrastructure
 
 import (
@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetIncidenciaByIDController struct {
@@ -30,19 +31,13 @@ func (ctrl *GetIncidenciaByIDController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID de incidencia inválido")
 		return
 	}
 
 	incidencia, err := ctrl.getByIDUseCase.Run(int32(id))
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "No se pudo encontrar la incidencia",
-			"error":   err.Error(),
-		})
+		core.RespondError(c, http.StatusNotFound, core.ErrCodeNotFound, "Incidencia no encontrada", nil)
 		return
 	}
 

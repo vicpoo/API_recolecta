@@ -2,11 +2,11 @@ package controller_ciudadano
 
 import (
 	"database/sql"
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/application/application_ciudadano"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetCiudadanoController struct {
@@ -21,28 +21,20 @@ func (c *GetCiudadanoController) Run(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "id inválido",
-		})
+		core.RespondInvalidInput(ctx, "id inválido")
 		return
 	}
 
 	ciudadano, err := c.useCase.Execute(ctx.Request.Context(), id)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"error": "ciudadano no encontrado",
-			})
+		if err == sql.ErrNoRows || err.Error() == "ciudadano no encontrado" {
+			core.RespondNotFound(ctx, "ciudadano", strconv.Itoa(id))
 			return
 		}
 
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		core.RespondInternalServerError(ctx, "no se pudo obtener ciudadano", err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": ciudadano,
-	})
+	core.RespondOK(ctx, gin.H{"data": ciudadano})
 }

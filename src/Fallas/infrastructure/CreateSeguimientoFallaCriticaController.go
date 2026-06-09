@@ -2,11 +2,10 @@
 package infrastructure
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
 	"github.com/vicpoo/API_recolecta/src/Fallas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type CreateSeguimientoFallaCriticaController struct {
@@ -33,10 +32,7 @@ func (ctrl *CreateSeguimientoFallaCriticaController) Run(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Datos inválidos",
-			"error":   err.Error(),
-		})
+		core.RespondBadRequest(c, "Datos inválidos", map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -44,12 +40,9 @@ func (ctrl *CreateSeguimientoFallaCriticaController) Run(c *gin.Context) {
 
 	createdSeguimiento, err := ctrl.createUseCase.Run(seguimiento)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo crear el seguimiento de falla crítica",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudo crear el seguimiento de falla crítica", err)
 		return
 	}
 
-	c.JSON(http.StatusCreated, createdSeguimiento)
+	core.RespondCreated(c, createdSeguimiento)
 }

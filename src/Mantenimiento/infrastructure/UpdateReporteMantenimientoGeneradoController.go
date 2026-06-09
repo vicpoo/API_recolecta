@@ -2,13 +2,14 @@
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type UpdateReporteMantenimientoGeneradoController struct {
@@ -33,10 +34,7 @@ func (ctrl *UpdateReporteMantenimientoGeneradoController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID inválido")
 		return
 	}
 
@@ -48,10 +46,7 @@ func (ctrl *UpdateReporteMantenimientoGeneradoController) Run(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&reporteRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Datos inválidos",
-			"error":   err.Error(),
-		})
+		core.RespondBadRequest(c, "Datos inválidos", map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -62,10 +57,7 @@ func (ctrl *UpdateReporteMantenimientoGeneradoController) Run(c *gin.Context) {
 	if reporteRequest.FechaDesde != "" {
 		fechaDesde, errParse = time.Parse(time.RFC3339, reporteRequest.FechaDesde)
 		if errParse != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "Formato de fecha_desde inválido",
-				"error":   errParse.Error(),
-			})
+			core.RespondBadRequest(c, "Formato de fecha_desde inválido", map[string]string{"error": errParse.Error()})
 			return
 		}
 	}
@@ -73,10 +65,7 @@ func (ctrl *UpdateReporteMantenimientoGeneradoController) Run(c *gin.Context) {
 	if reporteRequest.FechaHasta != "" {
 		fechaHasta, errParse = time.Parse(time.RFC3339, reporteRequest.FechaHasta)
 		if errParse != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"message": "Formato de fecha_hasta inválido",
-				"error":   errParse.Error(),
-			})
+			core.RespondBadRequest(c, "Formato de fecha_hasta inválido", map[string]string{"error": errParse.Error()})
 			return
 		}
 	}
@@ -91,12 +80,13 @@ func (ctrl *UpdateReporteMantenimientoGeneradoController) Run(c *gin.Context) {
 
 	updatedReporte, err := ctrl.updateUseCase.Run(reporte)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo actualizar el reporte de mantenimiento",
-			"error":   err.Error(),
-		})
+		if strings.Contains(err.Error(), "no encontrado") {
+			core.RespondNotFound(c, "Reporte de mantenimiento generado", idParam)
+		} else {
+			core.RespondInternalServerError(c, "No se pudo actualizar el reporte de mantenimiento", err)
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, updatedReporte)
+	core.RespondOK(c, updatedReporte)
 }

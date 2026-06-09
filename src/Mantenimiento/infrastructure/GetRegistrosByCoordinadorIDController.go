@@ -2,11 +2,11 @@
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetRegistrosByCoordinadorIDController struct {
@@ -29,29 +29,25 @@ func (ctrl *GetRegistrosByCoordinadorIDController) Run(c *gin.Context) {
 	coordinadorIDParam := c.Param("coordinador_id")
 	coordinadorID, err := strconv.Atoi(coordinadorIDParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID de coordinador inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID de coordinador inválido")
 		return
 	}
 
 	registros, err := ctrl.getByCoordinadorIDUseCase.Run(int32(coordinadorID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener los registros de mantenimiento del coordinador",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener los registros de mantenimiento del coordinador", err)
 		return
 	}
 
 	if len(registros) == 0 {
-		c.JSON(http.StatusOK, gin.H{
+		core.RespondOK(c, map[string]interface{}{
 			"message": "No se encontraron registros de mantenimiento para este coordinador",
 			"data":    []string{},
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, registros)
+	core.RespondOK(c, map[string]interface{}{
+		"data": registros,
+	})
 }

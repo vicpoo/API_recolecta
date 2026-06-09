@@ -2,11 +2,11 @@
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type DeleteSeguimientoFallaCriticaController struct {
@@ -30,23 +30,15 @@ func (ctrl *DeleteSeguimientoFallaCriticaController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondBadRequest(c, "ID inválido", map[string]string{"error": err.Error()})
 		return
 	}
 
 	errDelete := ctrl.deleteUseCase.Run(int32(id))
 	if errDelete != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo eliminar el seguimiento de falla crítica",
-			"error":   errDelete.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudo eliminar el seguimiento de falla crítica", errDelete)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status": "Seguimiento de falla crítica eliminado exitosamente",
-	})
+	core.RespondOK(c, map[string]string{"status": "Seguimiento de falla crítica eliminado exitosamente"})
 }

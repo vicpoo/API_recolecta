@@ -2,12 +2,12 @@
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
 	"github.com/vicpoo/API_recolecta/src/Fallas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type UpdateSeguimientoFallaCriticaController struct {
@@ -32,10 +32,7 @@ func (ctrl *UpdateSeguimientoFallaCriticaController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondBadRequest(c, "ID inválido", map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -45,10 +42,7 @@ func (ctrl *UpdateSeguimientoFallaCriticaController) Run(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Datos inválidos",
-			"error":   err.Error(),
-		})
+		core.RespondBadRequest(c, "Datos inválidos", map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -60,12 +54,9 @@ func (ctrl *UpdateSeguimientoFallaCriticaController) Run(c *gin.Context) {
 
 	updatedSeguimiento, err := ctrl.updateUseCase.Run(seguimiento)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo actualizar el seguimiento de falla crítica",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudo actualizar el seguimiento de falla crítica", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, updatedSeguimiento)
+	core.RespondOK(c, updatedSeguimiento)
 }

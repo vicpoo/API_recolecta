@@ -2,10 +2,9 @@
 package infrastructure
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAllReportesMantenimientoGeneradoController struct {
@@ -27,12 +26,11 @@ func NewGetAllReportesMantenimientoGeneradoController(getAllUseCase *application
 func (ctrl *GetAllReportesMantenimientoGeneradoController) Run(c *gin.Context) {
 	reportes, err := ctrl.getAllUseCase.Run()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener los reportes de mantenimiento",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener los reportes de mantenimiento", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, reportes)
+	core.RespondOK(c, map[string]interface{}{
+		"data": reportes,
+	})
 }

@@ -1,10 +1,9 @@
 package controller_ciudadano
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/application/application_ciudadano"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type ListCiudadanoController struct {
@@ -18,13 +17,9 @@ func NewListCiudadanoController(useCase *application_ciudadano.ViewAllCiudadano)
 func (c *ListCiudadanoController) Run(ctx *gin.Context) {
 	ciudadanos, err := c.useCase.Execute(ctx.Request.Context())
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		core.RespondInternalServerError(ctx, "no se pudo listar ciudadanos", err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": ciudadanos,
-	})
+	core.RespondOK(ctx, gin.H{"data": ciudadanos})
 }

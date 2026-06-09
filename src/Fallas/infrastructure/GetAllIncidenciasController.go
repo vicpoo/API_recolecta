@@ -1,4 +1,4 @@
-//GetAllIncidenciasController.go
+// GetAllIncidenciasController.go
 package infrastructure
 
 import (
@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAllIncidenciasController struct {
@@ -27,10 +28,7 @@ func NewGetAllIncidenciasController(getAllUseCase *application.GetAllIncidencias
 func (ctrl *GetAllIncidenciasController) Run(c *gin.Context) {
 	incidencias, err := ctrl.getAllUseCase.Run()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener las incidencias",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "Error al listar incidencias", err)
 		return
 	}
 

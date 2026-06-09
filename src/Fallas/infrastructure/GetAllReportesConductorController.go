@@ -2,10 +2,9 @@
 package infrastructure
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAllReportesConductorController struct {
@@ -27,12 +26,9 @@ func NewGetAllReportesConductorController(getAllUseCase *application.GetAllRepor
 func (ctrl *GetAllReportesConductorController) Run(c *gin.Context) {
 	reportes, err := ctrl.getAllUseCase.Run()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener los reportes",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener los reportes", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, reportes)
+	core.RespondOK(c, reportes)
 }

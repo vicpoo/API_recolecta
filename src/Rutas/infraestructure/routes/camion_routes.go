@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type CamionRoutes struct {
@@ -42,6 +43,7 @@ func NewCamionRoutes(
 
 func (camionRoutes *CamionRoutes) Run() {
 	routes := camionRoutes.engine.Group("/api/camion")
+	routes.Use(core.JWTAuthMiddleware(), core.RequireRole(core.CONDUCTOR, core.SUPERVISOR, core.COORDINADOR))
 	{
 		routes.POST("/", camionRoutes.createCamionController.Run)
 		routes.GET("/", camionRoutes.getAllCamionController.Run)

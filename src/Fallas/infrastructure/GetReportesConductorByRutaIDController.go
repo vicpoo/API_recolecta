@@ -2,11 +2,11 @@
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetReportesConductorByRutaIDController struct {
@@ -29,21 +29,15 @@ func (ctrl *GetReportesConductorByRutaIDController) Run(c *gin.Context) {
 	rutaIDParam := c.Param("ruta_id")
 	rutaID, err := strconv.Atoi(rutaIDParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID de ruta inválido",
-			"error":   err.Error(),
-		})
+		core.RespondBadRequest(c, "ID de ruta inválido", map[string]string{"error": err.Error()})
 		return
 	}
 
 	reportes, err := ctrl.getByRutaIDUseCase.Run(int32(rutaID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener los reportes de la ruta",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener los reportes de la ruta", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, reportes)
+	core.RespondOK(c, reportes)
 }

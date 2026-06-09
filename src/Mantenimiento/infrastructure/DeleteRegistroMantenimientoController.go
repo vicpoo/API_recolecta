@@ -1,12 +1,13 @@
-//DeleteRegistroMantenimientoController.go
+// DeleteRegistroMantenimientoController.go
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type DeleteRegistroMantenimientoController struct {
@@ -30,23 +31,21 @@ func (ctrl *DeleteRegistroMantenimientoController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID inválido")
 		return
 	}
 
 	errDelete := ctrl.deleteUseCase.Run(int32(id))
 	if errDelete != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo eliminar el registro de mantenimiento",
-			"error":   errDelete.Error(),
-		})
+		if strings.Contains(errDelete.Error(), "no encontrado") {
+			core.RespondNotFound(c, "Registro de mantenimiento", idParam)
+		} else {
+			core.RespondInternalServerError(c, "No se pudo eliminar el registro de mantenimiento", errDelete)
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
+	core.RespondOK(c, map[string]string{
 		"status": "Registro de mantenimiento eliminado exitosamente",
 	})
 }

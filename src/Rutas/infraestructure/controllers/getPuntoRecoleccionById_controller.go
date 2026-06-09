@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetPuntoRecoleccionByIdController struct {
@@ -27,15 +28,19 @@ func (c *GetPuntoRecoleccionByIdController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(idStr)
 
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "id inválido"})
+		core.RespondInvalidInput(ctx, "id inválido")
 		return
 	}
 
 	result, err := c.uc.Execute(int32(id))
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		if strings.Contains(err.Error(), "no encontrado") {
+			core.RespondNotFound(ctx, "Punto de recolección", idStr)
+		} else {
+			core.RespondInternalServerError(ctx, "No se pudo obtener el punto de recolección", err)
+		}
 		return
 	}
 
-	ctx.JSON(http.StatusOK, result)
+	core.RespondOK(ctx, result)
 }

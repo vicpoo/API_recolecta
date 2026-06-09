@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAnomaliasByTipoAnomaliaController struct {
@@ -27,18 +28,13 @@ func NewGetAnomaliasByTipoAnomaliaController(getByTipoAnomaliaUseCase *applicati
 func (ctrl *GetAnomaliasByTipoAnomaliaController) Run(c *gin.Context) {
 	tipoAnomalia := c.Query("tipo_anomalia")
 	if tipoAnomalia == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Se requiere el parámetro tipo_anomalia",
-		})
+		core.RespondValidationError(c, "Parámetro de tipo_anomalia inválido", map[string]string{"tipo_anomalia": "requerido"})
 		return
 	}
 
 	anomalias, err := ctrl.getByTipoAnomaliaUseCase.Run(tipoAnomalia)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener las anomalías por tipo",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener las anomalías por tipo", err)
 		return
 	}
 

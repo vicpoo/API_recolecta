@@ -1,4 +1,4 @@
-//GetIncidenciasByFechaRangeController.go
+// GetIncidenciasByFechaRangeController.go
 package infrastructure
 
 import (
@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetIncidenciasByFechaRangeController struct {
@@ -29,18 +30,16 @@ func (ctrl *GetIncidenciasByFechaRangeController) Run(c *gin.Context) {
 	fechaFin := c.Query("fecha_fin")
 
 	if fechaInicio == "" || fechaFin == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Se requieren los parámetros fecha_inicio y fecha_fin",
+		core.RespondValidationError(c, "Parámetros de fecha inválidos", map[string]string{
+			"fecha_inicio": "requerido",
+			"fecha_fin":    "requerido",
 		})
 		return
 	}
 
 	incidencias, err := ctrl.getByFechaRangeUseCase.Run(fechaInicio, fechaFin)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener las incidencias",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener las incidencias", err)
 		return
 	}
 

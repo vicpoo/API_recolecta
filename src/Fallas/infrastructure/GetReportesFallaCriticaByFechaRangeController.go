@@ -2,10 +2,9 @@
 package infrastructure
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetReportesFallaCriticaByFechaRangeController struct {
@@ -29,20 +28,15 @@ func (ctrl *GetReportesFallaCriticaByFechaRangeController) Run(c *gin.Context) {
 	fechaFin := c.Query("fecha_fin")
 
 	if fechaInicio == "" || fechaFin == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Se requieren los parámetros fecha_inicio y fecha_fin",
-		})
+		core.RespondBadRequest(c, "Se requieren los parámetros fecha_inicio y fecha_fin", nil)
 		return
 	}
 
 	reportes, err := ctrl.getByFechaRangeUseCase.Run(fechaInicio, fechaFin)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener los reportes de falla crítica para el rango de fechas",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener los reportes de falla crítica para el rango de fechas", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, reportes)
+	core.RespondOK(c, reportes)
 }

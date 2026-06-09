@@ -1,4 +1,4 @@
-//GetIncidenciasByPuntoRecoleccionIDController.go
+// GetIncidenciasByPuntoRecoleccionIDController.go
 package infrastructure
 
 import (
@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetIncidenciasByPuntoRecoleccionIDController struct {
@@ -29,19 +30,13 @@ func (ctrl *GetIncidenciasByPuntoRecoleccionIDController) Run(c *gin.Context) {
 	puntoIDParam := c.Param("punto_recoleccion_id")
 	puntoID, err := strconv.Atoi(puntoIDParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID de punto de recolección inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID de punto de recolección inválido")
 		return
 	}
 
 	incidencias, err := ctrl.getByPuntoRecoleccionIDUseCase.Run(int32(puntoID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener las incidencias del punto de recolección",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener las incidencias del punto de recolección", err)
 		return
 	}
 

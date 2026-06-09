@@ -1,12 +1,12 @@
-//GetRegistrosByCamionIDController.go
+// GetRegistrosByCamionIDController.go
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Mantenimiento/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetRegistrosByCamionIDController struct {
@@ -29,29 +29,25 @@ func (ctrl *GetRegistrosByCamionIDController) Run(c *gin.Context) {
 	camionIDParam := c.Param("camion_id")
 	camionID, err := strconv.Atoi(camionIDParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID de camión inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID de camión inválido")
 		return
 	}
 
 	registros, err := ctrl.getByCamionIDUseCase.Run(int32(camionID))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudieron obtener los registros de mantenimiento del camión",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudieron obtener los registros de mantenimiento del camión", err)
 		return
 	}
 
 	if len(registros) == 0 {
-		c.JSON(http.StatusOK, gin.H{
+		core.RespondOK(c, map[string]interface{}{
 			"message": "No se encontraron registros de mantenimiento para este camión",
 			"data":    []string{},
 		})
 		return
 	}
 
-	c.JSON(http.StatusOK, registros)
+	core.RespondOK(c, map[string]interface{}{
+		"data": registros,
+	})
 }

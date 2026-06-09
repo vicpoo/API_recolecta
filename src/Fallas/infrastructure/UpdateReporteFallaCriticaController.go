@@ -2,12 +2,12 @@
 package infrastructure
 
 import (
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
 	"github.com/vicpoo/API_recolecta/src/Fallas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type UpdateReporteFallaCriticaController struct {
@@ -32,10 +32,7 @@ func (ctrl *UpdateReporteFallaCriticaController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "ID inválido",
-			"error":   err.Error(),
-		})
+		core.RespondInvalidInput(c, "ID inválido")
 		return
 	}
 
@@ -46,10 +43,7 @@ func (ctrl *UpdateReporteFallaCriticaController) Run(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Datos inválidos",
-			"error":   err.Error(),
-		})
+		core.RespondBadRequest(c, "Datos inválidos", gin.H{"error": err.Error()})
 		return
 	}
 
@@ -62,12 +56,9 @@ func (ctrl *UpdateReporteFallaCriticaController) Run(c *gin.Context) {
 
 	updatedReporte, err := ctrl.updateUseCase.Run(reporte)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "No se pudo actualizar el reporte de falla crítica",
-			"error":   err.Error(),
-		})
+		core.RespondInternalServerError(c, "No se pudo actualizar el reporte de falla crítica", err)
 		return
 	}
 
-	c.JSON(http.StatusOK, updatedReporte)
+	core.RespondOK(c, updatedReporte)
 }
