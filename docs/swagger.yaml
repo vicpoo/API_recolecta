@@ -1,12 +1,12 @@
-basePath: /
 definitions:
   domain.AlertaUsuario:
     properties:
-      alertaID:
+      alerta_id:
         type: integer
-      creadoPor:
+      creado_por:
+        description: supervisor
         type: integer
-      createdAt:
+      created_at:
         type: string
       leida:
         type: boolean
@@ -14,8 +14,20 @@ definitions:
         type: string
       titulo:
         type: string
-      usuarioID:
+      usuario_id:
+        description: receptor
         type: integer
+    type: object
+  domain.Colonia:
+    properties:
+      colonia_id:
+        type: integer
+      created_at:
+        type: string
+      nombre:
+        type: string
+      zona:
+        type: string
     type: object
   entities.Camion:
     properties:
@@ -51,12 +63,8 @@ definitions:
       tipo_camion_id:
         type: integer
     type: object
-host: localhost:8080
 info:
   contact: {}
-  description: API para gestión de recolección de residuos
-  title: API Recolecta
-  version: "1.0"
 paths:
   /api/alertas:
     get:
@@ -714,6 +722,190 @@ paths:
       summary: Buscar camión por placa
       tags:
       - Camion
+  /api/colonia:
+    get:
+      description: Obtiene el listado de todas las colonias disponibles. Endpoint
+        público
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Colonia'
+            type: array
+        "500":
+          description: Error interno del servidor
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Listar colonias
+      tags:
+      - Colonia
+    post:
+      consumes:
+      - application/json
+      description: Crea una nueva colonia. Solo administradores (rol ADMIN)
+      parameters:
+      - description: Datos de la colonia
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Colonia'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Colonia'
+        "400":
+          description: Datos inválidos
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: No autenticado
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: No autorizado (requiere rol ADMIN)
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Error interno del servidor
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Crear colonia
+      tags:
+      - Colonia
+  /api/colonia/{id}:
+    delete:
+      description: Elimina una colonia de la base de datos. Solo administradores (rol
+        ADMIN)
+      parameters:
+      - description: ID de la colonia
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Colonia eliminada correctamente
+        "400":
+          description: ID inválido
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: No autenticado
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: No autorizado (requiere rol ADMIN)
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Error interno del servidor
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Eliminar colonia
+      tags:
+      - Colonia
+    get:
+      description: Obtiene los detalles de una colonia específica. Endpoint público
+      parameters:
+      - description: ID de la colonia
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Colonia'
+        "400":
+          description: ID inválido
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Colonia no encontrada
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Error interno del servidor
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Obtener colonia por ID
+      tags:
+      - Colonia
+    put:
+      consumes:
+      - application/json
+      description: Actualiza los datos de una colonia existente. Solo administradores
+        (rol ADMIN)
+      parameters:
+      - description: ID de la colonia
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Datos a actualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.Colonia'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Colonia actualizada correctamente
+        "400":
+          description: Datos inválidos
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: No autenticado
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: No autorizado (requiere rol ADMIN)
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Error interno del servidor
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - Bearer: []
+      summary: Actualizar colonia
+      tags:
+      - Colonia
   /api/estado-camion/:
     get:
       produces:
@@ -3686,290 +3878,4 @@ paths:
       summary: Actualizar tipo de mantenimiento
       tags:
       - TipoMantenimiento
-  /api/usuarios:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              additionalProperties: true
-              type: object
-            type: array
-      summary: Listar usuarios
-      tags:
-      - Usuario
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Datos usuario
-        in: body
-        name: body
-        required: true
-        schema:
-          additionalProperties: true
-          type: object
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Crear usuario
-      tags:
-      - Usuario
-  /api/usuarios/{id}:
-    delete:
-      parameters:
-      - description: ID usuario
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Eliminar usuario
-      tags:
-      - Usuario
-    get:
-      parameters:
-      - description: ID usuario
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Obtener usuario por ID
-      tags:
-      - Usuario
-  /api/usuarios/login:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Credenciales
-        in: body
-        name: body
-        required: true
-        schema:
-          additionalProperties: true
-          type: object
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-        "401":
-          description: Unauthorized
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Login de usuario
-      tags:
-      - Usuario
-  /colonias:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              additionalProperties: true
-              type: object
-            type: array
-      summary: Listar colonias
-      tags:
-      - Colonia
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Colonia
-        in: body
-        name: body
-        required: true
-        schema:
-          additionalProperties: true
-          type: object
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Crear colonia
-      tags:
-      - Colonia
-  /colonias/{id}:
-    delete:
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Eliminar colonia
-      tags:
-      - Colonia
-    get:
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Colonia por ID
-      tags:
-      - Colonia
-    put:
-      consumes:
-      - application/json
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Actualizar colonia
-      tags:
-      - Colonia
-  /domicilios:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Domicilio
-        in: body
-        name: body
-        required: true
-        schema:
-          additionalProperties: true
-          type: object
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Crear domicilio
-      tags:
-      - Domicilio
-  /domicilios/{id}:
-    delete:
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Eliminar domicilio
-      tags:
-      - Domicilio
-    get:
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Domicilio por ID
-      tags:
-      - Domicilio
-    put:
-      consumes:
-      - application/json
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Actualizar domicilio
-      tags:
-      - Domicilio
 swagger: "2.0"
