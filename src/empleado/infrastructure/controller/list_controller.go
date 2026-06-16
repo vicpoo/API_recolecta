@@ -1,0 +1,26 @@
+package controller
+
+import (
+
+	"github.com/gin-gonic/gin"
+	"github.com/vicpoo/API_recolecta/src/core"
+	"github.com/vicpoo/API_recolecta/src/empleado/application"
+)
+
+type ListEmpleadoController struct {
+	useCase *application.ListEmpleado
+}
+
+func NewListEmpleadoController(useCase *application.ListEmpleado) *ListEmpleadoController {
+	return &ListEmpleadoController{useCase: useCase}
+}
+
+func (c *ListEmpleadoController) Run(ctx *gin.Context) {
+	result, err := c.useCase.Execute(ctx.Request.Context())
+	if err != nil {
+		core.RespondInternalServerError(ctx, "error listando empleados", err)
+		return
+	}
+
+	core.RespondOK(ctx, gin.H{"data": result})
+}

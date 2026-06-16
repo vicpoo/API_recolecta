@@ -17,6 +17,12 @@ func NewGetNotificacionesByMantenimientoIDController(useCase *application.GetNot
 	return &GetNotificacionesByMantenimientoIDController{useCase: useCase}
 }
 
+// @Summary      Notificaciones por mantenimiento
+// @Tags         Notificacion
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/notificaciones/mantenimiento/{mantenimiento_id} [get]
 func (ctrl *GetNotificacionesByMantenimientoIDController) Run(c *gin.Context) {
 	idParam := c.Param("mantenimiento_id")
 	id, err := strconv.Atoi(idParam)

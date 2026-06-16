@@ -16,6 +16,12 @@ func NewGetActivoByChoferController(uc *application.GetActivoByChoferUseCase) *G
 	return &GetActivoByChoferController{uc: uc}
 }
 
+// @Summary      Asignación activa por chofer
+// @Tags         HistorialAsignacion
+// @Produce      json
+// @Param        choferId path int true "ID chofer"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/historial-asignacion/activo/chofer/{choferId} [get]
 func (ctr *GetActivoByChoferController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("choferId"))
 	if err != nil {

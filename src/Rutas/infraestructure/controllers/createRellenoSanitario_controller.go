@@ -1,11 +1,10 @@
 package controllers
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
 	"github.com/vicpoo/API_recolecta/src/Rutas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type CreateRellenoSanitarioController struct {
@@ -16,19 +15,26 @@ func NewCreateRellenoSanitarioController(uc *application.SaveRellenoSanitarioUse
 	return &CreateRellenoSanitarioController{uc: uc}
 }
 
+// @Summary      Crear relleno sanitario
+// @Tags         RellenoSanitario
+// @Accept       json
+// @Produce      json
+// @Success      201 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/relleno-sanitario/ [post]
 func (c *CreateRellenoSanitarioController) Execute(ctx *gin.Context) {
 	var relleno entities.RellenoSanitario
 
 	if err := ctx.ShouldBindJSON(&relleno); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		core.RespondInvalidInput(ctx, err.Error())
 		return
 	}
 
 	result, err := c.uc.Execute(&relleno)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		core.RespondInternalServerError(ctx, "Error creando relleno sanitario", err)
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, result)
+	core.RespondCreated(ctx, result)
 }

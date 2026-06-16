@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetRegistroVaciadoByRellenoIDController struct {
@@ -18,16 +19,22 @@ func NewGetRegistroVaciadoByRellenoIDController(
 	return &GetRegistroVaciadoByRellenoIDController{uc: uc}
 }
 
+// @Summary      Registros vaciado por relleno
+// @Tags         RegistroVaciado
+// @Produce      json
+// @Param        relleno_id path int true "ID relleno"
+// @Success      200 {array} map[string]interface{}
+// @Router       /api/registro-vaciado/relleno/{relleno_id} [get]
 func (c *GetRegistroVaciadoByRellenoIDController) Run(ctx *gin.Context) {
 	rellenoID, err := strconv.Atoi(ctx.Param("relleno_id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "relleno_id inválido"})
+		core.RespondInvalidInput(ctx, "relleno_id inválido")
 		return
 	}
 
 	result, err := c.uc.Execute(int32(rellenoID))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		core.RespondInternalServerError(ctx, "No se pudieron obtener los registros de vaciado por relleno", err)
 		return
 	}
 

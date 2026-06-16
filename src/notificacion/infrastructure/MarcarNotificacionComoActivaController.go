@@ -17,6 +17,13 @@ func NewMarcarNotificacionComoActivaController(useCase *application.MarcarNotifi
 	return &MarcarNotificacionComoActivaController{useCase: useCase}
 }
 
+// @Summary      Reactivar notificación
+// @Tags         Notificacion
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/notificaciones/{id}/reactivar [patch]
 func (ctrl *MarcarNotificacionComoActivaController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

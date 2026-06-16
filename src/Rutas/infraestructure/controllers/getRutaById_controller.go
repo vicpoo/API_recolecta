@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
-	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetRutaByIdController struct {
@@ -17,33 +18,34 @@ func NewGetRutaByIdController(uc *application.GetRutaByIdUseCase) *GetRutaByIdCo
 	return &GetRutaByIdController{uc: uc}
 }
 
+// @Summary      Obtener ruta por ID
+// @Tags         Ruta
+// @Produce      json
+// @Param        id path int true "ID ruta"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/rutas/{id} [get]
 func (ctr *GetRutaByIdController) Run(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"message": "ID inválido",
-		})
+		core.RespondInvalidInput(ctx, "ID inválido")
 		return
 	}
 
 	ruta, err := ctr.uc.Run(int32(id))
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"success": false,
-			"message": "Ruta no encontrada",
-		})
+		if strings.Contains(err.Error(), "no encontrado") || strings.Contains(err.Error(), "no encontrada") {
+			core.RespondNotFound(ctx, "Ruta", ctx.Param("id"))
+			return
+		}
+		core.RespondInternalServerError(ctx, "Error obteniendo ruta", err)
 		return
 	}
 
 	// Convertir json_ruta de string a objeto JSON
 	var jsonRuta interface{}
 	if err := json.Unmarshal([]byte(ruta.JsonRuta), &jsonRuta); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"message": "Error al parsear json_ruta",
-		})
+		core.RespondInternalServerError(ctx, "Error al parsear json_ruta", err)
 		return
 	}
 
@@ -60,5 +62,5 @@ func (ctr *GetRutaByIdController) Run(ctx *gin.Context) {
 		},
 	}
 
-	ctx.JSON(http.StatusOK, response)
+	core.RespondOK(ctx, response)
 }

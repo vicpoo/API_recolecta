@@ -2,12 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
-	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
 	"github.com/vicpoo/API_recolecta/src/Rutas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type CreateRutaController struct {
@@ -18,6 +18,13 @@ func NewCreateRutaController(uc *application.CreateRutaUseCase) *CreateRutaContr
 	return &CreateRutaController{uc}
 }
 
+// @Summary      Crear ruta
+// @Tags         Ruta
+// @Accept       json
+// @Produce      json
+// @Success      201 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/rutas/ [post]
 func (ctr *CreateRutaController) Run(ctx *gin.Context) {
 	var req struct {
 		Nombre      string          `json:"nombre" binding:"required"`
@@ -27,13 +34,13 @@ func (ctr *CreateRutaController) Run(ctx *gin.Context) {
 	}
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
+		core.RespondInvalidInput(ctx, err.Error())
 		return
 	}
 
 	// Validar que JsonRuta sea un JSON válido
 	if !json.Valid(req.JsonRuta) {
-		ctx.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "json_ruta inválido"})
+		core.RespondInvalidInput(ctx, "json_ruta inválido")
 		return
 	}
 
@@ -52,17 +59,17 @@ func (ctr *CreateRutaController) Run(ctx *gin.Context) {
 
 	err := ctr.uc.Run(ruta)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": err.Error()})
+		core.RespondInternalServerError(ctx, "Error creando ruta", err)
 		return
 	}
 
 	var jsonRuta interface{}
 	if err := json.Unmarshal([]byte(ruta.JsonRuta), &jsonRuta); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "Error al parsear json_ruta"})
+		core.RespondInternalServerError(ctx, "Error al parsear json_ruta", err)
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"success": true, "data": gin.H{
+	core.RespondCreated(ctx, gin.H{"success": true, "data": gin.H{
 		"ruta_id":     ruta.RutaID,
 		"nombre":      ruta.Nombre,
 		"descripcion": ruta.Descripcion,

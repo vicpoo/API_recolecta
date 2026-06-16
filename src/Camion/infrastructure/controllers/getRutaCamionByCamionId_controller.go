@@ -18,6 +18,12 @@ func NewGetRutaCamionByCamionIDController(
 	return &GetRutaCamionByCamionIDController{uc}
 }
 
+// @Summary      Rutas-camión por ID de camión
+// @Tags         RutaCamion
+// @Produce      json
+// @Param        camion_id path int true "ID camión"
+// @Success      200 {array} map[string]interface{}
+// @Router       /api/ruta-camion/camion/{camion_id} [get]
 func (c *GetRutaCamionByCamionIDController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("camion_id"))
 	if err != nil {

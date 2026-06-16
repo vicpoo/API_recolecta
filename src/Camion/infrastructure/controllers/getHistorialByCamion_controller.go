@@ -16,6 +16,12 @@ func NewGetHistorialByCamionController(uc *application.GetHistorialByCamionUseCa
 	return &GetHistorialByCamionController{uc: uc}
 }
 
+// @Summary      Historial por camión
+// @Tags         HistorialAsignacion
+// @Produce      json
+// @Param        camionId path int true "ID camión"
+// @Success      200 {array} map[string]interface{}
+// @Router       /api/historial-asignacion/camion/{camionId} [get]
 func (ctr *GetHistorialByCamionController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("camionId"))
 	if err != nil {

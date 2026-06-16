@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetAllRegistroVaciadoController struct {
@@ -15,10 +16,15 @@ func NewGetAllRegistroVaciadoController(uc *application.ListAllRegistroVaciadoUs
 	return &GetAllRegistroVaciadoController{uc: uc}
 }
 
+// @Summary      Listar registros de vaciado
+// @Tags         RegistroVaciado
+// @Produce      json
+// @Success      200 {array} map[string]interface{}
+// @Router       /api/registro-vaciado/ [get]
 func (c *GetAllRegistroVaciadoController) Run(ctx *gin.Context) {
 	result, err := c.uc.Execute()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		core.RespondInternalServerError(ctx, "No se pudieron obtener los registros de vaciado", err)
 		return
 	}
 

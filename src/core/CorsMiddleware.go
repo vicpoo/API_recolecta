@@ -20,19 +20,22 @@ func CORSMiddleware() gin.HandlerFunc {
 		}
 	}
 
+	// Si no hay orígenes configurados, permitir todos (útil en dev/staging sin variable seteada).
+	if len(origins) == 0 {
+		return cors.New(cors.Config{
+			AllowAllOrigins: true,
+			AllowMethods:    []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+			AllowHeaders:    []string{"Origin", "Content-Type", "Accept", "Authorization"},
+			MaxAge:          12 * time.Hour,
+		})
+	}
+
 	return cors.New(cors.Config{
-		AllowOrigins: origins,
-		AllowMethods: []string{
-			"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS",
-		},
-		AllowHeaders: []string{
-			"Origin",
-			"Content-Type",
-			"Accept",
-			"Authorization",
-		},
+		AllowOrigins:     origins,
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		AllowCredentials: true,
-		MaxAge: 12 * time.Hour,
+		MaxAge:           12 * time.Hour,
 	})
 }
 

@@ -16,6 +16,13 @@ func NewCrearNotificacionFallaController(useCase *application.CrearNotificacionF
 	return &CrearNotificacionFallaController{useCase: useCase}
 }
 
+// @Summary      Crear notificación de falla
+// @Tags         Notificacion
+// @Produce      json
+// @Param        body body map[string]interface{} true "Body"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/notificaciones/falla [post]
 func (ctrl *CrearNotificacionFallaController) Run(c *gin.Context) {
 	var request struct {
 		UsuarioID  *int32 `json:"usuario_id"`

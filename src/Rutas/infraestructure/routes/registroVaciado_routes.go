@@ -4,18 +4,19 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type RegistroVaciadoRoutes struct {
 	engine *gin.Engine
 
-	createController              *controllers.CreateRegistroVaciadoController
-	getAllController              *controllers.GetAllRegistroVaciadoController
-	getByIDController             *controllers.GetRegistroVaciadoByIDController
-	getByRellenoIDController      *controllers.GetRegistroVaciadoByRellenoIDController
-	getByRutaCamionIDController   *controllers.GetRegistroVaciadoByRutaCamionIDController
-	existsController              *controllers.ExistsRegistroVaciadoController
-	deleteController              *controllers.DeleteRegistroVaciadoController
+	createController            *controllers.CreateRegistroVaciadoController
+	getAllController            *controllers.GetAllRegistroVaciadoController
+	getByIDController           *controllers.GetRegistroVaciadoByIDController
+	getByRellenoIDController    *controllers.GetRegistroVaciadoByRellenoIDController
+	getByRutaCamionIDController *controllers.GetRegistroVaciadoByRutaCamionIDController
+	existsController            *controllers.ExistsRegistroVaciadoController
+	deleteController            *controllers.DeleteRegistroVaciadoController
 }
 
 func NewRegistroVaciadoRoutes(
@@ -43,6 +44,7 @@ func NewRegistroVaciadoRoutes(
 
 func (r *RegistroVaciadoRoutes) Run() {
 	group := r.engine.Group("/api/registro-vaciado")
+	group.Use(core.JWTAuthMiddleware(), core.RequireRole(core.CONDUCTOR, core.SUPERVISOR, core.COORDINADOR))
 	{
 		group.POST("/", r.createController.Run)
 		group.GET("/", r.getAllController.Run)

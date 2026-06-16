@@ -17,6 +17,12 @@ func NewGetNotificacionesByFallaIDController(useCase *application.GetNotificacio
 	return &GetNotificacionesByFallaIDController{useCase: useCase}
 }
 
+// @Summary      Notificaciones por falla
+// @Tags         Notificacion
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/notificaciones/falla/{falla_id} [get]
 func (ctrl *GetNotificacionesByFallaIDController) Run(c *gin.Context) {
 	idParam := c.Param("falla_id")
 	id, err := strconv.Atoi(idParam)

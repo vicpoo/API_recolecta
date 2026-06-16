@@ -7,15 +7,15 @@ import (
 	"github.com/vicpoo/API_recolecta/src/alerta_usuario/domain"
 )
 
-type AlertaRepository struct {
+type PostgresAlertaRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewAlertaRepository(db *pgxpool.Pool) *AlertaRepository {
-	return &AlertaRepository{db}
+func NewPostgresAlertaRepository(db *pgxpool.Pool) domain.AlertaUsuarioRepository {
+	return &PostgresAlertaRepository{db}
 }
 
-func (r *AlertaRepository) Create(a *domain.AlertaUsuario) error {
+func (r *PostgresAlertaRepository) Create(a *domain.AlertaUsuario) error {
 	query := `
 		INSERT INTO alerta_usuario
 		(titulo, mensaje, usuario_id, creado_por, leida, created_at)
@@ -36,7 +36,7 @@ func (r *AlertaRepository) Create(a *domain.AlertaUsuario) error {
 	return err
 }
 
-func (r *AlertaRepository) GetByUsuario(usuarioID int) ([]domain.AlertaUsuario, error) {
+func (r *PostgresAlertaRepository) GetByUsuario(usuarioID int) ([]domain.AlertaUsuario, error) {
 	query := `
 		SELECT alerta_id, titulo, mensaje, leida, created_at, creado_por
 		FROM alerta_usuario
@@ -70,7 +70,7 @@ func (r *AlertaRepository) GetByUsuario(usuarioID int) ([]domain.AlertaUsuario, 
 	return alertas, nil
 }
 
-func (r *AlertaRepository) MarkAsRead(alertaID int, usuarioID int) error {
+func (r *PostgresAlertaRepository) MarkAsRead(alertaID int, usuarioID int) error {
 	query := `
 		UPDATE alerta_usuario
 		SET leida = true

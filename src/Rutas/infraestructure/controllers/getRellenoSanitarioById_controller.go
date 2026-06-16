@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetRellenoSanitarioByIDController struct {
@@ -16,18 +17,28 @@ func NewGetRellenoSanitarioByIDController(uc *application.GetRellenoSanitarioByI
 	return &GetRellenoSanitarioByIDController{uc: uc}
 }
 
+// @Summary      Relleno sanitario por ID
+// @Tags         RellenoSanitario
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/relleno-sanitario/{id} [get]
 func (c *GetRellenoSanitarioByIDController) Execute(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
+		core.RespondInvalidInput(ctx, "ID inválido")
 		return
 	}
 
 	result, err := c.uc.Execute(int32(id))
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		if strings.Contains(err.Error(), "no encontrado") {
+			core.RespondNotFound(ctx, "RellenoSanitario", ctx.Param("id"))
+			return
+		}
+		core.RespondInternalServerError(ctx, "Error obteniendo relleno sanitario", err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, result)
+	core.RespondOK(ctx, result)
 }

@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"encoding/json"
-	"net/http"
 	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
 	"github.com/vicpoo/API_recolecta/src/Rutas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type UpdateRutaController struct {
@@ -17,10 +18,17 @@ func NewUpdateRutaController(uc *application.UpdateRutaUseCase) *UpdateRutaContr
 	return &UpdateRutaController{uc}
 }
 
+// @Summary      Actualizar ruta
+// @Tags         Ruta
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "ID ruta"
+// @Success      200 {object} map[string]interface{}
+// @Router       /api/rutas/{id} [put]
 func (ctr *UpdateRutaController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "ID inválido"})
+		core.RespondInvalidInput(ctx, "ID inválido")
 		return
 	}
 
@@ -31,13 +39,13 @@ func (ctr *UpdateRutaController) Run(ctx *gin.Context) {
 	}
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"success": false, "message": err.Error()})
+		core.RespondInvalidInput(ctx, err.Error())
 		return
 	}
 
 	// Validar que JsonRuta sea un JSON válido
 	if !json.Valid(req.JsonRuta) {
-		ctx.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "json_ruta inválido"})
+		core.RespondInvalidInput(ctx, "json_ruta inválido")
 		return
 	}
 
@@ -50,16 +58,16 @@ func (ctr *UpdateRutaController) Run(ctx *gin.Context) {
 
 	err = ctr.uc.Run(ruta)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": err.Error()})
+		core.RespondInternalServerError(ctx, "Error actualizando ruta", err)
 		return
 	}
 	var jsonRuta interface{}
 	if err := json.Unmarshal([]byte(ruta.JsonRuta), &jsonRuta); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "Error al parsear json_ruta"})
+		core.RespondInternalServerError(ctx, "Error al parsear json_ruta", err)
 		return
 	}
-	
-	ctx.JSON(http.StatusOK, gin.H{"success": true, "data": gin.H{
+
+	core.RespondOK(ctx, gin.H{"success": true, "data": gin.H{
 		"ruta_id":     ruta.RutaID,
 		"nombre":      ruta.Nombre,
 		"descripcion": ruta.Descripcion,

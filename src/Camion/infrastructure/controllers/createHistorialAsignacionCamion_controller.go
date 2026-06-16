@@ -16,6 +16,13 @@ func NewCreateHistorialAsignacionCamionController(uc *application.SaveHistorialA
 	return &CreateHistorialAsignacionCamionController{uc: uc}
 }
 
+// @Summary      Crear historial de asignación de camión
+// @Tags         HistorialAsignacion
+// @Accept       json
+// @Produce      json
+// @Success      201 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /api/historial-asignacion/ [post]
 func (ctr *CreateHistorialAsignacionCamionController) Run(ctx *gin.Context) {
 	var historial entities.HistorialAsignacionCamion
 

@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type PuntoRecoleccionRoutes struct {
@@ -26,18 +27,19 @@ func NewPuntoRecoleccionRoutes(
 	deleteController *controllers.DeletePuntoRecoleccionController,
 ) *PuntoRecoleccionRoutes {
 	return &PuntoRecoleccionRoutes{
-		engine: engine,
-		createController: createController,
-		getAllController: getAllController,
-		getByIdController: getByIdController,
+		engine:              engine,
+		createController:    createController,
+		getAllController:    getAllController,
+		getByIdController:   getByIdController,
 		getByRutaController: getByRutaController,
-		updateController: updateController,
-		deleteController: deleteController,
+		updateController:    updateController,
+		deleteController:    deleteController,
 	}
 }
 
 func (r *PuntoRecoleccionRoutes) Run() {
 	routes := r.engine.Group("/api/puntos-recoleccion")
+	routes.Use(core.JWTAuthMiddleware(), core.RequireRole(core.CONDUCTOR, core.SUPERVISOR, core.COORDINADOR))
 	{
 		routes.POST("/", r.createController.Run)
 		routes.GET("/", r.getAllController.Run)
