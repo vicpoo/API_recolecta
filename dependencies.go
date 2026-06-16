@@ -76,7 +76,7 @@ func InitDependencies() {
 
 	engine := gin.Default()
 	engine.Use(core.CORSMiddleware())
-	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	engine.GET("/api/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	db := core.GetBD()
 
