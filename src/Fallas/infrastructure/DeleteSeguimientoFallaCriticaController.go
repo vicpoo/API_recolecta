@@ -23,8 +23,8 @@ func NewDeleteSeguimientoFallaCriticaController(deleteUseCase *application.Delet
 // @Tags         SeguimientoFallaCritica
 // @Produce      json
 // @Param        id path int true "ID"
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.SeguimientoFallaCriticaMessageResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/seguimientos-falla-critica/{id} [delete]
 func (ctrl *DeleteSeguimientoFallaCriticaController) Run(c *gin.Context) {
 	idParam := c.Param("id")

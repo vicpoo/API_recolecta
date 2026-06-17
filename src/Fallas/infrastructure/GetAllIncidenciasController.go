@@ -22,8 +22,8 @@ func NewGetAllIncidenciasController(getAllUseCase *application.GetAllIncidencias
 // @Summary      Listar incidencias
 // @Tags         Incidencia
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.IncidenciaListResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/incidencias/ [get]
 func (ctrl *GetAllIncidenciasController) Run(c *gin.Context) {
 	incidencias, err := ctrl.getAllUseCase.Run()

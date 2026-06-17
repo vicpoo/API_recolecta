@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/empleado/application"
+	_ "github.com/vicpoo/API_recolecta/src/empleado/domain/entities"
 )
 
 type CreateEmpleadoController struct {
@@ -15,6 +16,16 @@ func NewCreateEmpleadoController(useCase *application.CreateEmpleado) *CreateEmp
 	return &CreateEmpleadoController{useCase: useCase}
 }
 
+// @Summary      Crear empleado
+// @Tags         Empleado
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        body body entities.CreateEmpleadoRequest true "Empleado"
+// @Success      201 {object} entities.EmpleadoResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Router       /api/empleados/ [post]
 func (c *CreateEmpleadoController) Run(ctx *gin.Context) {
 	var input application.CreateEmpleadoInput
 

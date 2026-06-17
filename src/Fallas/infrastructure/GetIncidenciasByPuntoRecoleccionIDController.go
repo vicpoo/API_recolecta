@@ -23,8 +23,8 @@ func NewGetIncidenciasByPuntoRecoleccionIDController(getByPuntoRecoleccionIDUseC
 // @Summary      Incidencias por punto
 // @Tags         Incidencia
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.IncidenciaListResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/incidencias/punto/{punto_recoleccion_id} [get]
 func (ctrl *GetIncidenciasByPuntoRecoleccionIDController) Run(c *gin.Context) {
 	puntoIDParam := c.Param("punto_recoleccion_id")

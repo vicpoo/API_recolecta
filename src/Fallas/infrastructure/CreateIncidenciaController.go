@@ -24,9 +24,9 @@ func NewCreateIncidenciaController(createUseCase *application.CreateIncidenciaUs
 // @Summary      Crear incidencia
 // @Tags         Incidencia
 // @Produce      json
-// @Param        body body map[string]interface{} true "Body"
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Param        body body entities.CreateIncidenciaRequest true "Body"
+// @Success      200 {object} entities.IncidenciaResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/incidencias/ [post]
 func (ctrl *CreateIncidenciaController) Run(c *gin.Context) {
 	var request struct {

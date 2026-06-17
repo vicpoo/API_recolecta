@@ -21,8 +21,8 @@ func NewGetAllTiposMantenimientoController(getAllUseCase *application.GetAllTipo
 // @Summary      Listar tipos de mantenimiento
 // @Tags         TipoMantenimiento
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.RegistroMantenimientoListResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/tipos-mantenimiento/ [get]
 func (ctrl *GetAllTiposMantenimientoController) Run(c *gin.Context) {
 	tiposMantenimiento, err := ctrl.getAllUseCase.Run()

@@ -21,7 +21,8 @@ func NewGetAllEstadoCamionController(
 // @Summary      Listar estados de camión
 // @Tags         EstadoCamion
 // @Produce      json
-// @Success      200 {array} map[string]interface{}
+// @Success      200 {object} entities.EstadoCamionListResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/estado-camion/ [get]
 func (ctr *GetAllEstadoCamionController) Run(ctx *gin.Context) {
 	estadosCamion, err := ctr.uc.Run()

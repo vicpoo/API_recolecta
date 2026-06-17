@@ -19,9 +19,9 @@ func NewCrearNotificacionFallaController(useCase *application.CrearNotificacionF
 // @Summary      Crear notificación de falla
 // @Tags         Notificacion
 // @Produce      json
-// @Param        body body map[string]interface{} true "Body"
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Param        body body entities.CreateNotificacionRequest true "Body"
+// @Success      200 {object} entities.NotificacionResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/notificaciones/falla [post]
 func (ctrl *CrearNotificacionFallaController) Run(c *gin.Context) {
 	var request struct {

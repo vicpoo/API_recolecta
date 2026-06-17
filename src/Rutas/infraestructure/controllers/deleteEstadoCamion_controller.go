@@ -25,7 +25,10 @@ func NewDeleteEstadoCamionController(
 // @Tags         EstadoCamion
 // @Produce      json
 // @Param        id path int true "ID"
-// @Success      200 {object} map[string]interface{}
+// @Success      200 {object} entities.EstadoCamionMessageResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/estado-camion/{id} [delete]
 func (ctr *DeleteEstadoCamionController) Run(ctx *gin.Context) {
 	idParam := ctx.Param("id")

@@ -22,8 +22,8 @@ func NewGetAlertasByFechaRangeController(getByFechaRangeUseCase *application.Get
 // @Summary      Alertas por rango de fecha
 // @Tags         AlertaMantenimiento
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.AlertaMantenimientoResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/alertas-mantenimiento/fecha [get]
 func (ctrl *GetAlertasByFechaRangeController) Run(c *gin.Context) {
 	var request struct {

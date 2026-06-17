@@ -22,7 +22,10 @@ func NewGetRutaByIdController(uc *application.GetRutaByIdUseCase) *GetRutaByIdCo
 // @Tags         Ruta
 // @Produce      json
 // @Param        id path int true "ID ruta"
-// @Success      200 {object} map[string]interface{}
+// @Success      200 {object} entities.EstadoCamionListResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/rutas/{id} [get]
 func (ctr *GetRutaByIdController) Run(ctx *gin.Context) {
 	idParam := ctx.Param("id")

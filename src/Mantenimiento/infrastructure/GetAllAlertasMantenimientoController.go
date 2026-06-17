@@ -20,8 +20,8 @@ func NewGetAllAlertasMantenimientoController(getAllUseCase *application.GetAllAl
 // @Summary      Listar alertas de mantenimiento
 // @Tags         AlertaMantenimiento
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.AlertaMantenimientoListResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/alertas-mantenimiento/ [get]
 func (ctrl *GetAllAlertasMantenimientoController) Run(c *gin.Context) {
 	alertas, err := ctrl.getAllUseCase.Run()

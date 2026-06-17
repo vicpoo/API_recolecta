@@ -23,8 +23,8 @@ func NewGetReporteFallaCriticaByIdController(getByIdUseCase *application.GetRepo
 // @Tags         ReporteFallaCritica
 // @Produce      json
 // @Param        id path int true "ID"
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.ReporteFallaCriticaResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/reportes-falla-critica/{id} [get]
 func (ctrl *GetReporteFallaCriticaByIdController) Run(c *gin.Context) {
 	idParam := c.Param("id")

@@ -23,8 +23,8 @@ func NewGetAnomaliasByChoferIDController(getByChoferIDUseCase *application.GetAn
 // @Summary      Anomalías por chofer
 // @Tags         Anomalia
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.AnomaliaResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/anomalias/chofer/{choferId} [get]
 func (ctrl *GetAnomaliasByChoferIDController) Run(c *gin.Context) {
 	choferIDParam := c.Param("choferId")

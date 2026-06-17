@@ -43,8 +43,8 @@ func (c *AlertaController) RegisterRoutes(r *gin.RouterGroup) {
 // @Produce      json
 // @Param        body body domain.AlertaUsuario true "Datos de la alerta"
 // @Success      201
-// @Failure      400 {object} map[string]interface{}
-// @Failure      500 {object} map[string]interface{}
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/alertas [post]
 func (c *AlertaController) Create(ctx *gin.Context) {
 	var body struct {
@@ -77,7 +77,7 @@ func (c *AlertaController) Create(ctx *gin.Context) {
 // @Tags         AlertaUsuario
 // @Produce      json
 // @Success      200 {array} domain.AlertaUsuario
-// @Failure      500 {object} map[string]interface{}
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/alertas [get]
 func (c *AlertaController) ListMine(ctx *gin.Context) {
 	alertas, err := c.list.Execute(ctx.GetInt("user_id"))
@@ -94,7 +94,7 @@ func (c *AlertaController) ListMine(ctx *gin.Context) {
 // @Produce      json
 // @Param        id path int true "ID de la alerta"
 // @Success      200
-// @Failure      403 {object} map[string]interface{}
+// @Failure      403 {object} core.ErrorResponse
 // @Router       /api/alertas/{id}/leida [put]
 func (c *AlertaController) MarkAsRead(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))

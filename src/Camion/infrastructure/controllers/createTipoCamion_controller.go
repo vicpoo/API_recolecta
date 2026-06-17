@@ -23,9 +23,9 @@ func NewCreateTipoCamionController(uc *application.SaveTipoCamionUseCase) *Creat
 // @Tags         TipoCamion
 // @Accept       json
 // @Produce      json
-// @Param        body body entities.TipoCamion true "Tipo de camión"
-// @Success      201 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Param        body body entities.CreateHistorialAsignacionCamionRequest true "Body"
+// @Success      201 {object} entities.HistorialAsignacionCamionResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/tipo-camion/ [post]
 func (ctr *CreateTipoCamionController) Run(ctx *gin.Context) {
 	var tipoCamion entities.TipoCamion

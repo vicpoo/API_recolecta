@@ -20,7 +20,10 @@ func NewGetHistorialByChoferController(uc *application.GetHistorialByChoferUseCa
 // @Tags         HistorialAsignacion
 // @Produce      json
 // @Param        choferId path int true "ID chofer"
-// @Success      200 {array} map[string]interface{}
+// @Success      200 {object} entities.HistorialAsignacionCamionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/historial-asignacion/chofer/{choferId} [get]
 func (ctr *GetHistorialByChoferController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("choferId"))

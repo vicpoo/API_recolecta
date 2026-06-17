@@ -55,18 +55,23 @@ func (c *ColoniaController) RegisterRoutes(r *gin.Engine) {
 // @Accept       json
 // @Produce      json
 // @Security     Bearer
-// @Param        body body domain.Colonia true "Datos de la colonia"
-// @Success      201 {object} domain.Colonia
-// @Failure      400 {object} map[string]interface{} "Datos inválidos"
-// @Failure      401 {object} map[string]interface{} "No autenticado"
-// @Failure      403 {object} map[string]interface{} "No autorizado (requiere rol ADMIN)"
-// @Failure      500 {object} map[string]interface{} "Error interno del servidor"
+// @Param        body body domain.CreateColoniaRequest true "Body"
+// @Success      201 {object} domain.ColoniaResponse
+// @Failure      400 {object} core.ErrorResponse "Datos inválidos"
+// @Failure      401 {object} core.ErrorResponse "No autenticado"
+// @Failure      403 {object} core.ErrorResponse "No autorizado (requiere rol ADMIN)"
+// @Failure      500 {object} core.ErrorResponse "Error interno del servidor"
 // @Router       /api/colonia [post]
 func (c *ColoniaController) Create(ctx *gin.Context) {
-	var body domain.Colonia
-	if err := ctx.ShouldBindJSON(&body); err != nil {
+	var request domain.CreateColoniaRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
 		core.RespondValidationError(ctx, "Datos de colonia inválidos", map[string]string{"error": err.Error()})
 		return
+	}
+
+	body := domain.Colonia{
+		Nombre: request.Nombre,
+		Zona:   request.Zona,
 	}
 
 	if err := c.create.Execute(&body); err != nil {
@@ -74,7 +79,12 @@ func (c *ColoniaController) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, body)
+	ctx.JSON(http.StatusCreated, domain.ColoniaResponse{
+		Success: true,
+		Message: "Colonia creada correctamente",
+		Data:    body,
+		Code:    http.StatusCreated,
+	})
 }
 
 // @Summary      Obtener colonia por ID
@@ -82,10 +92,10 @@ func (c *ColoniaController) Create(ctx *gin.Context) {
 // @Tags         Colonia
 // @Produce      json
 // @Param        id path int true "ID de la colonia"
-// @Success      200 {object} domain.Colonia
-// @Failure      400 {object} map[string]interface{} "ID inválido"
-// @Failure      404 {object} map[string]interface{} "Colonia no encontrada"
-// @Failure      500 {object} map[string]interface{} "Error interno del servidor"
+// @Success      200 {object} domain.ColoniaResponse
+// @Failure      400 {object} core.ErrorResponse "ID inválido"
+// @Failure      404 {object} core.ErrorResponse "Colonia no encontrada"
+// @Failure      500 {object} core.ErrorResponse "Error interno del servidor"
 // @Router       /api/colonia/{id} [get]
 func (c *ColoniaController) GetByID(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
@@ -100,15 +110,20 @@ func (c *ColoniaController) GetByID(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, colonia)
+	ctx.JSON(http.StatusOK, domain.ColoniaResponse{
+		Success: true,
+		Message: "Colonia obtenida correctamente",
+		Data:    *colonia,
+		Code:    http.StatusOK,
+	})
 }
 
 // @Summary      Listar colonias
 // @Description  Obtiene el listado de todas las colonias disponibles. Endpoint público
 // @Tags         Colonia
 // @Produce      json
-// @Success      200 {array} domain.Colonia
-// @Failure      500 {object} map[string]interface{} "Error interno del servidor"
+// @Success      200 {object} domain.ColoniaResponse
+// @Failure      500 {object} core.ErrorResponse "Error interno del servidor"
 // @Router       /api/colonia [get]
 func (c *ColoniaController) List(ctx *gin.Context) {
 	colonias, err := c.list.Execute()
@@ -117,7 +132,12 @@ func (c *ColoniaController) List(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, colonias)
+	ctx.JSON(http.StatusOK, domain.ColoniaListResponse{
+		Success: true,
+		Message: "Colonias listadas correctamente",
+		Data:    colonias,
+		Code:    http.StatusOK,
+	})
 }
 
 // @Summary      Actualizar colonia
@@ -127,12 +147,12 @@ func (c *ColoniaController) List(ctx *gin.Context) {
 // @Produce      json
 // @Security     Bearer
 // @Param        id path int true "ID de la colonia"
-// @Param        body body domain.Colonia true "Datos a actualizar"
-// @Success      200 "Colonia actualizada correctamente"
-// @Failure      400 {object} map[string]interface{} "Datos inválidos"
-// @Failure      401 {object} map[string]interface{} "No autenticado"
-// @Failure      403 {object} map[string]interface{} "No autorizado (requiere rol ADMIN)"
-// @Failure      500 {object} map[string]interface{} "Error interno del servidor"
+// @Param        body body domain.CreateColoniaRequest true "Body"
+// @Success      200 {object} domain.ColoniaResponse
+// @Failure      400 {object} core.ErrorResponse "Datos inválidos"
+// @Failure      401 {object} core.ErrorResponse "No autenticado"
+// @Failure      403 {object} core.ErrorResponse "No autorizado (requiere rol ADMIN)"
+// @Failure      500 {object} core.ErrorResponse "Error interno del servidor"
 // @Router       /api/colonia/{id} [put]
 func (c *ColoniaController) Update(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
@@ -141,20 +161,28 @@ func (c *ColoniaController) Update(ctx *gin.Context) {
 		return
 	}
 
-	var body domain.Colonia
-	if err := ctx.ShouldBindJSON(&body); err != nil {
+	var request domain.UpdateColoniaRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
 		core.RespondValidationError(ctx, "Datos de colonia inválidos", map[string]string{"error": err.Error()})
 		return
 	}
 
-	body.ColoniaID = id
+	body := domain.Colonia{
+		ColoniaID: id,
+		Nombre:    request.Nombre,
+		Zona:      request.Zona,
+	}
 
 	if err := c.update.Execute(&body); err != nil {
 		core.RespondInternalServerError(ctx, "Error al actualizar colonia", err)
 		return
 	}
 
-	ctx.Status(http.StatusOK)
+	ctx.JSON(http.StatusOK, domain.ColoniaMessageResponse{
+		Success: true,
+		Message: "Colonia actualizada correctamente",
+		Code:    http.StatusOK,
+	})
 }
 
 // @Summary      Eliminar colonia
@@ -164,10 +192,10 @@ func (c *ColoniaController) Update(ctx *gin.Context) {
 // @Security     Bearer
 // @Param        id path int true "ID de la colonia"
 // @Success      204 "Colonia eliminada correctamente"
-// @Failure      400 {object} map[string]interface{} "ID inválido"
-// @Failure      401 {object} map[string]interface{} "No autenticado"
-// @Failure      403 {object} map[string]interface{} "No autorizado (requiere rol ADMIN)"
-// @Failure      500 {object} map[string]interface{} "Error interno del servidor"
+// @Failure      400 {object} core.ErrorResponse "ID inválido"
+// @Failure      401 {object} core.ErrorResponse "No autenticado"
+// @Failure      403 {object} core.ErrorResponse "No autorizado (requiere rol ADMIN)"
+// @Failure      500 {object} core.ErrorResponse "Error interno del servidor"
 // @Router       /api/colonia/{id} [delete]
 func (c *ColoniaController) Delete(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))

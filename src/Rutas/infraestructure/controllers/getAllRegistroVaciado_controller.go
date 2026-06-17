@@ -19,7 +19,8 @@ func NewGetAllRegistroVaciadoController(uc *application.ListAllRegistroVaciadoUs
 // @Summary      Listar registros de vaciado
 // @Tags         RegistroVaciado
 // @Produce      json
-// @Success      200 {array} map[string]interface{}
+// @Success      200 {object} entities.RegistroVaciadoListResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/registro-vaciado/ [get]
 func (c *GetAllRegistroVaciadoController) Run(ctx *gin.Context) {
 	result, err := c.uc.Execute()

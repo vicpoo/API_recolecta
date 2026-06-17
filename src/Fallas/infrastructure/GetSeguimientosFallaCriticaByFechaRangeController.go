@@ -20,8 +20,8 @@ func NewGetSeguimientosFallaCriticaByFechaRangeController(getByFechaRangeUseCase
 // @Summary      Seguimientos falla crítica por fecha
 // @Tags         SeguimientoFallaCritica
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.SeguimientoFallaCriticaResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/seguimientos-falla-critica/por-fecha [get]
 func (ctrl *GetSeguimientosFallaCriticaByFechaRangeController) Run(c *gin.Context) {
 	fechaInicio := c.Query("fecha_inicio")

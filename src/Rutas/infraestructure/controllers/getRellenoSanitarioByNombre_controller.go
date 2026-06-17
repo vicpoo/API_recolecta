@@ -20,7 +20,9 @@ func NewGetRellenoSanitarioByNombreController(
 // @Tags         RellenoSanitario
 // @Produce      json
 // @Param        nombre query string true "Nombre"
-// @Success      200 {object} map[string]interface{}
+// @Success      200 {object} entities.RellenoSanitarioResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/relleno-sanitario/buscar [get]
 func (c *GetRellenoSanitarioByNombreController) Execute(ctx *gin.Context) {
 	nombre := ctx.Query("nombre")

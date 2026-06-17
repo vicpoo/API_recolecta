@@ -22,7 +22,10 @@ func NewGetRutaCamionByIDController(
 // @Tags         RutaCamion
 // @Produce      json
 // @Param        id path int true "ID"
-// @Success      200 {object} map[string]interface{}
+// @Success      200 {object} entities.HistorialAsignacionCamionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/ruta-camion/{id} [get]
 func (c *GetRutaCamionByIDController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))

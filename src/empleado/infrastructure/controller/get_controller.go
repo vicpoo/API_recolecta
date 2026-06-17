@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/empleado/application"
+	_ "github.com/vicpoo/API_recolecta/src/empleado/domain/entities"
 )
 
 type GetEmpleadoController struct {
@@ -16,6 +17,15 @@ func NewGetEmpleadoController(useCase *application.GetEmpleado) *GetEmpleadoCont
 	return &GetEmpleadoController{useCase: useCase}
 }
 
+// @Summary      Obtener empleado por ID
+// @Tags         Empleado
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id path int true "ID del empleado"
+// @Success      200 {object} entities.EmpleadoResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Router       /api/empleados/{id} [get]
 func (c *GetEmpleadoController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

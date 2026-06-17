@@ -19,7 +19,9 @@ func NewGetCamionByModeloController(uc *application.GetCamionByModeloUseCase) *G
 // @Tags         Camion
 // @Produce      json
 // @Param        modelo query string true "Modelo"
-// @Success      200 {array} entities.Camion
+// @Success      200 {object} entities.EstadoCamionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/camion/modelo [get]
 func (ctr *GetCamionByModeloController) Run(ctx *gin.Context) {
 	modelo := ctx.Query("modelo")

@@ -22,8 +22,8 @@ func NewGetAlertasByTipoMantenimientoIDController(getByTipoUseCase *application.
 // @Summary      Alertas por tipo de mantenimiento
 // @Tags         AlertaMantenimiento
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.AlertaMantenimientoResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/alertas-mantenimiento/tipo/{tipo_id} [get]
 func (ctrl *GetAlertasByTipoMantenimientoIDController) Run(c *gin.Context) {
 	idParam := c.Param("tipo_id")

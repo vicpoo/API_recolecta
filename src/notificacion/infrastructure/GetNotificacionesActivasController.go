@@ -19,8 +19,8 @@ func NewGetNotificacionesActivasController(useCase *application.GetNotificacione
 // @Summary      Notificaciones activas
 // @Tags         Notificacion
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.NotificacionResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/notificaciones/activas [get]
 func (ctrl *GetNotificacionesActivasController) Run(c *gin.Context) {
 	result, err := ctrl.useCase.Run()

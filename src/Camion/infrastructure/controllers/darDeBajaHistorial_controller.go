@@ -20,7 +20,9 @@ func NewDarDeBajaHistorialAsignacionController(uc *application.DarDeBajaHistoria
 // @Tags         HistorialAsignacion
 // @Produce      json
 // @Param        id path int true "ID historial"
-// @Success      200 {object} map[string]interface{}
+// @Success      200 {object} entities.HistorialAsignacionCamionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/historial-asignacion/baja/{id} [put]
 func (ctr *DarDeBajaHistorialAsignacionController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))

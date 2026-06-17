@@ -20,8 +20,8 @@ func NewGetNotificacionesByFallaIDController(useCase *application.GetNotificacio
 // @Summary      Notificaciones por falla
 // @Tags         Notificacion
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.NotificacionResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/notificaciones/falla/{falla_id} [get]
 func (ctrl *GetNotificacionesByFallaIDController) Run(c *gin.Context) {
 	idParam := c.Param("falla_id")

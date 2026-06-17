@@ -22,8 +22,8 @@ func NewGetAnomaliasByEstadoController(getByEstadoUseCase *application.GetAnomal
 // @Summary      Anomalías por estado
 // @Tags         Anomalia
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.AnomaliaResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/anomalias/estado [get]
 func (ctrl *GetAnomaliasByEstadoController) Run(c *gin.Context) {
 	estado := c.Query("estado")

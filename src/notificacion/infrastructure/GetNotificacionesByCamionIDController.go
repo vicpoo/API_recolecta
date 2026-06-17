@@ -20,8 +20,8 @@ func NewGetNotificacionesByCamionIDController(useCase *application.GetNotificaci
 // @Summary      Notificaciones por camión
 // @Tags         Notificacion
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.NotificacionResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/notificaciones/camion/{camion_id} [get]
 func (ctrl *GetNotificacionesByCamionIDController) Run(c *gin.Context) {
 	idParam := c.Param("camion_id")
