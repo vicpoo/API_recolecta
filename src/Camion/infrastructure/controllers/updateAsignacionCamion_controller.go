@@ -22,8 +22,9 @@ func NewUpdateHistorialAsignacionCamionController(uc *application.UpdateHistoria
 // @Accept       json
 // @Produce      json
 // @Param        id path int true "ID historial"
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Param        body body entities.UpdateHistorialAsignacionCamionRequest true "Body"
+// @Success      200 {object} entities.HistorialAsignacionCamionResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/historial-asignacion/{id} [put]
 func (ctr *UpdateHistorialAsignacionCamionController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
