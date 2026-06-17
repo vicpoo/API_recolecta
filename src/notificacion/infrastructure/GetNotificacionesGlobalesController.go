@@ -19,8 +19,8 @@ func NewGetNotificacionesGlobalesController(useCase *application.GetNotificacion
 // @Summary      Notificaciones globales
 // @Tags         Notificacion
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.NotificacionResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/notificaciones/globales [get]
 func (ctrl *GetNotificacionesGlobalesController) Run(c *gin.Context) {
 	result, err := ctrl.useCase.Run()
