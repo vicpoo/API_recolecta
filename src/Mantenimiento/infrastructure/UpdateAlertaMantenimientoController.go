@@ -23,10 +23,10 @@ func NewUpdateAlertaMantenimientoController(updateUseCase *application.UpdateAle
 // @Summary      Actualizar alerta
 // @Tags         AlertaMantenimiento
 // @Produce      json
-// @Param        body body map[string]interface{} true "Body"
+// @Param        body body entities.UpdateAlertaMantenimientoRequest true "Body"
 // @Param        id path int true "ID"
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.AlertaMantenimientoResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/alertas-mantenimiento/{id} [put]
 func (ctrl *UpdateAlertaMantenimientoController) Run(c *gin.Context) {
 	idParam := c.Param("id")

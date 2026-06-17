@@ -20,8 +20,8 @@ func NewGetAlertasAtendidasController(getAtendidasUseCase *application.GetAlerta
 // @Summary      Alertas atendidas
 // @Tags         AlertaMantenimiento
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.AlertaMantenimientoResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/alertas-mantenimiento/atendidas [get]
 func (ctrl *GetAlertasAtendidasController) Run(c *gin.Context) {
 	alertas, err := ctrl.getAtendidasUseCase.Run()

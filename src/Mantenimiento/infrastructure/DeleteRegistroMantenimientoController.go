@@ -24,8 +24,8 @@ func NewDeleteRegistroMantenimientoController(deleteUseCase *application.DeleteR
 // @Tags         RegistroMantenimiento
 // @Produce      json
 // @Param        id path int true "ID"
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.RegistroMantenimientoMessageResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/registros-mantenimiento/{id} [delete]
 func (ctrl *DeleteRegistroMantenimientoController) Run(c *gin.Context) {
 	idParam := c.Param("id")

@@ -20,8 +20,8 @@ func NewGetReportesMantenimientoGeneradoByFechaRangeController(getByFechaRangeUs
 // @Summary      Reportes por rango de fecha
 // @Tags         ReporteMantenimientoGenerado
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.RegistroMantenimientoResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/reportes-mantenimiento-generado/fecha [get]
 func (ctrl *GetReportesMantenimientoGeneradoByFechaRangeController) Run(c *gin.Context) {
 	fechaInicio := c.Query("fecha_inicio")

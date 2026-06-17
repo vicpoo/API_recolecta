@@ -22,8 +22,8 @@ func NewGetRegistrosByCamionIDController(getByCamionIDUseCase *application.GetRe
 // @Summary      Registros por camión
 // @Tags         RegistroMantenimiento
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.RegistroMantenimientoListResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/registros-mantenimiento/camion/{camion_id} [get]
 func (ctrl *GetRegistrosByCamionIDController) Run(c *gin.Context) {
 	camionIDParam := c.Param("camion_id")

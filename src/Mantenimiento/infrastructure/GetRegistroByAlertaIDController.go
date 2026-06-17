@@ -23,8 +23,8 @@ func NewGetRegistroByAlertaIDController(getByAlertaIDUseCase *application.GetReg
 // @Summary      Registros por alerta
 // @Tags         RegistroMantenimiento
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.RegistroMantenimientoResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/registros-mantenimiento/alerta/{alerta_id} [get]
 func (ctrl *GetRegistroByAlertaIDController) Run(c *gin.Context) {
 	alertaIDParam := c.Param("alerta_id")

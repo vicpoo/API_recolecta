@@ -23,9 +23,9 @@ func NewCreateRegistroMantenimientoController(createUseCase *application.CreateR
 // @Summary      Crear registro de mantenimiento
 // @Tags         RegistroMantenimiento
 // @Produce      json
-// @Param        body body map[string]interface{} true "Body"
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Param        body body entities.CreateRegistroMantenimientoRequest true "Body"
+// @Success      200 {object} entities.RegistroMantenimientoResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/registros-mantenimiento/ [post]
 func (ctrl *CreateRegistroMantenimientoController) Run(c *gin.Context) {
 	var request struct {
