@@ -2,10 +2,12 @@ package controller_ciudadano
 
 import (
 	"database/sql"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/application/application_ciudadano"
+	"github.com/vicpoo/API_recolecta/src/Ciudadanos/domain/entities"
 	"github.com/vicpoo/API_recolecta/src/core"
 )
 
@@ -17,6 +19,16 @@ func NewGetCiudadanoController(useCase *application_ciudadano.ViewOneCiudadano) 
 	return &GetCiudadanoController{useCase: useCase}
 }
 
+// @Summary      Obtener ciudadano por ID
+// @Tags         Ciudadano
+// @Produce      json
+// @Param        id path int true "ID del ciudadano"
+// @Success      200 {object} entities.CiudadanoResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/ciudadanos/{id} [get]
 func (c *GetCiudadanoController) Run(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -36,5 +48,10 @@ func (c *GetCiudadanoController) Run(ctx *gin.Context) {
 		return
 	}
 
-	core.RespondOK(ctx, gin.H{"data": ciudadano})
+	core.RespondOK(ctx, entities.CiudadanoResponse{
+		Success: true,
+		Message: "ciudadano obtenido correctamente",
+		Data:    *ciudadano,
+		Code:    http.StatusOK,
+	})
 }

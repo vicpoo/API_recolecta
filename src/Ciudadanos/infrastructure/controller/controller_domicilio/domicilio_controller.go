@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/application/application_domicilio"
+	"github.com/vicpoo/API_recolecta/src/Ciudadanos/domain/entities"
 	"github.com/vicpoo/API_recolecta/src/core"
 )
 
@@ -33,8 +34,18 @@ func NewDomicilioController(
 	}
 }
 
+// @Summary      Crear domicilio
+// @Tags         Domicilio
+// @Accept       json
+// @Produce      json
+// @Param        body body entities.CreateDomicilioRequest true "Body"
+// @Success      201 {object} entities.DomicilioResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/domicilios [post]
 func (c *DomicilioController) Create(ctx *gin.Context) {
-	var body application_domicilio.CreateDomicilioInput
+	var body entities.CreateDomicilioRequest
 
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		core.RespondValidationError(ctx, "Datos de domicilio inválidos", map[string]string{"error": err.Error()})
@@ -45,18 +56,36 @@ func (c *DomicilioController) Create(ctx *gin.Context) {
 		body.CiudadanoID = ctx.GetInt("user_id")
 	}
 
-	id, err := c.create.Execute(ctx.Request.Context(), body)
+	appInput := application_domicilio.CreateDomicilioInput{
+		CiudadanoID: body.CiudadanoID,
+		ColoniaID:   body.ColoniaID,
+		Alias:       body.Alias,
+		Calle:       body.Calle,
+		Numero:      body.Numero,
+		Referencia:  body.Referencia,
+	}
+
+	id, err := c.create.Execute(ctx.Request.Context(), appInput)
 	if err != nil {
 		core.RespondInternalServerError(ctx, "Error al crear domicilio", err)
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{
-		"message": "domicilio creado correctamente",
-		"id":      id,
+	ctx.JSON(http.StatusCreated, entities.DomicilioIDResponse{
+		Success: true,
+		Message: "domicilio creado correctamente",
+		ID:      id,
+		Code:    http.StatusCreated,
 	})
 }
 
+// @Summary      Listar domicilios
+// @Tags         Domicilio
+// @Produce      json
+// @Success      200 {object} entities.DomicilioResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/domicilios [get]
 func (c *DomicilioController) List(ctx *gin.Context) {
 	ciudadanoID := ctx.GetInt("user_id")
 
@@ -66,11 +95,24 @@ func (c *DomicilioController) List(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": domicilios,
+	ctx.JSON(http.StatusOK, entities.DomicilioListResponse{
+		Success: true,
+		Message: "domicilios listados correctamente",
+		Data:    domicilios,
+		Code:    http.StatusOK,
 	})
 }
 
+// @Summary      Obtener domicilio por ID
+// @Tags         Domicilio
+// @Produce      json
+// @Param        id path int true "ID del domicilio"
+// @Success      200 {object} entities.DomicilioResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/domicilios/{id} [get]
 func (c *DomicilioController) GetByID(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -89,11 +131,25 @@ func (c *DomicilioController) GetByID(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": domicilio,
+	ctx.JSON(http.StatusOK, entities.DomicilioResponse{
+		Success: true,
+		Message: "domicilio obtenido correctamente",
+		Data:    *domicilio,
+		Code:    http.StatusOK,
 	})
 }
 
+// @Summary      Actualizar domicilio
+// @Tags         Domicilio
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "ID del domicilio"
+// @Param        body body entities.CreateDomicilioRequest true "Body"
+// @Success      200 {object} entities.DomicilioResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/domicilios/{id} [put]
 func (c *DomicilioController) Update(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -101,24 +157,43 @@ func (c *DomicilioController) Update(ctx *gin.Context) {
 		return
 	}
 
-	var body application_domicilio.UpdateDomicilioInput
+	var body entities.UpdateDomicilioRequest
 	if err := ctx.ShouldBindJSON(&body); err != nil {
 		core.RespondValidationError(ctx, "Datos de domicilio inválidos", map[string]string{"error": err.Error()})
 		return
 	}
 
-	body.ID = id
+	appInput := application_domicilio.UpdateDomicilioInput{
+		ID:         id,
+		ColoniaID:  body.ColoniaID,
+		Alias:      body.Alias,
+		Calle:      body.Calle,
+		Numero:     body.Numero,
+		Referencia: body.Referencia,
+	}
 
-	if err := c.update.Execute(ctx.Request.Context(), body); err != nil {
+	if err := c.update.Execute(ctx.Request.Context(), appInput); err != nil {
 		core.RespondInternalServerError(ctx, "Error al actualizar domicilio", err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "domicilio actualizado correctamente",
+	ctx.JSON(http.StatusOK, entities.DomicilioMessageResponse{
+		Success: true,
+		Message: "domicilio actualizado correctamente",
+		Code:    http.StatusOK,
 	})
 }
 
+// @Summary      Eliminar domicilio
+// @Tags         Domicilio
+// @Produce      json
+// @Param        id path int true "ID del domicilio"
+// @Success      200 {object} entities.DomicilioResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      403 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/domicilios/{id} [delete]
 func (c *DomicilioController) Delete(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
@@ -133,7 +208,9 @@ func (c *DomicilioController) Delete(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "domicilio eliminado correctamente",
+	ctx.JSON(http.StatusOK, entities.DomicilioMessageResponse{
+		Success: true,
+		Message: "domicilio eliminado correctamente",
+		Code:    http.StatusOK,
 	})
 }
