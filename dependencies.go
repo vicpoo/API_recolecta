@@ -6,6 +6,9 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	_ "github.com/vicpoo/API_recolecta/docs"
+	alertaApplication "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
+	alertaHttp "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/http"
+	alertaPostgres "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/postgres"
 	historialUseCases "github.com/vicpoo/API_recolecta/src/Camion/application"
 	rutaCamionApp "github.com/vicpoo/API_recolecta/src/Camion/application"
 	tipoCamionUseCases "github.com/vicpoo/API_recolecta/src/Camion/application"
@@ -51,6 +54,7 @@ import (
 	reporteConductor "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
 	reporteFallaCritica "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
 	seguimientoFallaCritica "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
+	alertaMantenimiento "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure"
 	registroMantenimiento "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure"
 	reporteMantenimientoGenerado "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure"
 	tipoMantenimiento "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure"
@@ -70,6 +74,12 @@ import (
 )
 
 // archivo para hacer las instancias de los controllers, casos de uso y repositories, etc.
+// @title           API Recolecta
+// @version         1.0
+// @description     API para gestión de recolección de residuos
+// @host            localhost:8080
+// @BasePath        /
+// @schemes         http
 func InitDependencies() {
 	// En producción las variables vienen inyectadas por Docker; .env es opcional.
 	_ = godotenv.Load()
@@ -478,6 +488,18 @@ func InitDependencies() {
 	// ===============================
 	// ALERTA USUARIO
 	// ===============================
+	alertaRepository := alertaPostgres.NewPostgresAlertaRepository(db)
+	createAlertaUC := alertaApplication.NewCreateAlerta(alertaRepository)
+	listMisAlertasUC := alertaApplication.NewListMisAlertas(alertaRepository)
+	marcarLeidaUC := alertaApplication.NewMarcarLeida(alertaRepository)
+	alertaController := alertaHttp.NewAlertaController(createAlertaUC, listMisAlertasUC, marcarLeidaUC)
+
+	apiGroup := engine.Group("/api")
+	alertaController.RegisterRoutes(apiGroup)
+
+	// ===============================
+	// FALLAS Y MANTENIMIENTO
+	// ===============================
 
 	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
 
@@ -498,6 +520,10 @@ func InitDependencies() {
 	reporteFallaCriticaRoutes := reporteFallaCritica.NewReporteFallaCriticaRouter(engine)
 
 	reporteFallaCriticaRoutes.Run()
+
+	alertaMantenimientoRoutes := alertaMantenimiento.NewAlertaMantenimientoRouter(engine)
+
+	alertaMantenimientoRoutes.Run()
 
 	reporteMantenimientoGeneradoRoutes := reporteMantenimientoGenerado.NewReporteMantenimientoGeneradoRouter(engine)
 
