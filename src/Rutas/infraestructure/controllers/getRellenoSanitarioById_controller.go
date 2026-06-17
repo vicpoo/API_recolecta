@@ -21,7 +21,10 @@ func NewGetRellenoSanitarioByIDController(uc *application.GetRellenoSanitarioByI
 // @Tags         RellenoSanitario
 // @Produce      json
 // @Param        id path int true "ID"
-// @Success      200 {object} map[string]interface{}
+// @Success      200 {object} entities.RellenoSanitarioResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/relleno-sanitario/{id} [get]
 func (c *GetRellenoSanitarioByIDController) Execute(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))

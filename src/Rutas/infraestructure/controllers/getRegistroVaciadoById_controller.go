@@ -22,7 +22,10 @@ func NewGetRegistroVaciadoByIDController(uc *application.GetRegistroVaciadoByIDU
 // @Tags         RegistroVaciado
 // @Produce      json
 // @Param        id path int true "ID"
-// @Success      200 {object} map[string]interface{}
+// @Success      200 {object} entities.RegistroVaciadoResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/registro-vaciado/{id} [get]
 func (c *GetRegistroVaciadoByIDController) Run(ctx *gin.Context) {
 	idStr := ctx.Param("id")

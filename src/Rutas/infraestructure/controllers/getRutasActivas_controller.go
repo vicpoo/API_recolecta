@@ -19,7 +19,8 @@ func NewGetRutaActivasController(uc *application.GetRutaActivasUseCase) *GetRuta
 // @Summary      Listar rutas activas
 // @Tags         Ruta
 // @Produce      json
-// @Success      200 {array} map[string]interface{}
+// @Success      200 {object} entities.EstadoCamionListResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/rutas/activas [get]
 func (ctr *GetRutaActivasController) Run(ctx *gin.Context) {
 	rutas, err := ctr.uc.Run()

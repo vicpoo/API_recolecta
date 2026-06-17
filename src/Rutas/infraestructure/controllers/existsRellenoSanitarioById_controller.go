@@ -22,7 +22,9 @@ func NewExistsRellenoSanitarioByIdController(
 // @Tags         RellenoSanitario
 // @Produce      json
 // @Param        id path int true "ID"
-// @Success      200 {object} map[string]interface{}
+// @Success      200 {object} entities.RellenoSanitarioListResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/relleno-sanitario/exists/{id} [get]
 func (c *ExistsRellenoSanitarioByIdController) Execute(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))

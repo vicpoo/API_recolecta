@@ -25,7 +25,10 @@ func NewGetEstadoCamionByIdController(
 // @Tags         EstadoCamion
 // @Produce      json
 // @Param        id path int true "ID camión"
-// @Success      200 {object} map[string]interface{}
+// @Success      200 {object} entities.EstadoCamionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/estado-camion/camion/{id} [get]
 func (ctr *GetEstadoCamionByIdController) Run(ctx *gin.Context) {
 	idParam := ctx.Param("id")

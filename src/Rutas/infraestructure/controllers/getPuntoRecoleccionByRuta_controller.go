@@ -20,7 +20,9 @@ func NewGetPuntoRecoleccionByRutaController(uc *application.GetPuntoRecoleccionB
 // @Tags         PuntoRecoleccion
 // @Produce      json
 // @Param        rutaId path int true "ID ruta"
-// @Success      200 {array} map[string]interface{}
+// @Success      200 {object} entities.PuntoRecoleccionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/puntos-recoleccion/ruta/{rutaId} [get]
 func (c *GetPuntoRecoleccionByRutaController) Run(ctx *gin.Context) {
 	rutaStr := ctx.Param("rutaId")

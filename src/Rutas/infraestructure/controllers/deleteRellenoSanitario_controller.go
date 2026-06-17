@@ -20,7 +20,9 @@ func NewDeleteRellenoSanitarioController(uc *application.DeleteRellenoSanitarioU
 // @Tags         RellenoSanitario
 // @Produce      json
 // @Param        id path int true "ID"
-// @Success      200 {object} map[string]interface{}
+// @Success      200 {object} entities.RellenoSanitarioMessageResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
 // @Router       /api/relleno-sanitario/{id} [delete]
 func (c *DeleteRellenoSanitarioController) Execute(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
