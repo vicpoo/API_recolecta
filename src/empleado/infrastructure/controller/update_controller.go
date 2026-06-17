@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/empleado/application"
+	_ "github.com/vicpoo/API_recolecta/src/empleado/domain/entities"
 )
 
 type UpdateEmpleadoController struct {
@@ -16,6 +17,17 @@ func NewUpdateEmpleadoController(useCase *application.UpdateEmpleado) *UpdateEmp
 	return &UpdateEmpleadoController{useCase: useCase}
 }
 
+// @Summary      Actualizar empleado
+// @Tags         Empleado
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        id path int true "ID del empleado"
+// @Param        body body entities.UpdateEmpleadoRequest true "Datos a actualizar"
+// @Success      200 {object} entities.EmpleadoResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Router       /api/empleados/{id} [patch]
 func (c *UpdateEmpleadoController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

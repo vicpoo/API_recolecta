@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/empleado/application"
+	_ "github.com/vicpoo/API_recolecta/src/empleado/domain/entities"
 )
 
 type ListEmpleadoController struct {
@@ -15,6 +16,13 @@ func NewListEmpleadoController(useCase *application.ListEmpleado) *ListEmpleadoC
 	return &ListEmpleadoController{useCase: useCase}
 }
 
+// @Summary      Listar empleados
+// @Tags         Empleado
+// @Produce      json
+// @Security     BearerAuth
+// @Success      200 {object} entities.EmpleadoListResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Router       /api/empleados/ [get]
 func (c *ListEmpleadoController) Run(ctx *gin.Context) {
 	result, err := c.useCase.Execute(ctx.Request.Context())
 	if err != nil {

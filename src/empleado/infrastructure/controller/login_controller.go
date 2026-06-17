@@ -7,6 +7,7 @@ import (
 
 	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/empleado/application"
+	_ "github.com/vicpoo/API_recolecta/src/empleado/domain/entities"
 )
 
 type LoginEmpleadoController struct {
@@ -17,6 +18,15 @@ func NewLoginEmpleadoController(useCase *application.LoginEmpleado) *LoginEmplea
 	return &LoginEmpleadoController{useCase: useCase}
 }
 
+// @Summary      Login de empleado
+// @Tags         Empleado
+// @Accept       json
+// @Produce      json
+// @Param        body body entities.LoginEmpleadoRequest true "Credenciales de login"
+// @Success      200 {object} entities.LoginEmpleadoResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      401 {object} core.ErrorResponse
+// @Router       /api/empleados/login [post]
 func (c *LoginEmpleadoController) Run(ctx *gin.Context) {
 	var input application.LoginEmpleadoInput
 
