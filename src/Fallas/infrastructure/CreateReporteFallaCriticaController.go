@@ -21,9 +21,9 @@ func NewCreateReporteFallaCriticaController(createUseCase *application.CreateRep
 // @Summary      Crear reporte falla crítica
 // @Tags         ReporteFallaCritica
 // @Produce      json
-// @Param        body body map[string]interface{} true "Body"
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Param        body body entities.CreateReporteFallaCriticaRequest true "Body"
+// @Success      200 {object} entities.ReporteFallaCriticaResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/reportes-falla-critica/ [post]
 func (ctrl *CreateReporteFallaCriticaController) Run(c *gin.Context) {
 	var request struct {

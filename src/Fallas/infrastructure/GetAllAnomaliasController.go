@@ -20,8 +20,8 @@ func NewGetAllAnomaliasController(getAllUseCase *application.GetAllAnomaliasUseC
 // @Summary      Listar anomalías
 // @Tags         Anomalia
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.AnomaliaListResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/anomalias/ [get]
 func (ctrl *GetAllAnomaliasController) Run(c *gin.Context) {
 	anomalias, err := ctrl.getAllUseCase.Run()

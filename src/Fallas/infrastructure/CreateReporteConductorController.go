@@ -21,9 +21,9 @@ func NewCreateReporteConductorController(createUseCase *application.CreateReport
 // @Summary      Crear reporte conductor
 // @Tags         ReporteConductor
 // @Produce      json
-// @Param        body body map[string]interface{} true "Body"
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Param        body body entities.CreateReporteConductorRequest true "Body"
+// @Success      200 {object} entities.ReporteConductorResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/reportes-conductor/ [post]
 func (ctrl *CreateReporteConductorController) Run(c *gin.Context) {
 	var reporteRequest struct {

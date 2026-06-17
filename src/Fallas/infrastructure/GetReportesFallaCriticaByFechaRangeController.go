@@ -20,8 +20,8 @@ func NewGetReportesFallaCriticaByFechaRangeController(getByFechaRangeUseCase *ap
 // @Summary      Reportes falla crítica por fecha
 // @Tags         ReporteFallaCritica
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.ReporteFallaCriticaResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/reportes-falla-critica/por-fecha [get]
 func (ctrl *GetReportesFallaCriticaByFechaRangeController) Run(c *gin.Context) {
 	fechaInicio := c.Query("fecha_inicio")

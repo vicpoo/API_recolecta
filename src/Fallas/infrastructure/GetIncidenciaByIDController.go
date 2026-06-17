@@ -24,8 +24,8 @@ func NewGetIncidenciaByIDController(getByIDUseCase *application.GetIncidenciaByI
 // @Tags         Incidencia
 // @Produce      json
 // @Param        id path int true "ID"
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.IncidenciaResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/incidencias/{id} [get]
 func (ctrl *GetIncidenciaByIDController) Run(c *gin.Context) {
 	idParam := c.Param("id")

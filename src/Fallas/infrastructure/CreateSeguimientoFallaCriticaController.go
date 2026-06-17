@@ -21,9 +21,9 @@ func NewCreateSeguimientoFallaCriticaController(createUseCase *application.Creat
 // @Summary      Crear seguimiento falla crítica
 // @Tags         SeguimientoFallaCritica
 // @Produce      json
-// @Param        body body map[string]interface{} true "Body"
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Param        body body entities.CreateSeguimientoFallaCriticaRequest true "Body"
+// @Success      200 {object} entities.SeguimientoFallaCriticaResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/seguimientos-falla-critica/ [post]
 func (ctrl *CreateSeguimientoFallaCriticaController) Run(c *gin.Context) {
 	var request struct {

@@ -22,8 +22,8 @@ func NewGetReportesConductorByConductorIDController(getByConductorIDUseCase *app
 // @Summary      Reportes conductor por conductor
 // @Tags         ReporteConductor
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.ReporteConductorResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/reportes-conductor/conductor/{conductor_id} [get]
 func (ctrl *GetReportesConductorByConductorIDController) Run(c *gin.Context) {
 	conductorIDParam := c.Param("conductor_id")

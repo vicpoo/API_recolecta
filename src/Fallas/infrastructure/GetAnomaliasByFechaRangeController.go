@@ -22,8 +22,8 @@ func NewGetAnomaliasByFechaRangeController(getByFechaRangeUseCase *application.G
 // @Summary      Anomalías por rango de fecha
 // @Tags         Anomalia
 // @Produce      json
-// @Success      200 {object} map[string]interface{}
-// @Failure      400 {object} map[string]interface{}
+// @Success      200 {object} entities.AnomaliaResponse
+// @Failure      400 {object} core.ErrorResponse
 // @Router       /api/anomalias/por-fecha [get]
 func (ctrl *GetAnomaliasByFechaRangeController) Run(c *gin.Context) {
 	fechaInicio := c.Query("fecha_inicio")
