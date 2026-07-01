@@ -7,7 +7,7 @@ CREATE DATABASE proyecto_recolecta;
 -- =====================
 -- VERIFICACIÓN DE VERSIÓN
 -- =====================
-DO $$ 
+DO $$
 DECLARE
     version_num INTEGER;
 BEGIN
@@ -119,7 +119,8 @@ CREATE TABLE IF NOT EXISTS tipo_mantenimiento (
 CREATE TABLE IF NOT EXISTS registro_asignacion_ruta (
   id SERIAL PRIMARY KEY,
   ruta_id INTEGER NOT NULL,
-  camion_id INTEGER NOT NULL,
+  status SMALLINT NOT NULL, -- 0: Inactiva, 1: Activa
+  camion_id INTEGER NOT NULL, -- Falta un estado de asignación para saber si está activo o no
   fecha_asignacion DATE NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -211,8 +212,8 @@ DO $$
 DECLARE
     t text;
 BEGIN
-    FOR t IN 
-        SELECT c.table_name 
+    FOR t IN
+        SELECT c.table_name
         FROM information_schema.columns c
         JOIN information_schema.tables t ON c.table_name = t.table_name AND c.table_schema = t.table_schema
         WHERE c.column_name = 'updated_at' AND c.table_schema = 'public' AND t.table_type = 'BASE TABLE'
@@ -225,14 +226,14 @@ END $$;
 -- =====================
 -- MENSAJE DE FINALIZACIÓN
 -- =====================
-DO $$ 
+DO $$
 DECLARE
     table_count INTEGER;
 BEGIN
     SELECT COUNT(*) INTO table_count
     FROM information_schema.tables
     WHERE table_schema = 'public' AND table_type = 'BASE TABLE';
-    
+
     RAISE NOTICE '=========================================';
     RAISE NOTICE '✅ Script de inicialización de schema completado exitosamente';
     RAISE NOTICE 'Base de datos: proyecto_recolecta';
