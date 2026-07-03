@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   core.ErrorDetail:
     properties:
@@ -248,11 +249,14 @@ definitions:
         type: string
       email:
         type: string
+      fcm_token:
+        type: string
       password:
         type: string
     required:
     - alias
     - email
+    - fcm_token
     - password
     type: object
   entities.CreateDomicilioRequest:
@@ -692,15 +696,38 @@ definitions:
       success:
         type: boolean
     type: object
-  entities.LoginEmpleadoRequest:
+  entities.LoginCiudadanoRequest:
     properties:
+      email:
+        type: string
       password:
         type: string
-      username:
+    required:
+    - email
+    - password
+    type: object
+  entities.LoginCiudadanoResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.Ciudadano'
+      message:
+        type: string
+      success:
+        type: boolean
+      token:
+        type: string
+    type: object
+  entities.LoginEmpleadoRequest:
+    properties:
+      email:
+        type: string
+      password:
         type: string
     required:
+    - email
     - password
-    - username
     type: object
   entities.LoginEmpleadoResponse:
     properties:
@@ -1285,8 +1312,12 @@ definitions:
       falla_id:
         type: integer
     type: object
+host: localhost:8080
 info:
   contact: {}
+  description: API para gestión de recolección de residuos
+  title: API Recolecta
+  version: "1.0"
 paths:
   /api/alertas:
     get:
@@ -2076,14 +2107,14 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/entities.CreateCiudadanoRequest'
+          $ref: '#/definitions/entities.LoginCiudadanoRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.CiudadanoResponse'
+            $ref: '#/definitions/entities.LoginCiudadanoResponse'
         "400":
           description: Bad Request
           schema:
@@ -5746,4 +5777,6 @@ paths:
       summary: Actualizar tipo de mantenimiento
       tags:
       - TipoMantenimiento
+schemes:
+- http
 swagger: "2.0"

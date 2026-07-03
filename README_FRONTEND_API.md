@@ -103,7 +103,7 @@ Campos importantes:
 
 ```json
 {
-  "mail_or_username": "admin@recolecta.com",
+  "email": "admin@recolecta.com",
   "password": "123456"
 }
 ```

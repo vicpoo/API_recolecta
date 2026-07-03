@@ -21,8 +21,8 @@ func NewLoginCiudadanoController(useCase *application_ciudadano.LoginCiudadano) 
 // @Tags         Ciudadano
 // @Accept       json
 // @Produce      json
-// @Param        body body entities.CreateCiudadanoRequest true "Body"
-// @Success      200 {object} entities.CiudadanoResponse
+// @Param        body body entities.LoginCiudadanoRequest true "Body"
+// @Success      200 {object} entities.LoginCiudadanoResponse
 // @Failure      400 {object} core.ErrorResponse
 // @Failure      401 {object} core.ErrorResponse
 // @Failure      500 {object} core.ErrorResponse
@@ -36,8 +36,8 @@ func (c *LoginCiudadanoController) Run(ctx *gin.Context) {
 	}
 
 	appInput := application_ciudadano.LoginCiudadanoInput{
-		EmailOrAlias: input.EmailOrAlias,
-		Password:     input.Password,
+		Email:    input.Email,
+		Password: input.Password,
 	}
 
 	result, err := c.useCase.Execute(ctx.Request.Context(), appInput)

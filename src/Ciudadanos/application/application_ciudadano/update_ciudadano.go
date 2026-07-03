@@ -5,9 +5,8 @@ import (
 	"errors"
 	"strings"
 
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/domain"
+	passwordSecurity "github.com/vicpoo/API_recolecta/src/security/password"
 )
 
 type UpdateCiudadanoInput struct {
@@ -78,12 +77,12 @@ func (uc *UpdateCiudadano) Execute(ctx context.Context, in UpdateCiudadanoInput)
 			return errors.New("password inválido")
 		}
 
-		hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		hash, err := passwordSecurity.Hash(password)
 		if err != nil {
 			return err
 		}
 
-		ciudadano.Password = string(hash)
+		ciudadano.Password = hash
 	}
 
 	return uc.repo.Update(ctx, ciudadano)

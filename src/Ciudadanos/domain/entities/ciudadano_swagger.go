@@ -5,6 +5,7 @@ type CreateCiudadanoRequest struct {
 	Email    string `json:"email" binding:"required"`
 	Alias    string `json:"alias" binding:"required"`
 	Password string `json:"password" binding:"required"`
+	FCMToken string `json:"fcm_token" binding:"required"`
 }
 
 // swagger:model UpdateCiudadanoRequest
@@ -16,8 +17,8 @@ type UpdateCiudadanoRequest struct {
 
 // swagger:model LoginCiudadanoRequest
 type LoginCiudadanoRequest struct {
-	EmailOrAlias string `json:"email_or_alias" binding:"required"`
-	Password     string `json:"password" binding:"required"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 // swagger:model LoginCiudadanoData
@@ -28,11 +29,11 @@ type LoginCiudadanoData struct {
 
 // swagger:model LoginCiudadanoResponse
 type LoginCiudadanoResponse struct {
-	Success bool               `json:"success"`
-	Message string             `json:"message"`
-	Token   string             `json:"token"`
-	Data    Ciudadano          `json:"data"`
-	Code    int                `json:"code"`
+	Success bool      `json:"success"`
+	Message string    `json:"message"`
+	Token   string    `json:"token"`
+	Data    Ciudadano `json:"data"`
+	Code    int       `json:"code"`
 }
 
 // swagger:model CiudadanoResponse

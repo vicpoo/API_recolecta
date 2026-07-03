@@ -9,11 +9,10 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/vicpoo/API_recolecta/src/core"
 	"github.com/vicpoo/API_recolecta/src/empleado/domain/entities"
 	empleadoRepo "github.com/vicpoo/API_recolecta/src/empleado/infrastructure/repository"
+	passwordSecurity "github.com/vicpoo/API_recolecta/src/security/password"
 )
 
 type AdminSeedConfig struct {
@@ -31,38 +30,60 @@ func SeedAdmin(ctx context.Context) error {
 	}
 
 	db := core.GetBD()
-	defer core.ClosePool()
-
 	seedCtx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
 
-	if err := ensureAdminRole(seedCtx, db); err != nil {
+	return seedAdminWithConfig(seedCtx, db, cfg)
+}
+
+func seedAdminWithConfig(ctx context.Context, db *pgxpool.Pool, cfg AdminSeedConfig) error {
+	if err := ensureAdminRole(ctx, db); err != nil {
 		return err
 	}
 
 	repo := empleadoRepo.NewEmpleadoPostgresRepository(db)
 
-	existingByMail, err := repo.FindByMail(seedCtx, cfg.Mail)
+	hash, err := passwordSecurity.Hash(cfg.Password)
+	if err != nil {
+		return err
+	}
+
+	existingByMail, err := repo.FindByMail(ctx, cfg.Mail)
 	if err != nil {
 		return err
 	}
 	if existingByMail != nil {
-		fmt.Printf("admin ya existe con mail %s (id=%d)\n", existingByMail.Mail, existingByMail.ID)
+		existingByMail.Nombre = cfg.Nombre
+		existingByMail.Apellidos = cfg.Apellidos
+		existingByMail.Mail = cfg.Mail
+		existingByMail.Username = cfg.Username
+		existingByMail.Password = hash
+		existingByMail.Desactivado = false
+		existingByMail.RolID = core.ADMIN
+		if err := repo.Update(ctx, existingByMail); err != nil {
+			return err
+		}
+		fmt.Printf("admin actualizado por mail %s (id=%d)\n", existingByMail.Mail, existingByMail.ID)
 		return nil
 	}
 
-	existingByUsername, err := repo.FindByUsername(seedCtx, cfg.Username)
+	existingByUsername, err := repo.FindByUsername(ctx, cfg.Username)
 	if err != nil {
 		return err
 	}
 	if existingByUsername != nil {
-		fmt.Printf("admin ya existe con username %s (id=%d)\n", existingByUsername.Username, existingByUsername.ID)
+		existingByUsername.Nombre = cfg.Nombre
+		existingByUsername.Apellidos = cfg.Apellidos
+		existingByUsername.Mail = cfg.Mail
+		existingByUsername.Username = cfg.Username
+		existingByUsername.Password = hash
+		existingByUsername.Desactivado = false
+		existingByUsername.RolID = core.ADMIN
+		if err := repo.Update(ctx, existingByUsername); err != nil {
+			return err
+		}
+		fmt.Printf("admin actualizado por username %s (id=%d)\n", existingByUsername.Username, existingByUsername.ID)
 		return nil
-	}
-
-	hash, err := bcrypt.GenerateFromPassword([]byte(cfg.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return err
 	}
 
 	empleado := &entities.Empleado{
@@ -70,14 +91,14 @@ func SeedAdmin(ctx context.Context) error {
 		Apellidos:   cfg.Apellidos,
 		Mail:        cfg.Mail,
 		Username:    cfg.Username,
-		Password:    string(hash),
+		Password:    hash,
 		Desactivado: false,
 		RolID:       core.ADMIN,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
 
-	id, err := repo.Create(seedCtx, empleado)
+	id, err := repo.Create(ctx, empleado)
 	if err != nil {
 		return err
 	}
@@ -86,11 +107,19 @@ func SeedAdmin(ctx context.Context) error {
 	return nil
 }
 
+func resolveAdminEmail() string {
+	email := strings.TrimSpace(strings.ToLower(os.Getenv("ADMIN_EMAIL")))
+	if email == "" {
+		email = strings.TrimSpace(strings.ToLower(os.Getenv("ADMIN_MAIL")))
+	}
+	return email
+}
+
 func loadAdminSeedConfig() (AdminSeedConfig, error) {
 	cfg := AdminSeedConfig{
 		Nombre:    strings.TrimSpace(os.Getenv("ADMIN_NOMBRE")),
 		Apellidos: strings.TrimSpace(os.Getenv("ADMIN_APELLIDOS")),
-		Mail:      strings.TrimSpace(strings.ToLower(os.Getenv("ADMIN_MAIL"))),
+		Mail:      resolveAdminEmail(),
 		Username:  strings.TrimSpace(strings.ToLower(os.Getenv("ADMIN_USERNAME"))),
 		Password:  strings.TrimSpace(os.Getenv("ADMIN_PASSWORD")),
 	}
@@ -104,7 +133,7 @@ func loadAdminSeedConfig() (AdminSeedConfig, error) {
 
 	var missing []string
 	if cfg.Mail == "" {
-		missing = append(missing, "ADMIN_MAIL")
+		missing = append(missing, "ADMIN_EMAIL/ADMIN_MAIL")
 	}
 	if cfg.Username == "" {
 		missing = append(missing, "ADMIN_USERNAME")
@@ -122,14 +151,14 @@ func loadAdminSeedConfig() (AdminSeedConfig, error) {
 
 func ensureAdminRole(ctx context.Context, db *pgxpool.Pool) error {
 	const q = `
-		INSERT INTO rol (role_id, nombre, eliminado)
-		VALUES ($1, $2, FALSE)
-		ON CONFLICT (role_id)
+		INSERT INTO rol (id, nombre, active)
+		VALUES ($1, $2, TRUE)
+		ON CONFLICT (id)
 		DO UPDATE SET
 			nombre = EXCLUDED.nombre,
-			eliminado = FALSE
+			active = TRUE
 	`
 
-	_, err := db.Exec(ctx, q, core.ADMIN, "ADMIN")
+	_, err := db.Exec(ctx, q, core.ADMIN, "Administrador")
 	return err
 }

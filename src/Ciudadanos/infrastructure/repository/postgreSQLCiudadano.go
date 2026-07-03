@@ -20,7 +20,7 @@ func NewCiudadanoPostgresRepository(db *pgxpool.Pool) *CiudadanoPostgresReposito
 
 func (r *CiudadanoPostgresRepository) Create(ctx context.Context, c *entities.Ciudadano) (int, error) {
 	const q = `
-		INSERT INTO ciudadanos (email, alias, password, created_at)
+		INSERT INTO ciudadano (email, alias, password, created_at)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id
 	`
@@ -37,7 +37,7 @@ func (r *CiudadanoPostgresRepository) Create(ctx context.Context, c *entities.Ci
 func (r *CiudadanoPostgresRepository) GetByID(ctx context.Context, id int) (*entities.Ciudadano, error) {
 	const q = `
 		SELECT id, email, alias, password, created_at
-		FROM ciudadanos
+		FROM ciudadano
 		WHERE id = $1
 	`
 
@@ -59,7 +59,7 @@ func (r *CiudadanoPostgresRepository) GetByID(ctx context.Context, id int) (*ent
 func (r *CiudadanoPostgresRepository) List(ctx context.Context) ([]entities.Ciudadano, error) {
 	const q = `
 		SELECT id, email, alias, password, created_at
-		FROM ciudadanos
+		FROM ciudadano
 		ORDER BY id DESC
 	`
 
@@ -90,7 +90,7 @@ func (r *CiudadanoPostgresRepository) List(ctx context.Context) ([]entities.Ciud
 
 func (r *CiudadanoPostgresRepository) Update(ctx context.Context, c *entities.Ciudadano) error {
 	const q = `
-		UPDATE ciudadanos
+		UPDATE ciudadano
 		SET email = $1,
 		    alias = $2,
 		    password = $3
@@ -110,7 +110,7 @@ func (r *CiudadanoPostgresRepository) Update(ctx context.Context, c *entities.Ci
 }
 
 func (r *CiudadanoPostgresRepository) Delete(ctx context.Context, id int) error {
-	const q = `DELETE FROM ciudadanos WHERE id = $1`
+	const q = `DELETE FROM ciudadano WHERE id = $1`
 
 	cmdTag, err := r.db.Exec(ctx, q, id)
 	if err != nil {
@@ -127,7 +127,7 @@ func (r *CiudadanoPostgresRepository) Delete(ctx context.Context, id int) error 
 func (r *CiudadanoPostgresRepository) FindByEmail(ctx context.Context, email string) (*entities.Ciudadano, error) {
 	const q = `
 		SELECT id, email, alias, password, created_at
-		FROM ciudadanos
+		FROM ciudadano
 		WHERE email = $1
 	`
 
@@ -152,7 +152,7 @@ func (r *CiudadanoPostgresRepository) FindByEmail(ctx context.Context, email str
 func (r *CiudadanoPostgresRepository) FindByAlias(ctx context.Context, alias string) (*entities.Ciudadano, error) {
 	const q = `
 		SELECT id, email, alias, password, created_at
-		FROM ciudadanos
+		FROM ciudadano
 		WHERE alias = $1
 	`
 
@@ -177,7 +177,7 @@ func (r *CiudadanoPostgresRepository) FindByAlias(ctx context.Context, alias str
 func (r *CiudadanoPostgresRepository) FindByEmailOrAlias(ctx context.Context, value string) (*entities.Ciudadano, error) {
 	const q = `
 		SELECT id, email, alias, password, created_at
-		FROM ciudadanos
+		FROM ciudadano
 		WHERE email = $1 OR alias = $1
 	`
 

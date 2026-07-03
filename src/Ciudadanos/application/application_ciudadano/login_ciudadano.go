@@ -5,16 +5,15 @@ import (
 	"errors"
 	"strings"
 
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/domain"
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/domain/entities"
 	"github.com/vicpoo/API_recolecta/src/core"
+	passwordSecurity "github.com/vicpoo/API_recolecta/src/security/password"
 )
 
 type LoginCiudadanoInput struct {
-	EmailOrAlias string `json:"email_or_alias"`
-	Password     string `json:"password"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type LoginCiudadanoOutput struct {
@@ -31,18 +30,18 @@ func NewLoginCiudadano(repo domain.CiudadanoRepository) *LoginCiudadano {
 }
 
 func (uc *LoginCiudadano) Execute(ctx context.Context, in LoginCiudadanoInput) (*LoginCiudadanoOutput, error) {
-	credential := strings.TrimSpace(strings.ToLower(in.EmailOrAlias))
+	email := strings.TrimSpace(strings.ToLower(in.Email))
 	password := strings.TrimSpace(in.Password)
 
-	if credential == "" {
-		return nil, errors.New("email_or_alias es requerido")
+	if email == "" {
+		return nil, errors.New("email es requerido")
 	}
 
 	if password == "" {
 		return nil, errors.New("password es requerido")
 	}
 
-	ciudadano, err := uc.repo.FindByEmailOrAlias(ctx, credential)
+	ciudadano, err := uc.repo.FindByEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +50,7 @@ func (uc *LoginCiudadano) Execute(ctx context.Context, in LoginCiudadanoInput) (
 		return nil, errors.New("credenciales inválidas")
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(ciudadano.Password), []byte(password)); err != nil {
+	if err := passwordSecurity.Verify(ciudadano.Password, password); err != nil {
 		return nil, errors.New("credenciales inválidas")
 	}
 

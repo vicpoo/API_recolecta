@@ -38,6 +38,7 @@ func (c *CreateCiudadanoController) Run(ctx *gin.Context) {
 		Email:    input.Email,
 		Alias:    input.Alias,
 		Password: input.Password,
+		FCMToken: input.FCMToken,
 	}
 
 	id, err := c.useCase.Execute(ctx.Request.Context(), appInput)

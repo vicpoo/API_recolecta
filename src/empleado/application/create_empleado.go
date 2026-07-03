@@ -6,10 +6,9 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/crypto/bcrypt"
-
 	"github.com/vicpoo/API_recolecta/src/empleado/domain"
 	"github.com/vicpoo/API_recolecta/src/empleado/domain/entities"
+	passwordSecurity "github.com/vicpoo/API_recolecta/src/security/password"
 )
 
 type CreateEmpleadoInput struct {
@@ -72,7 +71,7 @@ func (uc *CreateEmpleado) Execute(ctx context.Context, in CreateEmpleadoInput) (
 		return nil, errors.New("el username ya está registrado")
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
+	hash, err := passwordSecurity.Hash(in.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +81,7 @@ func (uc *CreateEmpleado) Execute(ctx context.Context, in CreateEmpleadoInput) (
 		Apellidos:   in.Apellidos,
 		Mail:        in.Mail,
 		Username:    in.Username,
-		Password:    string(hash),
+		Password:    hash,
 		Desactivado: in.Desactivado,
 		RolID:       in.RolID,
 		CreatedAt:   time.Now(),

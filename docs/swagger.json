@@ -1,8 +1,16 @@
 {
+    "schemes": [
+        "http"
+    ],
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "API para gestión de recolección de residuos",
+        "title": "API Recolecta",
+        "contact": {},
+        "version": "1.0"
     },
+    "host": "localhost:8080",
+    "basePath": "/",
     "paths": {
         "/api/alertas": {
             "get": {
@@ -1075,7 +1083,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.CreateCiudadanoRequest"
+                            "$ref": "#/definitions/entities.LoginCiudadanoRequest"
                         }
                     }
                 ],
@@ -1083,7 +1091,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.CiudadanoResponse"
+                            "$ref": "#/definitions/entities.LoginCiudadanoResponse"
                         }
                     },
                     "400": {
@@ -7274,6 +7282,7 @@
             "required": [
                 "alias",
                 "email",
+                "fcm_token",
                 "password"
             ],
             "properties": {
@@ -7281,6 +7290,9 @@
                     "type": "string"
                 },
                 "email": {
+                    "type": "string"
+                },
+                "fcm_token": {
                     "type": "string"
                 },
                 "password": {
@@ -7951,17 +7963,52 @@
                 }
             }
         },
+        "entities.LoginCiudadanoRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "entities.LoginCiudadanoResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/entities.Ciudadano"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "entities.LoginEmpleadoRequest": {
             "type": "object",
             "required": [
-                "password",
-                "username"
+                "email",
+                "password"
             ],
             "properties": {
-                "password": {
+                "email": {
                     "type": "string"
                 },
-                "username": {
+                "password": {
                     "type": "string"
                 }
             }

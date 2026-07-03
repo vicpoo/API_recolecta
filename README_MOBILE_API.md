@@ -65,10 +65,10 @@ Todas las respuestas de error siguen esta estructura:
 
 ### 1.1 Descripción general del login de ciudadano
 
-El sistema de autenticación para ciudadanos permite que usuarios sin rol administrativo se autentiquen en la plataforma usando su correo electrónico o alias único. 
+El sistema de autenticación para ciudadanos permite que usuarios sin rol administrativo se autentiquen en la plataforma usando su correo electrónico. 
 
 **Características principales:**
-- **Identificador flexible**: Acepta `email` o `alias` (ambos únicos)
+- **Identificador**: Usa únicamente `email`
 - **Contraseña**: Se valida mediante bcrypt para mayor seguridad
 - **Token generado**: Contiene solo `user_id` (sin rol específico)
 - **Acceso**: Una vez autenticados, pueden acceder a recursos de ciudadanos con protección JWT
@@ -85,13 +85,13 @@ El sistema de autenticación para ciudadanos permite que usuarios sin rol admini
 
 ```json
 {
-  "email_or_alias": "juan.garcia@correo.com",
+  "email": "juan.garcia@correo.com",
   "password": "Segura123!"
 }
 ```
 
 **Validaciones en servidor:**
-- `email_or_alias` no puede estar vacío (se trimea)
+- `email` no puede estar vacío (se trimea)
 - `password` no puede estar vacío (se trimea)
 - Se convierte a minúsculas para búsqueda case-insensitive
 - La contraseña se valida contra el hash bcrypt almacenado
@@ -126,7 +126,7 @@ El sistema de autenticación para ciudadanos permite que usuarios sin rol admini
 El sistema de autenticación para empleados permite que usuarios con roles administrativos se autentiquen en la plataforma. A diferencia de ciudadanos, los empleados tienen un rol asignado que determina sus permisos.
 
 **Características principales:**
-- **Identificador flexible**: Acepta `email` (mail) o `username` (ambos únicos)
+- **Identificador**: Usa únicamente `email`
 - **Contraseña**: Se valida mediante bcrypt
 - **Token generado**: Contiene `user_id` + `rol_id` (importante para autorización)
 - **Acceso**: Después de autenticarse, pueden acceder a recursos protegidos según su rol
@@ -150,13 +150,13 @@ El sistema de autenticación para empleados permite que usuarios con roles admin
 
 ```json
 {
-  "mail_or_username": "luis.perez@recolecta.com",
+  "email": "luis.perez@recolecta.com",
   "password": "AdminPass123!"
 }
 ```
 
 **Validaciones en servidor:**
-- `mail_or_username` no puede estar vacío (se trimea)
+- `email` no puede estar vacío (se trimea)
 - `password` no puede estar vacío (se trimea)
 - Se convierte a minúsculas para búsqueda case-insensitive
 - Se valida que el empleado no esté desactivado
@@ -238,7 +238,8 @@ Estructura JSON estándar devuelta por la API:
 {
   "email": "juan.garcia@correo.com",
   "alias": "juangarcia",
-  "password": "MiPassword123!"
+  "password": "MiPassword123!",
+  "fcm_token": "fcm-device-token-abc123"
 }
 ```
 
@@ -246,6 +247,8 @@ Estructura JSON estándar devuelta por la API:
 - `email` debe ser válido y único
 - `alias` debe ser único
 - `password` debe tener mínimo X caracteres (validar según reglas del servidor)
+- `fcm_token` es requerido
+- El token FCM se almacena en Redis con clave `fcm:ciudadano:<id>`
 
 #### Response 201 Created
 

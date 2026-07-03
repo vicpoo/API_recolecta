@@ -1086,7 +1086,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.CreateCiudadanoRequest"
+                            "$ref": "#/definitions/entities.LoginCiudadanoRequest"
                         }
                     }
                 ],
@@ -1094,7 +1094,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.CiudadanoResponse"
+                            "$ref": "#/definitions/entities.LoginCiudadanoResponse"
                         }
                     },
                     "400": {
@@ -7285,6 +7285,7 @@ const docTemplate = `{
             "required": [
                 "alias",
                 "email",
+                "fcm_token",
                 "password"
             ],
             "properties": {
@@ -7292,6 +7293,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "email": {
+                    "type": "string"
+                },
+                "fcm_token": {
                     "type": "string"
                 },
                 "password": {
@@ -7962,17 +7966,52 @@ const docTemplate = `{
                 }
             }
         },
+        "entities.LoginCiudadanoRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "entities.LoginCiudadanoResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/entities.Ciudadano"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "entities.LoginEmpleadoRequest": {
             "type": "object",
             "required": [
-                "password",
-                "username"
+                "email",
+                "password"
             ],
             "properties": {
-                "password": {
+                "email": {
                     "type": "string"
                 },
-                "username": {
+                "password": {
                     "type": "string"
                 }
             }
@@ -8880,12 +8919,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
-	Host:             "",
-	BasePath:         "",
-	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Version:          "1.0",
+	Host:             "localhost:8080",
+	BasePath:         "/",
+	Schemes:          []string{"http"},
+	Title:            "API Recolecta",
+	Description:      "API para gestión de recolección de residuos",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
