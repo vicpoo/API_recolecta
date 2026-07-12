@@ -5792,8 +5792,6 @@ paths:
       summary: Actualizar tipo de mantenimiento
       tags:
       - TipoMantenimiento
-schemes:
-- http
 securityDefinitions:
   BearerAuth:
     description: 'Escribe ''Bearer '' seguido de tu token JWT. Ejemplo: "Bearer eyJhbG..."'

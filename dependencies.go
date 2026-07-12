@@ -78,7 +78,6 @@ import (
 // @version                    1.0
 // @description                API para gestión de recolección de residuos
 // @BasePath                   /
-// @schemes                    http
 // @securityDefinitions.apikey BearerAuth
 // @in                         header
 // @name                       Authorization
