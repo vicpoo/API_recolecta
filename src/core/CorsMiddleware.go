@@ -10,7 +10,10 @@ import (
 )
 
 func CORSMiddleware() gin.HandlerFunc {
-	originsEnv := os.Getenv("CORS_ORIGINS")
+	originsEnv := os.Getenv("CORS_ALLOWED_ORIGINS")
+	if originsEnv == "" {
+		originsEnv = os.Getenv("CORS_ORIGINS")
+	}
 
 	var origins []string
 	for _, origin := range strings.Split(originsEnv, ",") {
@@ -20,13 +23,14 @@ func CORSMiddleware() gin.HandlerFunc {
 		}
 	}
 
-	// Si no hay orígenes configurados, permitir todos (útil en dev/staging sin variable seteada).
+	// Si no hay orígenes configurados, permitir todos dinámicamente para soportar credenciales en desarrollo
 	if len(origins) == 0 {
 		return cors.New(cors.Config{
-			AllowAllOrigins: true,
-			AllowMethods:    []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-			AllowHeaders:    []string{"Origin", "Content-Type", "Accept", "Authorization"},
-			MaxAge:          12 * time.Hour,
+			AllowOriginFunc:  func(origin string) bool { return true },
+			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
 		})
 	}
 
