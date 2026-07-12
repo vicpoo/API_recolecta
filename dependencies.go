@@ -77,7 +77,6 @@ import (
 // @title                      API Recolecta
 // @version                    1.0
 // @description                API para gestión de recolección de residuos
-// @host                       localhost:8080
 // @BasePath                   /
 // @schemes                    http
 // @securityDefinitions.apikey BearerAuth
