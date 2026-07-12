@@ -20,11 +20,18 @@ func NewTruckStateEventController(processUc *application.ProcessTruckStateEventU
 }
 
 type processTruckStateRequest struct {
-	EventID      string `json:"event_id"`
-	EventType    string `json:"event_type"`
-	EventVersion string `json:"event_version"`
-	TruckID      int32  `json:"truck_id"`
-	StateCode    string `json:"state_code"`
+	EventID      string   `json:"event_id"`
+	EventType    string   `json:"event_type"`
+	EventVersion string   `json:"event_version"`
+	TruckID      int32    `json:"truck_id"`
+	StateCode    string   `json:"state_code"`
+	Lat          float64  `json:"lat"`
+	Lon          float64  `json:"lon"`
+	Payload      *struct {
+		StateCode string  `json:"state_code"`
+		Lat       float64 `json:"lat"`
+		Lon       float64 `json:"lon"`
+	} `json:"payload"`
 }
 
 func (ctrl *TruckStateEventController) Process(c *gin.Context) {
@@ -33,13 +40,27 @@ func (ctrl *TruckStateEventController) Process(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	lat := req.Lat
+	lon := req.Lon
+	stateCode := req.StateCode
+	if req.Payload != nil {
+		lat = req.Payload.Lat
+		lon = req.Payload.Lon
+		if req.Payload.StateCode != "" {
+			stateCode = req.Payload.StateCode
+		}
+	}
+
 	event := &domain.TruckStateEvent{
 		EventID:      req.EventID,
 		EventType:    req.EventType,
 		EventVersion: domain.EventVersion(req.EventVersion),
 		TruckID:      req.TruckID,
-		StateCode:    domain.StateCode(req.StateCode),
+		StateCode:    domain.StateCode(stateCode),
 		OccurredAt:   time.Now().UTC(),
+		Lat:          lat,
+		Lon:          lon,
 	}
 	if err := ctrl.processUc.Execute(c.Request.Context(), event); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

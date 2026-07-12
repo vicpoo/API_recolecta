@@ -3,11 +3,14 @@ package application_domicilio
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/domain"
 	"github.com/vicpoo/API_recolecta/src/Ciudadanos/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type CreateDomicilioInput struct {
@@ -17,6 +20,8 @@ type CreateDomicilioInput struct {
 	Calle       string  `json:"calle"`
 	Numero      string  `json:"numero"`
 	Referencia  *string `json:"referencia,omitempty"`
+	Lat         float64 `json:"lat"`
+	Lon         float64 `json:"lon"`
 }
 
 type CreateDomicilio struct {
@@ -66,5 +71,29 @@ func (uc *CreateDomicilio) Execute(ctx context.Context, in CreateDomicilioInput)
 		CreatedAt:   time.Now(),
 	}
 
-	return uc.repo.Create(ctx, d)
+	id, err := uc.repo.Create(ctx, d)
+	if err != nil {
+		return 0, err
+	}
+
+	// Guardar en Redis si vienen coordenadas
+	if in.Lat != 0 && in.Lon != 0 {
+		rdb, err := core.ConnectRedis()
+		if err == nil {
+			pipe := rdb.TxPipeline()
+			pipe.GeoAdd(ctx, "domicilios:geo", &redis.GeoLocation{
+				Longitude: in.Lon,
+				Latitude:  in.Lat,
+				Name:      fmt.Sprintf("%d", id),
+			})
+			pipe.HSet(ctx, fmt.Sprintf("domicilio:%d", id), map[string]interface{}{
+				"ciudadano_id": in.CiudadanoID,
+				"lat":          in.Lat,
+				"lon":          in.Lon,
+			})
+			_, _ = pipe.Exec(ctx)
+		}
+	}
+
+	return id, nil
 }

@@ -7321,6 +7321,12 @@
                 "colonia_id": {
                     "type": "integer"
                 },
+                "lat": {
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
+                },
                 "numero": {
                     "type": "string"
                 },
@@ -7466,6 +7472,12 @@
             "properties": {
                 "cp": {
                     "type": "string"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
                 },
                 "punto_id": {
                     "type": "integer"
@@ -8133,6 +8145,12 @@
                 },
                 "eliminado": {
                     "type": "boolean"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
                 },
                 "punto_id": {
                     "type": "integer"
@@ -8818,6 +8836,12 @@
                 "cp": {
                     "type": "string"
                 },
+                "lat": {
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
+                },
                 "punto_id": {
                     "type": "integer"
                 },
@@ -8910,6 +8934,14 @@
                     "type": "integer"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Escribe 'Bearer ' seguido de tu token JWT. Ejemplo: \"Bearer eyJhbG...\"",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

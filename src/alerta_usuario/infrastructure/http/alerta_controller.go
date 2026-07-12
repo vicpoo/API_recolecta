@@ -30,7 +30,7 @@ func (c *AlertaController) RegisterRoutes(r *gin.RouterGroup) {
 
 	r.POST(
 		"/alertas",
-		core.RequireRole(core.SUPERVISOR),
+		core.RequireRole(core.ADMIN, core.SUPERVISOR),
 		c.Create,
 	)
 	r.GET("/alertas", c.ListMine)

@@ -74,12 +74,16 @@ import (
 )
 
 // archivo para hacer las instancias de los controllers, casos de uso y repositories, etc.
-// @title           API Recolecta
-// @version         1.0
-// @description     API para gestión de recolección de residuos
-// @host            localhost:8080
-// @BasePath        /
-// @schemes         http
+// @title                      API Recolecta
+// @version                    1.0
+// @description                API para gestión de recolección de residuos
+// @host                       localhost:8080
+// @BasePath                   /
+// @schemes                    http
+// @securityDefinitions.apikey BearerAuth
+// @in                         header
+// @name                       Authorization
+// @description                Escribe 'Bearer ' seguido de tu token JWT. Ejemplo: "Bearer eyJhbG..."
 func InitDependencies() {
 	// En producción las variables vienen inyectadas por Docker; .env es opcional.
 	_ = godotenv.Load()

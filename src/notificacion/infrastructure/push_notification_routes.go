@@ -35,7 +35,7 @@ func (r *PushNotificationRouter) Run() {
 	rulesUc := application.NewManageNotificationRulesUseCase(rulesRepo)
 	rulesCtrl := NewNotificationRulesController(rulesUc)
 	traceRepo := NewRedisEventTraceRepository(core.GetRedis())
-	processEventUc := application.NewProcessTruckStateEventUseCase(rulesRepo, traceRepo)
+	processEventUc := application.NewProcessTruckStateEventUseCase(rulesRepo, traceRepo, fcmClient)
 	queryEventTraceUc := application.NewQueryEventTraceUseCase(traceRepo)
 	processEventCtrl := NewTruckStateEventController(processEventUc, queryEventTraceUc)
 	adminRealtimeRepo := NewRedisAdminRealtimeSessionRepository(core.GetRedis())

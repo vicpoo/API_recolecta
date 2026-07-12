@@ -269,6 +269,10 @@ definitions:
         type: integer
       colonia_id:
         type: integer
+      lat:
+        type: number
+      lon:
+        type: number
       numero:
         type: string
       referencia:
@@ -371,6 +375,10 @@ definitions:
     properties:
       cp:
         type: string
+      lat:
+        type: number
+      lon:
+        type: number
       punto_id:
         type: integer
       ruta_id:
@@ -808,6 +816,10 @@ definitions:
         type: string
       eliminado:
         type: boolean
+      lat:
+        type: number
+      lon:
+        type: number
       punto_id:
         type: integer
       ruta_id:
@@ -1252,6 +1264,10 @@ definitions:
     properties:
       cp:
         type: string
+      lat:
+        type: number
+      lon:
+        type: number
       punto_id:
         type: integer
       ruta_id:
@@ -5779,4 +5795,10 @@ paths:
       - TipoMantenimiento
 schemes:
 - http
+securityDefinitions:
+  BearerAuth:
+    description: 'Escribe ''Bearer '' seguido de tu token JWT. Ejemplo: "Bearer eyJhbG..."'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

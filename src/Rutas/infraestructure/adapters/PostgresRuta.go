@@ -24,10 +24,11 @@ func NewPostgresRuta() ports.IRuta {
 
 func (pg *PostgresRuta) Save(ruta *entities.Ruta) error {
 	ruta.CreatedAt = time.Now()
+	// nota: colonia_id es NOT NULL en DB, por defecto usamos 1
 	sql := `
-		INSERT INTO ruta (nombre, descripcion, json_ruta, eliminado, created_at)
-		VALUES ($1, $2, $3, false, $4)
-		RETURNING ruta_id
+		INSERT INTO ruta (nombre, descripcion, json_ruta, colonia_id, created_at)
+		VALUES ($1, $2, $3, 1, $4)
+		RETURNING id
 	`
 
 	err := pg.conn.QueryRow(
@@ -35,21 +36,23 @@ func (pg *PostgresRuta) Save(ruta *entities.Ruta) error {
 		sql,
 		ruta.Nombre,
 		ruta.Descripcion,
-		ruta.JsonRuta, // Ya es string, se guarda directamente
+		ruta.JsonRuta,
 		ruta.CreatedAt,
 	).Scan(&ruta.RutaID)
 
 	if err != nil {
 		return fmt.Errorf("error al guardar ruta: %w", err)
 	}
+	ruta.Eliminado = false
 	return nil
 }
 
 func (pg *PostgresRuta) ListAll() ([]entities.Ruta, error) {
 	sql := `
-		SELECT ruta_id, nombre, descripcion, json_ruta, eliminado, created_at
+		SELECT id, nombre, descripcion, json_ruta, (deleted_at IS NOT NULL) AS eliminado, created_at
 		FROM ruta
-		ORDER BY ruta_id DESC
+		WHERE deleted_at IS NULL
+		ORDER BY id DESC
 	`
 
 	rows, err := pg.conn.Query(context.Background(), sql)
@@ -66,7 +69,7 @@ func (pg *PostgresRuta) ListAll() ([]entities.Ruta, error) {
 			&r.RutaID,
 			&r.Nombre,
 			&r.Descripcion,
-			&r.JsonRuta, // Se lee directamente como string
+			&r.JsonRuta,
 			&r.Eliminado,
 			&r.CreatedAt,
 		)
@@ -86,9 +89,9 @@ func (pg *PostgresRuta) ListAll() ([]entities.Ruta, error) {
 
 func (pg *PostgresRuta) GetById(id int32) (*entities.Ruta, error) {
 	sql := `
-		SELECT ruta_id, nombre, descripcion, json_ruta, eliminado, created_at
+		SELECT id, nombre, descripcion, json_ruta, (deleted_at IS NOT NULL) AS eliminado, created_at
 		FROM ruta
-		WHERE ruta_id = $1
+		WHERE id = $1 AND deleted_at IS NULL
 	`
 
 	var r entities.Ruta
@@ -97,7 +100,7 @@ func (pg *PostgresRuta) GetById(id int32) (*entities.Ruta, error) {
 		&r.RutaID,
 		&r.Nombre,
 		&r.Descripcion,
-		&r.JsonRuta, // Se lee directamente como string
+		&r.JsonRuta,
 		&r.Eliminado,
 		&r.CreatedAt,
 	)
@@ -116,7 +119,7 @@ func (pg *PostgresRuta) Update(ruta *entities.Ruta) error {
 	sql := `
 		UPDATE ruta
 		SET nombre = $1, descripcion = $2, json_ruta = $3
-		WHERE ruta_id = $4 AND eliminado = false
+		WHERE id = $4 AND deleted_at IS NULL
 	`
 
 	cmd, err := pg.conn.Exec(
@@ -124,7 +127,7 @@ func (pg *PostgresRuta) Update(ruta *entities.Ruta) error {
 		sql,
 		ruta.Nombre,
 		ruta.Descripcion,
-		ruta.JsonRuta, // Ya es string, se guarda directamente
+		ruta.JsonRuta,
 		ruta.RutaID,
 	)
 	if err != nil {
@@ -141,8 +144,8 @@ func (pg *PostgresRuta) Update(ruta *entities.Ruta) error {
 func (pg *PostgresRuta) Delete(id int32) error {
 	sql := `
 		UPDATE ruta
-		SET eliminado = true
-		WHERE ruta_id = $1 AND eliminado = false
+		SET deleted_at = NOW()
+		WHERE id = $1 AND deleted_at IS NULL
 	`
 
 	cmd, err := pg.conn.Exec(context.Background(), sql, id)
@@ -159,10 +162,10 @@ func (pg *PostgresRuta) Delete(id int32) error {
 
 func (pg *PostgresRuta) GetActivas() ([]entities.Ruta, error) {
 	sql := `
-		SELECT ruta_id, nombre, descripcion, json_ruta, eliminado, created_at
+		SELECT id, nombre, descripcion, json_ruta, (deleted_at IS NOT NULL) AS eliminado, created_at
 		FROM ruta
-		WHERE eliminado = false
-		ORDER BY ruta_id DESC
+		WHERE deleted_at IS NULL
+		ORDER BY id DESC
 	`
 
 	rows, err := pg.conn.Query(context.Background(), sql)
@@ -179,7 +182,7 @@ func (pg *PostgresRuta) GetActivas() ([]entities.Ruta, error) {
 			&r.RutaID,
 			&r.Nombre,
 			&r.Descripcion,
-			&r.JsonRuta, // Se lee directamente como string
+			&r.JsonRuta,
 			&r.Eliminado,
 			&r.CreatedAt,
 		)

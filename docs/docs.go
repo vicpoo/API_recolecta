@@ -7324,6 +7324,12 @@ const docTemplate = `{
                 "colonia_id": {
                     "type": "integer"
                 },
+                "lat": {
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
+                },
                 "numero": {
                     "type": "string"
                 },
@@ -7469,6 +7475,12 @@ const docTemplate = `{
             "properties": {
                 "cp": {
                     "type": "string"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
                 },
                 "punto_id": {
                     "type": "integer"
@@ -8136,6 +8148,12 @@ const docTemplate = `{
                 },
                 "eliminado": {
                     "type": "boolean"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
                 },
                 "punto_id": {
                     "type": "integer"
@@ -8821,6 +8839,12 @@ const docTemplate = `{
                 "cp": {
                     "type": "string"
                 },
+                "lat": {
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
+                },
                 "punto_id": {
                     "type": "integer"
                 },
@@ -8913,6 +8937,14 @@ const docTemplate = `{
                     "type": "integer"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Escribe 'Bearer ' seguido de tu token JWT. Ejemplo: \"Bearer eyJhbG...\"",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

@@ -40,7 +40,7 @@ func NewRutaRoutes(
 
 func (r *RutaRoutes) Run() {
 	routes := r.engine.Group("/api/rutas")
-	routes.Use(core.JWTAuthMiddleware(), core.RequireRole(core.CONDUCTOR, core.SUPERVISOR, core.COORDINADOR))
+	routes.Use(core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN, core.CONDUCTOR, core.SUPERVISOR, core.COORDINADOR))
 	{
 		routes.POST("/", r.createController.Run)
 		routes.GET("/", r.getAllController.Run)
