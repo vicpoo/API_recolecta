@@ -60,12 +60,13 @@ CREATE TABLE IF NOT EXISTS licencia (
 -- CONTEXT BOUNDARY ASIGNACION
 -- =====================
 
-CREATE TABLE IF NOT EXISTS historial_asignacion (
-  id SERIAL PRIMARY KEY,
-  id_empleado INTEGER NOT NULL,
+CREATE TABLE IF NOT EXISTS historial_asignacion_camion (
+  id_historial SERIAL PRIMARY KEY,
+  id_chofer INTEGER NOT NULL,
   id_camion INTEGER NOT NULL,
   fecha_asignacion DATE NOT NULL,
   fecha_baja DATE DEFAULT NULL,
+  eliminado BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP DEFAULT NULL
@@ -89,23 +90,37 @@ CREATE TABLE IF NOT EXISTS camion (
   deleted_at TIMESTAMP DEFAULT NULL
 );
 
-CREATE TABLE IF NOT EXISTS registro_mantenimiento (
-  id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS tipo_mantenimiento (
+  tipo_mantenimiento_id SERIAL PRIMARY KEY,
+  nombre VARCHAR(50) NOT NULL,
+  categoria VARCHAR(50) NOT NULL,
+  eliminado BOOLEAN DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS alerta_mantenimiento (
+  alerta_id SERIAL PRIMARY KEY,
   camion_id INTEGER NOT NULL,
-  tipo_mantenimiento SMALLINT NOT NULL,
-  fecha_reporte DATE NOT NULL,
-  kilometraje INTEGER NOT NULL,
-  observaciones VARCHAR(255) NULL,
+  tipo_mantenimiento_id INTEGER NOT NULL,
+  descripcion TEXT NOT NULL,
+  observaciones TEXT NULL,
+  atendido BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP DEFAULT NULL
 );
 
-CREATE TABLE IF NOT EXISTS tipo_mantenimiento (
-  id SMALLINT PRIMARY KEY,
-  nombre VARCHAR(50) NOT NULL,
-  categoria VARCHAR(50) NOT NULL,
-  desactivado BOOLEAN DEFAULT FALSE
+CREATE TABLE IF NOT EXISTS registro_mantenimiento (
+  registro_id SERIAL PRIMARY KEY,
+  alerta_id INTEGER DEFAULT NULL,
+  camion_id INTEGER NOT NULL,
+  coordinador_id INTEGER NOT NULL,
+  mecanico_responsable VARCHAR(100) NOT NULL,
+  fecha_realizada TIMESTAMP NOT NULL,
+  kilometraje_mantenimiento INTEGER NOT NULL,
+  observaciones TEXT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP DEFAULT NULL
 );
 
 -- =====================
@@ -116,12 +131,12 @@ CREATE TABLE IF NOT EXISTS tipo_mantenimiento (
 -- BOUNDARY ASIGNACION RUTA
 -- =====================
 
-CREATE TABLE IF NOT EXISTS registro_asignacion_ruta (
-  id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS ruta_camion (
+  ruta_camion_id SERIAL PRIMARY KEY,
   ruta_id INTEGER NOT NULL,
-  status SMALLINT NOT NULL, -- 0: Inactiva, 1: Activa
-  camion_id INTEGER NOT NULL, -- Falta un estado de asignación para saber si está activo o no
-  fecha_asignacion DATE NOT NULL,
+  camion_id INTEGER NOT NULL,
+  fecha DATE NOT NULL,
+  eliminado BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   deleted_at TIMESTAMP DEFAULT NULL
@@ -174,7 +189,9 @@ CREATE TABLE IF NOT EXISTS ciudadano (
 CREATE TABLE IF NOT EXISTS domicilio (
   id SERIAL PRIMARY KEY,
   alias VARCHAR(100) NOT NULL,
-  direccion VARCHAR(255) NOT NULL,
+  calle VARCHAR(100) NOT NULL,
+  numero VARCHAR(20) NOT NULL,
+  referencia VARCHAR(255) DEFAULT NULL,
   ciudadano_id INTEGER NOT NULL,
   colonia_id INTEGER NOT NULL,
   deleted_at TIMESTAMP DEFAULT NULL,

@@ -74,23 +74,23 @@ DO $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
-        WHERE constraint_name = 'fk_empleado_historial'
+        WHERE constraint_name = 'fk_chofer_historial'
     ) THEN
-        ALTER TABLE historial_asignacion ADD CONSTRAINT fk_empleado_historial FOREIGN KEY (id_empleado) REFERENCES empleado(id);
+        ALTER TABLE historial_asignacion_camion ADD CONSTRAINT fk_chofer_historial FOREIGN KEY (id_chofer) REFERENCES empleado(id);
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_name = 'fk_camion_historial'
     ) THEN
-        ALTER TABLE historial_asignacion ADD CONSTRAINT fk_camion_historial FOREIGN KEY (id_camion) REFERENCES camion(id);
+        ALTER TABLE historial_asignacion_camion ADD CONSTRAINT fk_camion_historial FOREIGN KEY (id_camion) REFERENCES camion(id);
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
-        WHERE constraint_name = 'uq_empleado_camion_historial'
+        WHERE constraint_name = 'uq_chofer_camion_historial'
     ) THEN
-        ALTER TABLE historial_asignacion ADD CONSTRAINT uq_empleado_camion_historial UNIQUE (id_empleado, id_camion, fecha_asignacion);
+        ALTER TABLE historial_asignacion_camion ADD CONSTRAINT uq_chofer_camion_historial UNIQUE (id_chofer, id_camion, fecha_asignacion);
     END IF;
 END $$;
 
@@ -100,14 +100,14 @@ BEGIN
         SELECT 1 FROM information_schema.check_constraints
         WHERE constraint_name = 'chk_fecha_asignacion'
     ) THEN
-        ALTER TABLE historial_asignacion ADD CONSTRAINT chk_fecha_asignacion CHECK (fecha_asignacion <= CURRENT_DATE);
+        ALTER TABLE historial_asignacion_camion ADD CONSTRAINT chk_fecha_asignacion CHECK (fecha_asignacion <= CURRENT_DATE);
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.check_constraints
         WHERE constraint_name = 'chk_fecha_baja'
     ) THEN
-        ALTER TABLE historial_asignacion ADD CONSTRAINT chk_fecha_baja CHECK (fecha_baja IS NULL OR fecha_baja >= fecha_asignacion);
+        ALTER TABLE historial_asignacion_camion ADD CONSTRAINT chk_fecha_baja CHECK (fecha_baja IS NULL OR fecha_baja >= fecha_asignacion);
     END IF;
 END $$;
 
@@ -130,6 +130,25 @@ END $$;
 
 DO $$
 BEGIN
+    -- Alerta Mantenimiento Constraints
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'fk_camion_alerta_mantenimiento'
+    ) THEN
+        ALTER TABLE alerta_mantenimiento ADD CONSTRAINT fk_camion_alerta_mantenimiento FOREIGN KEY (camion_id) REFERENCES camion(id);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'fk_tipo_mantenimiento_alerta'
+    ) THEN
+        ALTER TABLE alerta_mantenimiento ADD CONSTRAINT fk_tipo_mantenimiento_alerta FOREIGN KEY (tipo_mantenimiento_id) REFERENCES tipo_mantenimiento(tipo_mantenimiento_id);
+    END IF;
+END $$;
+
+DO $$
+BEGIN
+    -- Registro Mantenimiento Constraints
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_name = 'fk_camion_afectado'
@@ -139,40 +158,41 @@ BEGIN
 
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
-        WHERE constraint_name = 'fk_tipo_mantenimiento'
+        WHERE constraint_name = 'fk_alerta_mantenimiento_registro'
     ) THEN
-        ALTER TABLE registro_mantenimiento ADD CONSTRAINT fk_tipo_mantenimiento FOREIGN KEY (tipo_mantenimiento) REFERENCES tipo_mantenimiento(id);
+        ALTER TABLE registro_mantenimiento ADD CONSTRAINT fk_alerta_mantenimiento_registro FOREIGN KEY (alerta_id) REFERENCES alerta_mantenimiento(alerta_id);
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.check_constraints
         WHERE constraint_name = 'chk_kilometraje_mantenimiento'
     ) THEN
-        ALTER TABLE registro_mantenimiento ADD CONSTRAINT chk_kilometraje_mantenimiento CHECK (kilometraje >= 0);
+        ALTER TABLE registro_mantenimiento ADD CONSTRAINT chk_kilometraje_mantenimiento CHECK (kilometraje_mantenimiento >= 0);
     END IF;
 END $$;
 
 DO $$
 BEGIN
+    -- Ruta Camion Constraints
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_name = 'fk_camion_asignado_ruta'
     ) THEN
-        ALTER TABLE registro_asignacion_ruta ADD CONSTRAINT fk_camion_asignado_ruta FOREIGN KEY (camion_id) REFERENCES camion(id);
+        ALTER TABLE ruta_camion ADD CONSTRAINT fk_camion_asignado_ruta FOREIGN KEY (camion_id) REFERENCES camion(id);
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.check_constraints
         WHERE constraint_name = 'chk_fecha_asignacion_ruta'
     ) THEN
-        ALTER TABLE registro_asignacion_ruta ADD CONSTRAINT chk_fecha_asignacion_ruta CHECK (fecha_asignacion <= CURRENT_DATE);
+        ALTER TABLE ruta_camion ADD CONSTRAINT chk_fecha_asignacion_ruta CHECK (fecha <= CURRENT_DATE);
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_name = 'fk_ruta_asignada'
     ) THEN
-        ALTER TABLE registro_asignacion_ruta ADD CONSTRAINT fk_ruta_asignada FOREIGN KEY (ruta_id) REFERENCES ruta(id);
+        ALTER TABLE ruta_camion ADD CONSTRAINT fk_ruta_asignada FOREIGN KEY (ruta_id) REFERENCES ruta(id);
     END IF;
 END $$;
 

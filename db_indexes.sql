@@ -58,28 +58,28 @@ BEGIN
         SELECT 1 FROM pg_indexes
         WHERE indexname = 'idx_asignacion_camion'
     ) THEN
-        CREATE INDEX idx_asignacion_camion ON historial_asignacion(id_camion);
+        CREATE INDEX idx_asignacion_camion ON historial_asignacion_camion(id_camion);
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM pg_indexes
         WHERE indexname = 'idx_fecha_asignacion_historial'
     ) THEN
-        CREATE INDEX idx_fecha_asignacion_historial ON historial_asignacion(fecha_asignacion);
+        CREATE INDEX idx_fecha_asignacion_historial ON historial_asignacion_camion(fecha_asignacion);
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM pg_indexes
         WHERE indexname = 'idx_fecha_desasignacion_historial'
     ) THEN
-        CREATE INDEX idx_fecha_desasignacion_historial ON historial_asignacion(fecha_desasignacion);
+        CREATE INDEX idx_fecha_desasignacion_historial ON historial_asignacion_camion(fecha_baja);
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM pg_indexes
         WHERE indexname = 'idx_registros_activos_historial'
     ) THEN
-        CREATE INDEX idx_registros_activos_historial ON historial_asignacion(deleted_at) WHERE deleted_at IS NULL;
+        CREATE INDEX idx_registros_activos_historial ON historial_asignacion_camion(eliminado) WHERE eliminado = false;
     END IF;
 END $$;
 
@@ -106,14 +106,14 @@ BEGIN
         SELECT 1 FROM pg_indexes
         WHERE indexname = 'idx_fecha_registro_mantencion'
     ) THEN
-        CREATE INDEX idx_fecha_registro_mantencion ON registro_mantenimiento(fecha);
+        CREATE INDEX idx_fecha_registro_mantencion ON registro_mantenimiento(fecha_realizada);
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM pg_indexes
-        WHERE indexname = 'idx_tipo_mantencion_registro'
+        WHERE indexname = 'idx_alerta_registro_mantenimiento'
     ) THEN
-        CREATE INDEX idx_tipo_mantencion_registro ON registro_mantenimiento(tipo_id);
+        CREATE INDEX idx_alerta_registro_mantenimiento ON registro_mantenimiento(alerta_id);
     END IF;
 END $$;
 
@@ -123,14 +123,14 @@ BEGIN
         SELECT 1 FROM pg_indexes
         WHERE indexname = 'idx_ruta_asignacion'
     ) THEN
-        CREATE INDEX idx_ruta_asignacion ON registro_asignacion_ruta(ruta_id);
+        CREATE INDEX idx_ruta_asignacion ON ruta_camion(ruta_id);
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM pg_indexes
         WHERE indexname = 'idx_fecha_asignacion_ruta'
     ) THEN
-        CREATE INDEX idx_fecha_asignacion_ruta ON registro_asignacion_ruta(fecha_asignacion);
+        CREATE INDEX idx_fecha_asignacion_ruta ON ruta_camion(fecha);
     END IF;
 END $$;
 
@@ -199,13 +199,6 @@ BEGIN
         WHERE indexname = 'idx_calle_domicilio'
     ) THEN
         CREATE INDEX idx_calle_domicilio ON domicilio(calle);
-    END IF;
-
-    IF NOT EXISTS (
-        SELECT 1 FROM pg_indexes
-        WHERE indexname = 'idx_direccion_domicilio'
-    ) THEN
-        CREATE INDEX idx_direccion_domicilio ON domicilio(direccion);
     END IF;
 
     IF NOT EXISTS (
