@@ -25,6 +25,7 @@ func NewDeleteNotificacionController(deleteUseCase *application.DeleteNotificaci
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.NotificacionMessageResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/notificaciones/{id} [delete]
 func (ctrl *DeleteNotificacionController) Run(c *gin.Context) {
 	idParam := c.Param("id")

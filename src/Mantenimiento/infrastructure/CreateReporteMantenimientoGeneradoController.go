@@ -26,6 +26,7 @@ func NewCreateReporteMantenimientoGeneradoController(createUseCase *application.
 // @Param        body body entities.CreateRegistroMantenimientoRequest true "Body"
 // @Success      200 {object} entities.RegistroMantenimientoResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/reportes-mantenimiento-generado/ [post]
 func (ctrl *CreateReporteMantenimientoGeneradoController) Run(c *gin.Context) {
 	var reporteRequest struct {

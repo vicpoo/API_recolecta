@@ -25,6 +25,7 @@ func NewCreateTipoMantenimientoController(createUseCase *application.CreateTipoM
 // @Param        body body entities.CreateRegistroMantenimientoRequest true "Body"
 // @Success      200 {object} entities.RegistroMantenimientoResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/tipos-mantenimiento/ [post]
 func (ctrl *CreateTipoMantenimientoController) Run(c *gin.Context) {
 	var request struct {

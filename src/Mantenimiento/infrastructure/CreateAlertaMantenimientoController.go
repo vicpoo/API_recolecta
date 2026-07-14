@@ -24,6 +24,7 @@ func NewCreateAlertaMantenimientoController(createUseCase *application.CreateAle
 // @Param        body body entities.CreateAlertaMantenimientoRequest true "Body"
 // @Success      200 {object} entities.AlertaMantenimientoResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/alertas-mantenimiento/ [post]
 func (ctrl *CreateAlertaMantenimientoController) Run(c *gin.Context) {
 	var request struct {

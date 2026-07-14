@@ -27,6 +27,7 @@ func NewUpdateReporteConductorController(updateUseCase *application.UpdateReport
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.ReporteConductorResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/reportes-conductor/{id} [put]
 func (ctrl *UpdateReporteConductorController) Run(c *gin.Context) {
 	idParam := c.Param("id")

@@ -24,6 +24,7 @@ func NewGetReportesMantenimientoGeneradoByCoordinadorIDController(getByCoordinad
 // @Produce      json
 // @Success      200 {object} entities.RegistroMantenimientoResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/reportes-mantenimiento-generado/coordinador/{coordinador_id} [get]
 func (ctrl *GetReportesMantenimientoGeneradoByCoordinadorIDController) Run(c *gin.Context) {
 	coordinadorIDParam := c.Param("coordinador_id")

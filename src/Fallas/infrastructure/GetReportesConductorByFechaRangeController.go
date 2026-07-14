@@ -22,6 +22,7 @@ func NewGetReportesConductorByFechaRangeController(getByFechaRangeUseCase *appli
 // @Produce      json
 // @Success      200 {object} entities.ReporteConductorResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/reportes-conductor/fecha [get]
 func (ctrl *GetReportesConductorByFechaRangeController) Run(c *gin.Context) {
 	fechaInicio := c.Query("fecha_inicio")

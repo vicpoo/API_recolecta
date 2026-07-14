@@ -26,6 +26,7 @@ func NewGetRegistroMantenimientoByIDController(getByIDUseCase *application.GetRe
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.RegistroMantenimientoResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/registros-mantenimiento/{id} [get]
 func (ctrl *GetRegistroMantenimientoByIDController) Run(c *gin.Context) {
 	idParam := c.Param("id")

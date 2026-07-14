@@ -22,6 +22,7 @@ func NewGetRegistrosByFechaRangeController(getByFechaRangeUseCase *application.G
 // @Produce      json
 // @Success      200 {object} entities.RegistroMantenimientoListResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/registros-mantenimiento/fecha [get]
 func (ctrl *GetRegistrosByFechaRangeController) Run(c *gin.Context) {
 	fechaInicio := c.Query("fecha_inicio")

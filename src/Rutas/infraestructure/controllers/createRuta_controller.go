@@ -25,6 +25,7 @@ func NewCreateRutaController(uc *application.CreateRutaUseCase) *CreateRutaContr
 // @Param        body body entities.CreateEstadoCamionRequest true "Body"
 // @Success      201 {object} entities.EstadoCamionResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/rutas/ [post]
 func (ctr *CreateRutaController) Run(ctx *gin.Context) {
 	var req struct {

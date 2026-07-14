@@ -22,6 +22,7 @@ func NewGetAllRegistrosMantenimientoController(getAllUseCase *application.GetAll
 // @Produce      json
 // @Success      200 {object} entities.RegistroMantenimientoListResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/registros-mantenimiento/ [get]
 func (ctrl *GetAllRegistrosMantenimientoController) Run(c *gin.Context) {
 	registros, err := ctrl.getAllUseCase.Run()

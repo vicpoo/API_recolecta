@@ -23,6 +23,7 @@ func NewGetAllTiposMantenimientoController(getAllUseCase *application.GetAllTipo
 // @Produce      json
 // @Success      200 {object} entities.RegistroMantenimientoListResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/tipos-mantenimiento/ [get]
 func (ctrl *GetAllTiposMantenimientoController) Run(c *gin.Context) {
 	tiposMantenimiento, err := ctrl.getAllUseCase.Run()

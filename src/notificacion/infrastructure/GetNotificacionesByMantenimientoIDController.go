@@ -22,6 +22,7 @@ func NewGetNotificacionesByMantenimientoIDController(useCase *application.GetNot
 // @Produce      json
 // @Success      200 {object} entities.NotificacionResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/notificaciones/mantenimiento/{mantenimiento_id} [get]
 func (ctrl *GetNotificacionesByMantenimientoIDController) Run(c *gin.Context) {
 	idParam := c.Param("mantenimiento_id")

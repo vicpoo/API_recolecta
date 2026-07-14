@@ -24,6 +24,7 @@ func NewGetRegistrosByCamionIDController(getByCamionIDUseCase *application.GetRe
 // @Produce      json
 // @Success      200 {object} entities.RegistroMantenimientoListResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/registros-mantenimiento/camion/{camion_id} [get]
 func (ctrl *GetRegistrosByCamionIDController) Run(c *gin.Context) {
 	camionIDParam := c.Param("camion_id")

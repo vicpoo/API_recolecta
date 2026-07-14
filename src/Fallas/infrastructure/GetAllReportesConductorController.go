@@ -22,6 +22,7 @@ func NewGetAllReportesConductorController(getAllUseCase *application.GetAllRepor
 // @Produce      json
 // @Success      200 {object} entities.ReporteConductorListResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/reportes-conductor/ [get]
 func (ctrl *GetAllReportesConductorController) Run(c *gin.Context) {
 	reportes, err := ctrl.getAllUseCase.Run()

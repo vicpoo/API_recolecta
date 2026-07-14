@@ -24,6 +24,7 @@ func NewCreateAnomaliaController(createUseCase *application.CreateAnomaliaUseCas
 // @Param        body body entities.CreateAnomaliaRequest true "Body"
 // @Success      200 {object} entities.AnomaliaResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/anomalias/ [post]
 func (ctrl *CreateAnomaliaController) Run(c *gin.Context) {
 	var request struct {

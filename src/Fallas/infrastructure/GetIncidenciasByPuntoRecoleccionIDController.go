@@ -25,6 +25,7 @@ func NewGetIncidenciasByPuntoRecoleccionIDController(getByPuntoRecoleccionIDUseC
 // @Produce      json
 // @Success      200 {object} entities.IncidenciaListResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/incidencias/punto/{punto_recoleccion_id} [get]
 func (ctrl *GetIncidenciasByPuntoRecoleccionIDController) Run(c *gin.Context) {
 	puntoIDParam := c.Param("punto_recoleccion_id")

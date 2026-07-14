@@ -25,6 +25,7 @@ func NewDeleteReporteConductorController(deleteUseCase *application.DeleteReport
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.ReporteConductorMessageResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/reportes-conductor/{id} [delete]
 func (ctrl *DeleteReporteConductorController) Run(c *gin.Context) {
 	idParam := c.Param("id")

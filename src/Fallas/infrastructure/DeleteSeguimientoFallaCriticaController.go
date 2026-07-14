@@ -25,6 +25,7 @@ func NewDeleteSeguimientoFallaCriticaController(deleteUseCase *application.Delet
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.SeguimientoFallaCriticaMessageResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/seguimientos-falla-critica/{id} [delete]
 func (ctrl *DeleteSeguimientoFallaCriticaController) Run(c *gin.Context) {
 	idParam := c.Param("id")

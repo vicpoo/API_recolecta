@@ -26,6 +26,7 @@ func NewDeleteReporteMantenimientoGeneradoController(deleteUseCase *application.
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.RegistroMantenimientoMessageResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/reportes-mantenimiento-generado/{id} [delete]
 func (ctrl *DeleteReporteMantenimientoGeneradoController) Run(c *gin.Context) {
 	idParam := c.Param("id")

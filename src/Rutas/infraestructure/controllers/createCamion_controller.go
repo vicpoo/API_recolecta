@@ -25,6 +25,7 @@ func NewCreateCamionController(uc *application.SaveCamionUseCase) *CreateCamionC
 // @Param        body body entities.CreateEstadoCamionRequest true "Body"
 // @Success      201 {object} entities.EstadoCamionResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/camion/ [post]
 func (ctr *CreateCamionController) Run(ctx *gin.Context) {
 	var camion entities.Camion

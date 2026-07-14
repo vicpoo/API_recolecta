@@ -24,6 +24,7 @@ func NewGetSeguimientosFallaCriticaByFallaIDController(getByFallaIDUseCase *appl
 // @Produce      json
 // @Success      200 {object} entities.SeguimientoFallaCriticaResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/seguimientos-falla-critica/falla/{fallaId} [get]
 func (ctrl *GetSeguimientosFallaCriticaByFallaIDController) Run(c *gin.Context) {
 	fallaIDParam := c.Param("fallaId")

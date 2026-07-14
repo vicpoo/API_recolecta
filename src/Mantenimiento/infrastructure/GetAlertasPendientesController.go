@@ -22,6 +22,7 @@ func NewGetAlertasPendientesController(getPendientesUseCase *application.GetAler
 // @Produce      json
 // @Success      200 {object} entities.AlertaMantenimientoResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/alertas-mantenimiento/pendientes [get]
 func (ctrl *GetAlertasPendientesController) Run(c *gin.Context) {
 	alertas, err := ctrl.getPendientesUseCase.Run()

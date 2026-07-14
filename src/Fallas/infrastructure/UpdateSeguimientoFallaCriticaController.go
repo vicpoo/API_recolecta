@@ -27,6 +27,7 @@ func NewUpdateSeguimientoFallaCriticaController(updateUseCase *application.Updat
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.SeguimientoFallaCriticaResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/seguimientos-falla-critica/{id} [put]
 func (ctrl *UpdateSeguimientoFallaCriticaController) Run(c *gin.Context) {
 	idParam := c.Param("id")

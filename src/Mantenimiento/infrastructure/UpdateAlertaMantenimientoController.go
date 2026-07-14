@@ -27,6 +27,7 @@ func NewUpdateAlertaMantenimientoController(updateUseCase *application.UpdateAle
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.AlertaMantenimientoResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/alertas-mantenimiento/{id} [put]
 func (ctrl *UpdateAlertaMantenimientoController) Run(c *gin.Context) {
 	idParam := c.Param("id")

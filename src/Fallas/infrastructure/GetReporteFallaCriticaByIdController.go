@@ -25,6 +25,7 @@ func NewGetReporteFallaCriticaByIdController(getByIdUseCase *application.GetRepo
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.ReporteFallaCriticaResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/reportes-falla-critica/{id} [get]
 func (ctrl *GetReporteFallaCriticaByIdController) Run(c *gin.Context) {
 	idParam := c.Param("id")

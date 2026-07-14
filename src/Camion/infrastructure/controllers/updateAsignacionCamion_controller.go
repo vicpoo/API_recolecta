@@ -25,6 +25,7 @@ func NewUpdateHistorialAsignacionCamionController(uc *application.UpdateHistoria
 // @Param        body body entities.UpdateHistorialAsignacionCamionRequest true "Body"
 // @Success      200 {object} entities.HistorialAsignacionCamionResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/historial-asignacion/{id} [put]
 func (ctr *UpdateHistorialAsignacionCamionController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))

@@ -54,7 +54,7 @@ func (c *ColoniaController) RegisterRoutes(r *gin.Engine) {
 // @Tags         Colonia
 // @Accept       json
 // @Produce      json
-// @Security     Bearer
+// @Security     BearerAuth
 // @Param        body body domain.CreateColoniaRequest true "Body"
 // @Success      201 {object} domain.ColoniaResponse
 // @Failure      400 {object} core.ErrorResponse "Datos inválidos"
@@ -96,6 +96,7 @@ func (c *ColoniaController) Create(ctx *gin.Context) {
 // @Failure      400 {object} core.ErrorResponse "ID inválido"
 // @Failure      404 {object} core.ErrorResponse "Colonia no encontrada"
 // @Failure      500 {object} core.ErrorResponse "Error interno del servidor"
+// @Security     BearerAuth
 // @Router       /api/colonia/{id} [get]
 func (c *ColoniaController) GetByID(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
@@ -124,6 +125,7 @@ func (c *ColoniaController) GetByID(ctx *gin.Context) {
 // @Produce      json
 // @Success      200 {object} domain.ColoniaResponse
 // @Failure      500 {object} core.ErrorResponse "Error interno del servidor"
+// @Security     BearerAuth
 // @Router       /api/colonia [get]
 func (c *ColoniaController) List(ctx *gin.Context) {
 	colonias, err := c.list.Execute()
@@ -145,7 +147,7 @@ func (c *ColoniaController) List(ctx *gin.Context) {
 // @Tags         Colonia
 // @Accept       json
 // @Produce      json
-// @Security     Bearer
+// @Security     BearerAuth
 // @Param        id path int true "ID de la colonia"
 // @Param        body body domain.CreateColoniaRequest true "Body"
 // @Success      200 {object} domain.ColoniaResponse
@@ -189,7 +191,7 @@ func (c *ColoniaController) Update(ctx *gin.Context) {
 // @Description  Elimina una colonia de la base de datos. Solo administradores (rol ADMIN)
 // @Tags         Colonia
 // @Produce      json
-// @Security     Bearer
+// @Security     BearerAuth
 // @Param        id path int true "ID de la colonia"
 // @Success      204 "Colonia eliminada correctamente"
 // @Failure      400 {object} core.ErrorResponse "ID inválido"

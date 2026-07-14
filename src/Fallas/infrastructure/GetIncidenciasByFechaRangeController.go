@@ -24,6 +24,7 @@ func NewGetIncidenciasByFechaRangeController(getByFechaRangeUseCase *application
 // @Produce      json
 // @Success      200 {object} entities.IncidenciaListResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/incidencias/fecha [get]
 func (ctrl *GetIncidenciasByFechaRangeController) Run(c *gin.Context) {
 	fechaInicio := c.Query("fecha_inicio")

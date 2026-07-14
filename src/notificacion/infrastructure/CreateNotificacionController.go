@@ -25,6 +25,7 @@ func NewCreateNotificacionController(createUseCase *application.CreateNotificaci
 // @Param        body body entities.CreateNotificacionRequest true "Body"
 // @Success      200 {object} entities.NotificacionResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/notificaciones/ [post]
 func (ctrl *CreateNotificacionController) Run(c *gin.Context) {
 	var request struct {

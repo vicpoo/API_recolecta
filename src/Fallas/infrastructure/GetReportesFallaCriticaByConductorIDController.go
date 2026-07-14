@@ -24,6 +24,7 @@ func NewGetReportesFallaCriticaByConductorIDController(getByConductorIDUseCase *
 // @Produce      json
 // @Success      200 {object} entities.ReporteFallaCriticaResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/reportes-falla-critica/conductor/{conductorId} [get]
 func (ctrl *GetReportesFallaCriticaByConductorIDController) Run(c *gin.Context) {
 	conductorIDParam := c.Param("conductorId")

@@ -24,6 +24,7 @@ func NewGetRegistrosByCoordinadorIDController(getByCoordinadorIDUseCase *applica
 // @Produce      json
 // @Success      200 {object} entities.RegistroMantenimientoListResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/registros-mantenimiento/coordinador/{coordinador_id} [get]
 func (ctrl *GetRegistrosByCoordinadorIDController) Run(c *gin.Context) {
 	coordinadorIDParam := c.Param("coordinador_id")

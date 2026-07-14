@@ -25,6 +25,7 @@ func NewGetIncidenciasByConductorIDController(getByConductorIDUseCase *applicati
 // @Produce      json
 // @Success      200 {object} entities.IncidenciaListResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/incidencias/conductor/{conductor_id} [get]
 func (ctrl *GetIncidenciasByConductorIDController) Run(c *gin.Context) {
 	conductorIDParam := c.Param("conductor_id")

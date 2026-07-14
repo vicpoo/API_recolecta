@@ -24,6 +24,7 @@ func NewCreateReporteConductorController(createUseCase *application.CreateReport
 // @Param        body body entities.CreateReporteConductorRequest true "Body"
 // @Success      200 {object} entities.ReporteConductorResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/reportes-conductor/ [post]
 func (ctrl *CreateReporteConductorController) Run(c *gin.Context) {
 	var reporteRequest struct {

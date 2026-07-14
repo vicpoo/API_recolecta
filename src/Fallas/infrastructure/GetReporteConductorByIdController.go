@@ -25,6 +25,7 @@ func NewGetReporteConductorByIdController(getByIdUseCase *application.GetReporte
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.ReporteConductorResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/reportes-conductor/{id} [get]
 func (ctrl *GetReporteConductorByIdController) Run(c *gin.Context) {
 	idParam := c.Param("id")

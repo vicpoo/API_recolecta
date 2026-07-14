@@ -23,6 +23,7 @@ func NewCreateHistorialAsignacionCamionController(uc *application.SaveHistorialA
 // @Param        body body entities.CreateHistorialAsignacionCamionRequest true "Body"
 // @Success      201 {object} entities.HistorialAsignacionCamionResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/historial-asignacion/ [post]
 func (ctr *CreateHistorialAsignacionCamionController) Run(ctx *gin.Context) {
 	var historial entities.HistorialAsignacionCamion

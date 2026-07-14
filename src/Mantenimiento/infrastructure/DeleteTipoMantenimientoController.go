@@ -25,6 +25,7 @@ func NewDeleteTipoMantenimientoController(deleteUseCase *application.DeleteTipoM
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.RegistroMantenimientoMessageResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/tipos-mantenimiento/{id} [delete]
 func (ctrl *DeleteTipoMantenimientoController) Run(c *gin.Context) {
 	idParam := c.Param("id")

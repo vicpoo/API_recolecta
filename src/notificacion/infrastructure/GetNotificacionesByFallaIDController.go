@@ -22,6 +22,7 @@ func NewGetNotificacionesByFallaIDController(useCase *application.GetNotificacio
 // @Produce      json
 // @Success      200 {object} entities.NotificacionResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/notificaciones/falla/{falla_id} [get]
 func (ctrl *GetNotificacionesByFallaIDController) Run(c *gin.Context) {
 	idParam := c.Param("falla_id")

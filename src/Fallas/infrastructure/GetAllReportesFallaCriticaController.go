@@ -22,6 +22,7 @@ func NewGetAllReportesFallaCriticaController(getAllUseCase *application.GetAllRe
 // @Produce      json
 // @Success      200 {object} entities.ReporteFallaCriticaListResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/reportes-falla-critica/ [get]
 func (ctrl *GetAllReportesFallaCriticaController) Run(c *gin.Context) {
 	reportes, err := ctrl.getAllUseCase.Run()

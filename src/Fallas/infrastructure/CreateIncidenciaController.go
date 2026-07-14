@@ -27,6 +27,7 @@ func NewCreateIncidenciaController(createUseCase *application.CreateIncidenciaUs
 // @Param        body body entities.CreateIncidenciaRequest true "Body"
 // @Success      200 {object} entities.IncidenciaResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/incidencias/ [post]
 func (ctrl *CreateIncidenciaController) Run(c *gin.Context) {
 	var request struct {

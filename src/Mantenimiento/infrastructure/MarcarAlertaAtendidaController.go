@@ -25,6 +25,7 @@ func NewMarcarAlertaAtendidaController(marcarAtendidaUseCase *application.Marcar
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.AlertaMantenimientoResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/alertas-mantenimiento/{id}/atender [patch]
 func (ctrl *MarcarAlertaAtendidaController) Run(c *gin.Context) {
 	idParam := c.Param("id")

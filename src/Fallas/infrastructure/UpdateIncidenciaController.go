@@ -29,6 +29,7 @@ func NewUpdateIncidenciaController(updateUseCase *application.UpdateIncidenciaUs
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.IncidenciaResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/incidencias/{id} [put]
 func (ctrl *UpdateIncidenciaController) Run(c *gin.Context) {
 	idParam := c.Param("id")

@@ -26,6 +26,7 @@ func NewDeleteIncidenciaController(deleteUseCase *application.DeleteIncidenciaUs
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.IncidenciaMessageResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/incidencias/{id} [delete]
 func (ctrl *DeleteIncidenciaController) Run(c *gin.Context) {
 	idParam := c.Param("id")

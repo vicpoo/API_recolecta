@@ -24,6 +24,7 @@ func NewGetAlertasByCamionIDController(getByCamionUseCase *application.GetAlerta
 // @Produce      json
 // @Success      200 {object} entities.AlertaMantenimientoResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/alertas-mantenimiento/camion/{camion_id} [get]
 func (ctrl *GetAlertasByCamionIDController) Run(c *gin.Context) {
 	idParam := c.Param("camion_id")

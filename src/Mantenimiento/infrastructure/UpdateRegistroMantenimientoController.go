@@ -29,6 +29,7 @@ func NewUpdateRegistroMantenimientoController(updateUseCase *application.UpdateR
 // @Param        id path int true "ID"
 // @Success      200 {object} entities.RegistroMantenimientoResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/registros-mantenimiento/{id} [put]
 func (ctrl *UpdateRegistroMantenimientoController) Run(c *gin.Context) {
 	idParam := c.Param("id")

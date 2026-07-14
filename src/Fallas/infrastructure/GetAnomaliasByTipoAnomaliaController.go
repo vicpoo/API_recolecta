@@ -24,6 +24,7 @@ func NewGetAnomaliasByTipoAnomaliaController(getByTipoAnomaliaUseCase *applicati
 // @Produce      json
 // @Success      200 {object} entities.AnomaliaResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/anomalias/tipo [get]
 func (ctrl *GetAnomaliasByTipoAnomaliaController) Run(c *gin.Context) {
 	tipoAnomalia := c.Query("tipo_anomalia")

@@ -22,6 +22,7 @@ func NewGetAllAlertasMantenimientoController(getAllUseCase *application.GetAllAl
 // @Produce      json
 // @Success      200 {object} entities.AlertaMantenimientoListResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/alertas-mantenimiento/ [get]
 func (ctrl *GetAllAlertasMantenimientoController) Run(c *gin.Context) {
 	alertas, err := ctrl.getAllUseCase.Run()

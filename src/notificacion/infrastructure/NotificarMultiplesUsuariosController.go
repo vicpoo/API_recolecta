@@ -21,6 +21,7 @@ func NewNotificarMultiplesUsuariosController(useCase *application.NotificarMulti
 // @Param        body body entities.CreateNotificacionRequest true "Body"
 // @Success      200 {object} entities.NotificacionResponse
 // @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
 // @Router       /api/notificaciones/enviar-multiples [post]
 func (ctrl *NotificarMultiplesUsuariosController) Run(c *gin.Context) {
 	var req application.NotificarMultiplesRequest
