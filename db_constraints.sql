@@ -202,7 +202,7 @@ BEGIN
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_name = 'fk_colonia_ruta'
     ) THEN
-        ALTER TABLE ruta ADD CONSTRAINT fk_colonia_ruta FOREIGN KEY (colonia_id) REFERENCES colonia(id);
+        ALTER TABLE ruta ADD CONSTRAINT fk_colonia_ruta FOREIGN KEY (colonia_id) REFERENCES colonia(colonia_id);
     END IF;
 
     IF NOT EXISTS (
@@ -267,7 +267,7 @@ BEGIN
         SELECT 1 FROM information_schema.table_constraints
         WHERE constraint_name = 'fk_colonia_domicilio'
     ) THEN
-        ALTER TABLE domicilio ADD CONSTRAINT fk_colonia_domicilio FOREIGN KEY (colonia_id) REFERENCES colonia(id);
+        ALTER TABLE domicilio ADD CONSTRAINT fk_colonia_domicilio FOREIGN KEY (colonia_id) REFERENCES colonia(colonia_id);
     END IF;
 
     IF NOT EXISTS (
@@ -278,3 +278,31 @@ BEGIN
     END IF;
 
 END $$;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'fk_camion_estado'
+    ) THEN
+        ALTER TABLE estado_camion ADD CONSTRAINT fk_camion_estado FOREIGN KEY (camion_id) REFERENCES camion(id);
+    END IF;
+END $$;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'fk_relleno_vaciado'
+    ) THEN
+        ALTER TABLE registro_vaciado ADD CONSTRAINT fk_relleno_vaciado FOREIGN KEY (relleno_id) REFERENCES relleno_sanitario(relleno_id);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'fk_ruta_camion_vaciado'
+    ) THEN
+        ALTER TABLE registro_vaciado ADD CONSTRAINT fk_ruta_camion_vaciado FOREIGN KEY (ruta_camion_id) REFERENCES ruta_camion(ruta_camion_id);
+    END IF;
+END $$;
+

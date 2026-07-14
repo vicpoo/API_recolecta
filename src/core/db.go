@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -53,22 +54,140 @@ func ConnectPostgres() (*pgxpool.Pool, error) {
 			err = fmt.Errorf("error pinging database: %w", pingErr)
 			return
 		}
+
+		// Run auto migration to auto-heal/sync outdated development schemas
+		AutoMigrateDatabase(pool)
 	})
 
 	return pool, err
 }
 
 func ClosePool() {
-    if pool != nil {
-        pool.Close()
-    }
+	if pool != nil {
+		pool.Close()
+	}
 }
 
-
 func GetBD() *pgxpool.Pool {
-    db, err := ConnectPostgres()
-    if err != nil {
-        panic(fmt.Sprintf("Error al conectar a la base de datos: %v", err))
-    }
-    return db
+	db, err := ConnectPostgres()
+	if err != nil {
+		panic(fmt.Sprintf("Error al conectar a la base de datos: %v", err))
+	}
+	return db
+}
+
+func AutoMigrateDatabase(db *pgxpool.Pool) {
+	ctx := context.Background()
+
+	// Only run this in development/debug mode
+	if os.Getenv("ENVIRONMENT") != "development" && os.Getenv("DEBUG") != "true" {
+		return
+	}
+
+	fmt.Println("[db-migrate] Checking if database schema is up-to-date...")
+
+	// Check 1: Does table 'domicilio' have column 'calle'?
+	var hasCalle bool
+	_ = db.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='domicilio' AND column_name='calle')").Scan(&hasCalle)
+
+	// Check 2: Does 'alerta_mantenimiento' table exist?
+	var hasAlertaTable bool
+	_ = db.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='alerta_mantenimiento')").Scan(&hasAlertaTable)
+
+	// Check 3: Does 'ruta_camion' table exist?
+	var hasRutaCamionTable bool
+	_ = db.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='ruta_camion')").Scan(&hasRutaCamionTable)
+
+	// Check 4: Does 'historial_asignacion_camion' table exist?
+	var hasHistorialTable bool
+	_ = db.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='historial_asignacion_camion')").Scan(&hasHistorialTable)
+
+	// Check 5: Does 'registro_mantenimiento' table have 'registro_id' column?
+	var hasRegistroID bool
+	_ = db.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='registro_mantenimiento' AND column_name='registro_id')").Scan(&hasRegistroID)
+
+	// Check 6: Does 'colonia' table have 'colonia_id' column?
+	var hasColoniaID bool
+	_ = db.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='colonia' AND column_name='colonia_id')").Scan(&hasColoniaID)
+
+	// Check 7: Does 'relleno_sanitario' table exist?
+	var hasRellenoTable bool
+	_ = db.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='relleno_sanitario')").Scan(&hasRellenoTable)
+
+	// Check 8: Does 'estado_camion' table exist?
+	var hasEstadoCamionTable bool
+	_ = db.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='estado_camion')").Scan(&hasEstadoCamionTable)
+
+	// Check 9: Does 'registro_vaciado' table exist?
+	var hasRegistroVaciadoTable bool
+	_ = db.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='registro_vaciado')").Scan(&hasRegistroVaciadoTable)
+
+	needsUpdate := !hasCalle || !hasAlertaTable || !hasRutaCamionTable || !hasHistorialTable || !hasRegistroID || !hasColoniaID || !hasRellenoTable || !hasEstadoCamionTable || !hasRegistroVaciadoTable
+
+	if !needsUpdate {
+		fmt.Println("[db-migrate] Database schema is up-to-date. No action needed.")
+		return
+	}
+
+	fmt.Println("[db-migrate] Database schema is outdated! Recreating tables...")
+
+	// Drop old/conflicting tables and views/triggers
+	dropQuery := `
+		DROP TABLE IF EXISTS 
+			domicilio, 
+			historial_asignacion, 
+			historial_asignacion_camion, 
+			registro_mantenimiento, 
+			tipo_mantenimiento, 
+			alerta_mantenimiento, 
+			registro_asignacion_ruta, 
+			ruta_camion,
+			colonia,
+			relleno_sanitario,
+			estado_camion,
+			registro_vaciado
+		CASCADE;
+	`
+	_, err := db.Exec(ctx, dropQuery)
+	if err != nil {
+		fmt.Printf("[db-migrate] Warning dropping tables: %v\n", err)
+	}
+
+	// Load and execute SQL files
+	executeSQLFile(ctx, db, "db_script.sql")
+	executeSQLFile(ctx, db, "db_constraints.sql")
+	executeSQLFile(ctx, db, "db_indexes.sql")
+
+	fmt.Println("[db-migrate] Database schema successfully updated/recreated!")
+}
+
+func executeSQLFile(ctx context.Context, db *pgxpool.Pool, filepath string) {
+	bytes, err := os.ReadFile(filepath)
+	if err != nil {
+		// Try parent directory fallback
+		bytes, err = os.ReadFile("../" + filepath)
+		if err != nil {
+			fmt.Printf("[db-migrate] Error reading %s: %v\n", filepath, err)
+			return
+		}
+	}
+
+	content := string(bytes)
+	lines := strings.Split(content, "\n")
+	var cleanLines []string
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "CREATE DATABASE") || strings.HasPrefix(trimmed, "\\c") {
+			continue
+		}
+		cleanLines = append(cleanLines, line)
+	}
+	cleanContent := strings.Join(cleanLines, "\n")
+
+	_, err = db.Exec(ctx, cleanContent)
+	if err != nil {
+		fmt.Printf("[db-migrate] Error executing %s: %v\n", filepath, err)
+	} else {
+		fmt.Printf("[db-migrate] Successfully executed %s\n", filepath)
+	}
 }

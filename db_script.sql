@@ -162,12 +162,41 @@ CREATE TABLE IF NOT EXISTS punto_recoleccion (
   deleted_at TIMESTAMP DEFAULT NULL
 );
 
+CREATE TABLE IF NOT EXISTS relleno_sanitario (
+  relleno_id SERIAL PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  direccion VARCHAR(255) NOT NULL,
+  es_rentado BOOLEAN DEFAULT FALSE,
+  capacidad_toneladas DOUBLE PRECISION NOT NULL,
+  eliminado BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP DEFAULT NULL
+);
+
+CREATE TABLE IF NOT EXISTS estado_camion (
+  estado_id SERIAL PRIMARY KEY,
+  camion_id INTEGER NOT NULL,
+  estado VARCHAR(50) NOT NULL,
+  observaciones TEXT NULL,
+  timestamp TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS registro_vaciado (
+  vaciado_id SERIAL PRIMARY KEY,
+  relleno_id INTEGER NOT NULL,
+  ruta_camion_id INTEGER NOT NULL,
+  hora TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
 -- =====================
 -- DOMINIO COLONIA
 -- =====================
 
 CREATE TABLE IF NOT EXISTS colonia (
-  id SERIAL PRIMARY KEY,
+  colonia_id SERIAL PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,
   zona VARCHAR(50) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
