@@ -166,6 +166,40 @@ definitions:
       success:
         type: boolean
     type: object
+  entities.Camion:
+    properties:
+      camion_id:
+        type: integer
+      color_disponibilidad:
+        type: string
+      created_at:
+        type: string
+      disponibilidad_id:
+        type: integer
+      es_rentado:
+        type: boolean
+      modelo:
+        type: string
+      nombre_disponibilidad:
+        type: string
+      placa:
+        type: string
+      tipo_camion_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  entities.CamionResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.Camion'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
   entities.Ciudadano:
     properties:
       alias:
@@ -242,6 +276,24 @@ definitions:
     - descripcion
     - id_chofer_id
     - tipo_anomalia
+    type: object
+  entities.CreateCamionRequest:
+    properties:
+      disponibilidad_id:
+        type: integer
+      es_rentado:
+        type: boolean
+      modelo:
+        type: string
+      placa:
+        type: string
+      tipo_camion_id:
+        type: integer
+    required:
+    - disponibilidad_id
+    - modelo
+    - placa
+    - tipo_camion_id
     type: object
   entities.CreateCiudadanoRequest:
     properties:
@@ -452,6 +504,17 @@ definitions:
     - camion_id
     - conductor_id
     - descripcion
+    type: object
+  entities.CreateRutaRequest:
+    properties:
+      descripcion:
+        type: string
+      json_ruta: {}
+      nombre:
+        type: string
+    required:
+    - json_ruta
+    - nombre
     type: object
   entities.CreateSeguimientoFallaCriticaRequest:
     properties:
@@ -1100,6 +1163,28 @@ definitions:
       success:
         type: boolean
     type: object
+  entities.Ruta:
+    properties:
+      created_at:
+        type: string
+      descripcion:
+        type: string
+      eliminado:
+        type: boolean
+      json_ruta:
+        type: string
+      nombre:
+        type: string
+      ruta_id:
+        type: integer
+    type: object
+  entities.RutaResponse:
+    properties:
+      data:
+        $ref: '#/definitions/entities.Ruta'
+      success:
+        type: boolean
+    type: object
   entities.SeguimientoFallaCritica:
     properties:
       comentario:
@@ -1173,6 +1258,19 @@ definitions:
         type: integer
       tipo_anomalia:
         type: string
+    type: object
+  entities.UpdateCamionRequest:
+    properties:
+      disponibilidad_id:
+        type: integer
+      es_rentado:
+        type: boolean
+      modelo:
+        type: string
+      placa:
+        type: string
+      tipo_camion_id:
+        type: integer
     type: object
   entities.UpdateCiudadanoRequest:
     properties:
@@ -1871,14 +1969,14 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/entities.CreateEstadoCamionRequest'
+          $ref: '#/definitions/entities.CreateCamionRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/entities.EstadoCamionResponse'
+            $ref: '#/definitions/entities.CamionResponse'
         "400":
           description: Bad Request
           schema:
@@ -1957,14 +2055,14 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/entities.UpdateEstadoCamionRequest'
+          $ref: '#/definitions/entities.UpdateCamionRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.EstadoCamionResponse'
+            $ref: '#/definitions/entities.CamionResponse'
         "400":
           description: Bad Request
           schema:
@@ -5655,14 +5753,14 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/entities.CreateEstadoCamionRequest'
+          $ref: '#/definitions/entities.CreateRutaRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/entities.EstadoCamionResponse'
+            $ref: '#/definitions/entities.RutaResponse'
         "400":
           description: Bad Request
           schema:

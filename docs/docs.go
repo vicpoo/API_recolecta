@@ -902,7 +902,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.CreateEstadoCamionRequest"
+                            "$ref": "#/definitions/entities.CreateCamionRequest"
                         }
                     }
                 ],
@@ -910,7 +910,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/entities.EstadoCamionResponse"
+                            "$ref": "#/definitions/entities.CamionResponse"
                         }
                     },
                     "400": {
@@ -1080,7 +1080,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.UpdateEstadoCamionRequest"
+                            "$ref": "#/definitions/entities.UpdateCamionRequest"
                         }
                     }
                 ],
@@ -1088,7 +1088,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.EstadoCamionResponse"
+                            "$ref": "#/definitions/entities.CamionResponse"
                         }
                     },
                     "400": {
@@ -7006,7 +7006,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/entities.CreateEstadoCamionRequest"
+                            "$ref": "#/definitions/entities.CreateRutaRequest"
                         }
                     }
                 ],
@@ -7014,7 +7014,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/entities.EstadoCamionResponse"
+                            "$ref": "#/definitions/entities.RutaResponse"
                         }
                     },
                     "400": {
@@ -8053,6 +8053,58 @@ const docTemplate = `{
                 }
             }
         },
+        "entities.Camion": {
+            "type": "object",
+            "properties": {
+                "camion_id": {
+                    "type": "integer"
+                },
+                "color_disponibilidad": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "disponibilidad_id": {
+                    "type": "integer"
+                },
+                "es_rentado": {
+                    "type": "boolean"
+                },
+                "modelo": {
+                    "type": "string"
+                },
+                "nombre_disponibilidad": {
+                    "type": "string"
+                },
+                "placa": {
+                    "type": "string"
+                },
+                "tipo_camion_id": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "entities.CamionResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/entities.Camion"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "entities.Ciudadano": {
             "type": "object",
             "properties": {
@@ -8167,6 +8219,32 @@ const docTemplate = `{
                 },
                 "tipo_anomalia": {
                     "type": "string"
+                }
+            }
+        },
+        "entities.CreateCamionRequest": {
+            "type": "object",
+            "required": [
+                "disponibilidad_id",
+                "modelo",
+                "placa",
+                "tipo_camion_id"
+            ],
+            "properties": {
+                "disponibilidad_id": {
+                    "type": "integer"
+                },
+                "es_rentado": {
+                    "type": "boolean"
+                },
+                "modelo": {
+                    "type": "string"
+                },
+                "placa": {
+                    "type": "string"
+                },
+                "tipo_camion_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -8480,6 +8558,22 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "descripcion": {
+                    "type": "string"
+                }
+            }
+        },
+        "entities.CreateRutaRequest": {
+            "type": "object",
+            "required": [
+                "json_ruta",
+                "nombre"
+            ],
+            "properties": {
+                "descripcion": {
+                    "type": "string"
+                },
+                "json_ruta": {},
+                "nombre": {
                     "type": "string"
                 }
             }
@@ -9477,6 +9571,40 @@ const docTemplate = `{
                 }
             }
         },
+        "entities.Ruta": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "descripcion": {
+                    "type": "string"
+                },
+                "eliminado": {
+                    "type": "boolean"
+                },
+                "json_ruta": {
+                    "type": "string"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "ruta_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "entities.RutaResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/entities.Ruta"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "entities.SeguimientoFallaCritica": {
             "type": "object",
             "properties": {
@@ -9588,6 +9716,26 @@ const docTemplate = `{
                 },
                 "tipo_anomalia": {
                     "type": "string"
+                }
+            }
+        },
+        "entities.UpdateCamionRequest": {
+            "type": "object",
+            "properties": {
+                "disponibilidad_id": {
+                    "type": "integer"
+                },
+                "es_rentado": {
+                    "type": "boolean"
+                },
+                "modelo": {
+                    "type": "string"
+                },
+                "placa": {
+                    "type": "string"
+                },
+                "tipo_camion_id": {
+                    "type": "integer"
                 }
             }
         },
