@@ -63,7 +63,7 @@ import (
 	coloniaPostgres "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/postgres"
 	empleadoInfra "github.com/vicpoo/API_recolecta/src/empleado/infrastructure"
 	empleadoRoutes "github.com/vicpoo/API_recolecta/src/empleado/infrastructure/routes"
-	_ "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
+	notificacionInfra "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
 	//rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
 	//listMisAlertasUC "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
 	//marcarLeidaUC "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
@@ -538,6 +538,9 @@ func InitDependencies() {
 	tipoMantenimientoRoutes := tipoMantenimiento.NewTipoMantenimientoRouter(engine)
 
 	tipoMantenimientoRoutes.Run()
+
+	pushNotificationRoutes := notificacionInfra.NewPushNotificationRouter(engine)
+	pushNotificationRoutes.Run()
 
 	engine.Run(":8080")
 }

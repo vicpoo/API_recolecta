@@ -53,12 +53,12 @@ func (uc *CreateDomicilio) Execute(ctx context.Context, in CreateDomicilioInput)
 		return 0, errors.New("numero es requerido")
 	}
 
-	existingByAlias, err := uc.repo.FindByAlias(ctx, in.Alias)
+	existingByAlias, err := uc.repo.FindByAlias(ctx, in.Alias, in.CiudadanoID)
 	if err != nil {
 		return 0, err
 	}
 	if existingByAlias != nil {
-		return 0, errors.New("el alias del domicilio ya está registrado")
+		return 0, errors.New("el alias del domicilio ya está registrado para este ciudadano")
 	}
 
 	d := &entities.Domicilio{

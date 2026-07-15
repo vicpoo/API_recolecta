@@ -73,9 +73,10 @@ CREATE TABLE IF NOT EXISTS historial_asignacion_camion (
 );
 
 CREATE TABLE IF NOT EXISTS tipo_camion (
-  id SMALLINT PRIMARY KEY,
+  tipo_camion_id SERIAL PRIMARY KEY,
   nombre VARCHAR(50) NOT NULL,
-  descripcion VARCHAR(255) NULL
+  descripcion VARCHAR(255) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS camion (
@@ -230,6 +231,16 @@ CREATE TABLE IF NOT EXISTS domicilio (
 -- =====================
 -- DOMINIO NOTIFICACIÓN
 -- =====================
+
+CREATE TABLE IF NOT EXISTS alerta_usuario (
+  alerta_id SERIAL PRIMARY KEY,
+  usuario_id INTEGER NOT NULL,
+  titulo VARCHAR(150) NOT NULL,
+  mensaje TEXT NOT NULL,
+  leida BOOLEAN DEFAULT FALSE NOT NULL,
+  creado_por INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS aviso (
   id SERIAL PRIMARY KEY,

@@ -124,7 +124,7 @@ BEGIN
         SELECT 1 FROM information_schema.check_constraints
         WHERE constraint_name = 'fk_tipo_camion'
     ) THEN
-        ALTER TABLE camion ADD CONSTRAINT fk_tipo_camion FOREIGN KEY (tipo_id) REFERENCES tipo_camion(id);
+        ALTER TABLE camion ADD CONSTRAINT fk_tipo_camion FOREIGN KEY (tipo_id) REFERENCES tipo_camion(tipo_camion_id);
     END IF;
 END $$;
 
@@ -303,6 +303,23 @@ BEGIN
         WHERE constraint_name = 'fk_ruta_camion_vaciado'
     ) THEN
         ALTER TABLE registro_vaciado ADD CONSTRAINT fk_ruta_camion_vaciado FOREIGN KEY (ruta_camion_id) REFERENCES ruta_camion(ruta_camion_id);
+    END IF;
+END $$;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'fk_usuario_alerta_usuario'
+    ) THEN
+        ALTER TABLE alerta_usuario ADD CONSTRAINT fk_usuario_alerta_usuario FOREIGN KEY (usuario_id) REFERENCES ciudadano(id);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'fk_creador_alerta_usuario'
+    ) THEN
+        ALTER TABLE alerta_usuario ADD CONSTRAINT fk_creador_alerta_usuario FOREIGN KEY (creado_por) REFERENCES empleado(id);
     END IF;
 END $$;
 

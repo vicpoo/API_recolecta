@@ -122,7 +122,15 @@ func AutoMigrateDatabase(db *pgxpool.Pool) {
 	var hasRegistroVaciadoTable bool
 	_ = db.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='registro_vaciado')").Scan(&hasRegistroVaciadoTable)
 
-	needsUpdate := !hasCalle || !hasAlertaTable || !hasRutaCamionTable || !hasHistorialTable || !hasRegistroID || !hasColoniaID || !hasRellenoTable || !hasEstadoCamionTable || !hasRegistroVaciadoTable
+	// Check 10: Does 'alerta_usuario' table exist?
+	var hasAlertaUsuarioTable bool
+	_ = db.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name='alerta_usuario')").Scan(&hasAlertaUsuarioTable)
+
+	// Check 11: Does 'tipo_camion' table have 'created_at' column?
+	var hasTipoCamionCreatedAt bool
+	_ = db.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tipo_camion' AND column_name='created_at')").Scan(&hasTipoCamionCreatedAt)
+
+	needsUpdate := !hasCalle || !hasAlertaTable || !hasRutaCamionTable || !hasHistorialTable || !hasRegistroID || !hasColoniaID || !hasRellenoTable || !hasEstadoCamionTable || !hasRegistroVaciadoTable || !hasAlertaUsuarioTable || !hasTipoCamionCreatedAt
 
 	if !needsUpdate {
 		fmt.Println("[db-migrate] Database schema is up-to-date. No action needed.")
@@ -145,7 +153,10 @@ func AutoMigrateDatabase(db *pgxpool.Pool) {
 			colonia,
 			relleno_sanitario,
 			estado_camion,
-			registro_vaciado
+			registro_vaciado,
+			alerta_usuario,
+			camion,
+			tipo_camion
 		CASCADE;
 	`
 	_, err := db.Exec(ctx, dropQuery)
