@@ -244,6 +244,33 @@ CREATE TABLE IF NOT EXISTS aviso (
 );
 
 -- =====================
+-- DOMINIO FALLAS (ANOMALIA)
+-- =====================
+
+-- Tabla unificada que reemplaza a Anomalia, Incidencia, ReporteConductor,
+-- ReporteFallaCritica y SeguimientoFallaCritica. El campo tipo_anomalia
+-- indica cuál de esos conceptos representa cada registro.
+-- SeguimientoFallaCritica usa anomalia_referencia_id (auto-relación) para
+-- apuntar al anomalia_id del REPORTE_FALLA_CRITICA al que da seguimiento.
+CREATE TABLE IF NOT EXISTS anomalia (
+  anomalia_id SERIAL PRIMARY KEY,
+  tipo_anomalia VARCHAR(50) NOT NULL,
+  punto_id INTEGER DEFAULT NULL,
+  conductor_id INTEGER DEFAULT NULL,
+  camion_id INTEGER DEFAULT NULL,
+  ruta_id INTEGER DEFAULT NULL,
+  anomalia_referencia_id INTEGER DEFAULT NULL,
+  descripcion TEXT NOT NULL,
+  json_ruta TEXT DEFAULT NULL,
+  estado VARCHAR(30) DEFAULT NULL,
+  eliminado BOOLEAN DEFAULT FALSE,
+  fecha_reporte TIMESTAMP NOT NULL,
+  fecha_resolucion TIMESTAMP DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =====================
 -- FUNCIONES Y TRIGGERS (Para updated_at automático en Postgres)
 -- =====================
 CREATE OR REPLACE FUNCTION update_updated_at_column()

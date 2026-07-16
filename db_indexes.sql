@@ -225,3 +225,69 @@ BEGIN
         CREATE INDEX idx_alias_ciudadano ON ciudadano(alias);
     END IF;
 END $$;
+
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes
+        WHERE indexname = 'idx_tipo_anomalia'
+    ) THEN
+        CREATE INDEX idx_tipo_anomalia ON anomalia(tipo_anomalia);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes
+        WHERE indexname = 'idx_estado_anomalia'
+    ) THEN
+        CREATE INDEX idx_estado_anomalia ON anomalia(estado);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes
+        WHERE indexname = 'idx_punto_id_anomalia'
+    ) THEN
+        CREATE INDEX idx_punto_id_anomalia ON anomalia(punto_id);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes
+        WHERE indexname = 'idx_conductor_id_anomalia'
+    ) THEN
+        CREATE INDEX idx_conductor_id_anomalia ON anomalia(conductor_id);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes
+        WHERE indexname = 'idx_camion_id_anomalia'
+    ) THEN
+        CREATE INDEX idx_camion_id_anomalia ON anomalia(camion_id);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes
+        WHERE indexname = 'idx_ruta_id_anomalia'
+    ) THEN
+        CREATE INDEX idx_ruta_id_anomalia ON anomalia(ruta_id);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes
+        WHERE indexname = 'idx_referencia_id_anomalia'
+    ) THEN
+        CREATE INDEX idx_referencia_id_anomalia ON anomalia(anomalia_referencia_id);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes
+        WHERE indexname = 'idx_fecha_reporte_anomalia'
+    ) THEN
+        CREATE INDEX idx_fecha_reporte_anomalia ON anomalia(fecha_reporte);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_indexes
+        WHERE indexname = 'idx_registros_activos_anomalia'
+    ) THEN
+        CREATE INDEX idx_registros_activos_anomalia ON anomalia(eliminado) WHERE eliminado = false;
+    END IF;
+END $$;
