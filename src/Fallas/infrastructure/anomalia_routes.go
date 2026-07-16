@@ -20,6 +20,7 @@ func (router *AnomaliaRouter) Run() {
 	// Inicializar dependencias
 	createController, getByIdController, updateController, deleteController,
 		getAllController, getByPuntoIDController, getByChoferIDController,
+		getByCamionIDController, getByRutaIDController, getByReferenciaIDController,
 		getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController := InitAnomaliaDependencies()
 
 	// Grupo de rutas para anomalías con prefijo /api
@@ -36,6 +37,9 @@ func (router *AnomaliaRouter) Run() {
 		// Rutas específicas
 		anomaliaGroup.GET("/punto/:puntoId", getByPuntoIDController.Run)
 		anomaliaGroup.GET("/chofer/:choferId", getByChoferIDController.Run)
+		anomaliaGroup.GET("/camion/:camionId", getByCamionIDController.Run)
+		anomaliaGroup.GET("/ruta/:rutaId", getByRutaIDController.Run)
+		anomaliaGroup.GET("/referencia/:referenciaId", getByReferenciaIDController.Run)
 		anomaliaGroup.GET("/estado", getByEstadoController.Run)        // Query param: ?estado=
 		anomaliaGroup.GET("/tipo", getByTipoAnomaliaController.Run)    // Query param: ?tipo_anomalia=
 		anomaliaGroup.GET("/por-fecha", getByFechaRangeController.Run) // Query params: ?fecha_inicio=&fecha_fin=

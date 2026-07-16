@@ -12,11 +12,16 @@ type IAnomalia interface {
 	Delete(id int32) error
 	GetAll() ([]entities.Anomalia, error)
 	GetByID(id int32) (*entities.Anomalia, error)
-	
-	// Métodos específicos para Anomalia
-	GetByPuntoID(puntoID int32) ([]entities.Anomalia, error)
-	GetByChoferID(choferID int32) ([]entities.Anomalia, error)
-	GetByEstado(estado string) ([]entities.Anomalia, error)
+
+	// Métodos específicos para Anomalia (cubren los antiguos dominios
+	// Incidencia, ReporteConductor, ReporteFallaCritica y
+	// SeguimientoFallaCritica, ahora unificados por TipoAnomalia)
 	GetByTipoAnomalia(tipoAnomalia string) ([]entities.Anomalia, error)
+	GetByEstado(estado string) ([]entities.Anomalia, error)
+	GetByPuntoID(puntoID int32) ([]entities.Anomalia, error)
+	GetByConductorID(conductorID int32) ([]entities.Anomalia, error)
+	GetByCamionID(camionID int32) ([]entities.Anomalia, error)
+	GetByRutaID(rutaID int32) ([]entities.Anomalia, error)
+	GetByReferenciaID(referenciaID int32) ([]entities.Anomalia, error)
 	GetByFechaRange(fechaInicio, fechaFin string) ([]entities.Anomalia, error)
 }

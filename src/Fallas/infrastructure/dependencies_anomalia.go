@@ -13,6 +13,9 @@ func InitAnomaliaDependencies() (
 	*GetAllAnomaliasController,
 	*GetAnomaliasByPuntoIDController,
 	*GetAnomaliasByChoferIDController,
+	*GetAnomaliasByCamionIDController,
+	*GetAnomaliasByRutaIDController,
+	*GetAnomaliasByReferenciaIDController,
 	*GetAnomaliasByEstadoController,
 	*GetAnomaliasByTipoAnomaliaController,
 	*GetAnomaliasByFechaRangeController,
@@ -27,7 +30,10 @@ func InitAnomaliaDependencies() (
 	deleteUseCase := application.NewDeleteAnomaliaUseCase(repo)
 	getAllUseCase := application.NewGetAllAnomaliasUseCase(repo)
 	getByPuntoIDUseCase := application.NewGetAnomaliasByPuntoIDUseCase(repo)
-	getByChoferIDUseCase := application.NewGetAnomaliasByChoferIDUseCase(repo)
+	getByChoferIDUseCase := application.NewGetAnomaliasByConductorIDUseCase(repo)
+	getByCamionIDUseCase := application.NewGetAnomaliasByCamionIDUseCase(repo)
+	getByRutaIDUseCase := application.NewGetAnomaliasByRutaIDUseCase(repo)
+	getByReferenciaIDUseCase := application.NewGetAnomaliasByReferenciaIDUseCase(repo)
 	getByEstadoUseCase := application.NewGetAnomaliasByEstadoUseCase(repo)
 	getByTipoAnomaliaUseCase := application.NewGetAnomaliasByTipoAnomaliaUseCase(repo)
 	getByFechaRangeUseCase := application.NewGetAnomaliasByFechaRangeUseCase(repo)
@@ -40,9 +46,14 @@ func InitAnomaliaDependencies() (
 	getAllController := NewGetAllAnomaliasController(getAllUseCase)
 	getByPuntoIDController := NewGetAnomaliasByPuntoIDController(getByPuntoIDUseCase)
 	getByChoferIDController := NewGetAnomaliasByChoferIDController(getByChoferIDUseCase)
+	getByCamionIDController := NewGetAnomaliasByCamionIDController(getByCamionIDUseCase)
+	getByRutaIDController := NewGetAnomaliasByRutaIDController(getByRutaIDUseCase)
+	getByReferenciaIDController := NewGetAnomaliasByReferenciaIDController(getByReferenciaIDUseCase)
 	getByEstadoController := NewGetAnomaliasByEstadoController(getByEstadoUseCase)
 	getByTipoAnomaliaController := NewGetAnomaliasByTipoAnomaliaController(getByTipoAnomaliaUseCase)
 	getByFechaRangeController := NewGetAnomaliasByFechaRangeController(getByFechaRangeUseCase)
 
-	return createController, getByIDController, updateController, deleteController, getAllController, getByPuntoIDController, getByChoferIDController, getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController
+	return createController, getByIDController, updateController, deleteController, getAllController,
+		getByPuntoIDController, getByChoferIDController, getByCamionIDController, getByRutaIDController,
+		getByReferenciaIDController, getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController
 }
