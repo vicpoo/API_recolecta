@@ -308,18 +308,68 @@ END $$;
 
 DO $$
 BEGIN
+    -- Anomalia Constraints
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
-        WHERE constraint_name = 'fk_usuario_alerta_usuario'
+        WHERE constraint_name = 'fk_punto_anomalia'
     ) THEN
-        ALTER TABLE alerta_usuario ADD CONSTRAINT fk_usuario_alerta_usuario FOREIGN KEY (usuario_id) REFERENCES ciudadano(id);
+        ALTER TABLE anomalia ADD CONSTRAINT fk_punto_anomalia FOREIGN KEY (punto_id) REFERENCES punto_recoleccion(id);
     END IF;
 
     IF NOT EXISTS (
         SELECT 1 FROM information_schema.table_constraints
-        WHERE constraint_name = 'fk_creador_alerta_usuario'
+        WHERE constraint_name = 'fk_conductor_anomalia'
     ) THEN
-        ALTER TABLE alerta_usuario ADD CONSTRAINT fk_creador_alerta_usuario FOREIGN KEY (creado_por) REFERENCES empleado(id);
+        ALTER TABLE anomalia ADD CONSTRAINT fk_conductor_anomalia FOREIGN KEY (conductor_id) REFERENCES empleado(id);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'fk_camion_anomalia'
+    ) THEN
+        ALTER TABLE anomalia ADD CONSTRAINT fk_camion_anomalia FOREIGN KEY (camion_id) REFERENCES camion(id);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'fk_ruta_anomalia'
+    ) THEN
+        ALTER TABLE anomalia ADD CONSTRAINT fk_ruta_anomalia FOREIGN KEY (ruta_id) REFERENCES ruta(id);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'fk_referencia_anomalia'
+    ) THEN
+        ALTER TABLE anomalia ADD CONSTRAINT fk_referencia_anomalia FOREIGN KEY (anomalia_referencia_id) REFERENCES anomalia(anomalia_id);
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.check_constraints
+        WHERE constraint_name = 'chk_tipo_anomalia'
+    ) THEN
+        ALTER TABLE anomalia ADD CONSTRAINT chk_tipo_anomalia CHECK (tipo_anomalia IN ('ANOMALIA', 'INCIDENCIA', 'REPORTE_CONDUCTOR', 'REPORTE_FALLA_CRITICA', 'SEGUIMIENTO_FALLA_CRITICA'));
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.check_constraints
+        WHERE constraint_name = 'chk_estado_anomalia'
+    ) THEN
+        ALTER TABLE anomalia ADD CONSTRAINT chk_estado_anomalia CHECK (estado IS NULL OR estado IN ('PENDIENTE', 'EN_PROCESO', 'RESUELTA'));
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.check_constraints
+        WHERE constraint_name = 'chk_descripcion_anomalia'
+    ) THEN
+        ALTER TABLE anomalia ADD CONSTRAINT chk_descripcion_anomalia CHECK (descripcion <> '');
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.check_constraints
+        WHERE constraint_name = 'chk_fecha_resolucion_anomalia'
+    ) THEN
+        ALTER TABLE anomalia ADD CONSTRAINT chk_fecha_resolucion_anomalia CHECK (fecha_resolucion IS NULL OR fecha_resolucion >= fecha_reporte);
     END IF;
 END $$;
 

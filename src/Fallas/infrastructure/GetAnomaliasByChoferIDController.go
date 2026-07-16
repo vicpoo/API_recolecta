@@ -11,10 +11,10 @@ import (
 )
 
 type GetAnomaliasByChoferIDController struct {
-	getByChoferIDUseCase *application.GetAnomaliasByChoferIDUseCase
+	getByChoferIDUseCase *application.GetAnomaliasByConductorIDUseCase
 }
 
-func NewGetAnomaliasByChoferIDController(getByChoferIDUseCase *application.GetAnomaliasByChoferIDUseCase) *GetAnomaliasByChoferIDController {
+func NewGetAnomaliasByChoferIDController(getByChoferIDUseCase *application.GetAnomaliasByConductorIDUseCase) *GetAnomaliasByChoferIDController {
 	return &GetAnomaliasByChoferIDController{
 		getByChoferIDUseCase: getByChoferIDUseCase,
 	}

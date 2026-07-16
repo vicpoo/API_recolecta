@@ -6,9 +6,6 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	_ "github.com/vicpoo/API_recolecta/docs"
-	alertaApplication "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
-	alertaHttp "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/http"
-	alertaPostgres "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/postgres"
 	historialUseCases "github.com/vicpoo/API_recolecta/src/Camion/application"
 	rutaCamionApp "github.com/vicpoo/API_recolecta/src/Camion/application"
 	tipoCamionUseCases "github.com/vicpoo/API_recolecta/src/Camion/application"
@@ -45,25 +42,20 @@ import (
 	registroVaciadoRoutesPkg "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
 	rsRoutes "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
 	rutaRoutes "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
+	alertaApplication "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
+	alertaHttp "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/http"
+	alertaPostgres "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/postgres"
 	"github.com/vicpoo/API_recolecta/src/core"
 
 	ciudadanosInfra "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure"
 	ciudadanosRoutes "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure/routes"
 	anomalia "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
-	incidencia "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
-	reporteConductor "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
-	reporteFallaCritica "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
-	seguimientoFallaCritica "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
-	alertaMantenimiento "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure"
-	registroMantenimiento "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure"
-	reporteMantenimientoGenerado "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure"
-	tipoMantenimiento "github.com/vicpoo/API_recolecta/src/Mantenimiento/infrastructure"
 	coloniaApplication "github.com/vicpoo/API_recolecta/src/colonia/application"
 	coloniaHttp "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/http"
 	coloniaPostgres "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/postgres"
 	empleadoInfra "github.com/vicpoo/API_recolecta/src/empleado/infrastructure"
 	empleadoRoutes "github.com/vicpoo/API_recolecta/src/empleado/infrastructure/routes"
-	notificacionInfra "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
+	//notificacionInfra "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
 	//rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
 	//listMisAlertasUC "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
 	//marcarLeidaUC "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
@@ -506,41 +498,6 @@ func InitDependencies() {
 	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
 
 	anomaliaRoutes.Run()
-
-	incidenciaRoutes := incidencia.NewIncidenciaRouter(engine)
-
-	incidenciaRoutes.Run()
-
-	reporteConductorRoutes := reporteConductor.NewReporteConductorRouter(engine)
-
-	reporteConductorRoutes.Run()
-
-	registroMantenimientoRoutes := registroMantenimiento.NewRegistroMantenimientoRouter(engine)
-
-	registroMantenimientoRoutes.Run()
-
-	reporteFallaCriticaRoutes := reporteFallaCritica.NewReporteFallaCriticaRouter(engine)
-
-	reporteFallaCriticaRoutes.Run()
-
-	alertaMantenimientoRoutes := alertaMantenimiento.NewAlertaMantenimientoRouter(engine)
-
-	alertaMantenimientoRoutes.Run()
-
-	reporteMantenimientoGeneradoRoutes := reporteMantenimientoGenerado.NewReporteMantenimientoGeneradoRouter(engine)
-
-	reporteMantenimientoGeneradoRoutes.Run()
-
-	seguimientoFallaCriticaRoutes := seguimientoFallaCritica.NewSeguimientoFallaCriticaRouter(engine)
-
-	seguimientoFallaCriticaRoutes.Run()
-
-	tipoMantenimientoRoutes := tipoMantenimiento.NewTipoMantenimientoRouter(engine)
-
-	tipoMantenimientoRoutes.Run()
-
-	pushNotificationRoutes := notificacionInfra.NewPushNotificationRouter(engine)
-	pushNotificationRoutes.Run()
 
 	engine.Run(":8080")
 }

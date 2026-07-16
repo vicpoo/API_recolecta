@@ -28,12 +28,16 @@ func NewCreateAnomaliaController(createUseCase *application.CreateAnomaliaUseCas
 // @Router       /api/anomalias/ [post]
 func (ctrl *CreateAnomaliaController) Run(c *gin.Context) {
 	var request struct {
-		PuntoID      *int32 `json:"punto_id"`
-		TipoAnomalia string `json:"tipo_anomalia" binding:"required"`
-		Descripcion  string `json:"descripcion" binding:"required"`
-		FechaReporte string `json:"fecha_reporte" binding:"required"`
-		Estado       string `json:"estado" binding:"required"`
-		IDChoferID   int32  `json:"id_chofer_id" binding:"required"`
+		TipoAnomalia         string `json:"tipo_anomalia" binding:"required"`
+		PuntoID              *int32 `json:"punto_id"`
+		ConductorID          *int32 `json:"conductor_id"`
+		CamionID             *int32 `json:"camion_id"`
+		RutaID               *int32 `json:"ruta_id"`
+		AnomaliaReferenciaID *int32 `json:"anomalia_referencia_id"`
+		Descripcion          string `json:"descripcion" binding:"required"`
+		JsonRuta             string `json:"json_ruta"`
+		Estado               string `json:"estado" binding:"required"`
+		FechaReporte         string `json:"fecha_reporte" binding:"required"`
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
@@ -53,13 +57,17 @@ func (ctrl *CreateAnomaliaController) Run(c *gin.Context) {
 		return
 	}
 
-	anomalia := entities.NewAnomaliaConPunto(
-		request.PuntoID,
+	anomalia := entities.NewAnomalia(
 		request.TipoAnomalia,
+		request.PuntoID,
+		request.ConductorID,
+		request.CamionID,
+		request.RutaID,
+		request.AnomaliaReferenciaID,
 		request.Descripcion,
-		fechaReporte,
+		request.JsonRuta,
 		request.Estado,
-		request.IDChoferID,
+		fechaReporte,
 	)
 
 	createdAnomalia, err := ctrl.createUseCase.Run(anomalia)
