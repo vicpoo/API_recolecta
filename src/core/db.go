@@ -28,6 +28,8 @@ func ConnectPostgres() (*pgxpool.Pool, error) {
 			os.Getenv("DB_NAME"),
 		)
 
+		fmt.Printf("[db-connect] Usando DSN: postgres://%s:***@%s:%s/%s?sslmode=disable\n", os.Getenv("DB_USER"), os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"))
+
 		config, parseErr := pgxpool.ParseConfig(dsn)
 		if parseErr != nil {
 			err = fmt.Errorf("error parsing DSN: %w", parseErr)
@@ -40,18 +42,32 @@ func ConnectPostgres() (*pgxpool.Pool, error) {
 		config.MaxConnIdleTime = 30 * time.Minute
 		config.HealthCheckPeriod = time.Minute
 
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
+		var tempPool *pgxpool.Pool
+		var lastErr error
+		maxRetries := 5
 
-		pool, err = pgxpool.NewWithConfig(ctx, config)
-		if err != nil {
-			err = fmt.Errorf("error creating pool: %w", err)
-			return
+		for i := 1; i <= maxRetries; i++ {
+			fmt.Printf("[db-connect] Intentando conectar a la base de datos (intento %d de %d)...\n", i, maxRetries)
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			
+			tempPool, lastErr = pgxpool.NewWithConfig(ctx, config)
+			if lastErr == nil {
+				lastErr = tempPool.Ping(ctx)
+				if lastErr == nil {
+					cancel()
+					pool = tempPool
+					break
+				}
+				tempPool.Close()
+			}
+			cancel()
+
+			fmt.Printf("[db-connect] Intento %d falló: %v. Reintentando en 3 segundos...\n", i, lastErr)
+			time.Sleep(3 * time.Second)
 		}
 
-		if pingErr := pool.Ping(ctx); pingErr != nil {
-			pool.Close()
-			err = fmt.Errorf("error pinging database: %w", pingErr)
+		if pool == nil {
+			err = fmt.Errorf("no se pudo conectar a la base de datos tras %d intentos: %w", maxRetries, lastErr)
 			return
 		}
 
