@@ -93,386 +93,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/alertas-mantenimiento/": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AlertaMantenimiento"
-                ],
-                "summary": "Listar alertas de mantenimiento",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.AlertaMantenimientoListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AlertaMantenimiento"
-                ],
-                "summary": "Crear alerta de mantenimiento",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateAlertaMantenimientoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.AlertaMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/alertas-mantenimiento/atendidas": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AlertaMantenimiento"
-                ],
-                "summary": "Alertas atendidas",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.AlertaMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/alertas-mantenimiento/camion/{camion_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AlertaMantenimiento"
-                ],
-                "summary": "Alertas por camión",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.AlertaMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/alertas-mantenimiento/fecha": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AlertaMantenimiento"
-                ],
-                "summary": "Alertas por rango de fecha",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.AlertaMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/alertas-mantenimiento/pendientes": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AlertaMantenimiento"
-                ],
-                "summary": "Alertas pendientes",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.AlertaMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/alertas-mantenimiento/tipo/{tipo_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AlertaMantenimiento"
-                ],
-                "summary": "Alertas por tipo de mantenimiento",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.AlertaMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/alertas-mantenimiento/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AlertaMantenimiento"
-                ],
-                "summary": "Alerta por ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.AlertaMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AlertaMantenimiento"
-                ],
-                "summary": "Actualizar alerta",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.UpdateAlertaMantenimientoRequest"
-                        }
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.AlertaMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AlertaMantenimiento"
-                ],
-                "summary": "Eliminar alerta",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.AlertaMantenimientoMessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/alertas-mantenimiento/{id}/atender": {
-            "patch": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "AlertaMantenimiento"
-                ],
-                "summary": "Marcar alerta como atendida",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.AlertaMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/alertas/{id}/leida": {
             "put": {
                 "security": [
@@ -562,6 +182,36 @@ const docTemplate = `{
                         }
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.AnomaliaResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/anomalias/camion/{camionId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Anomalia"
+                ],
+                "summary": "Anomalías por camión",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -682,6 +332,66 @@ const docTemplate = `{
                     "Anomalia"
                 ],
                 "summary": "Anomalías por punto",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.AnomaliaResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/anomalias/referencia/{referenciaId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Anomalia"
+                ],
+                "summary": "Anomalías por anomalía de referencia (seguimientos)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.AnomaliaResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/anomalias/ruta/{rutaId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Anomalia"
+                ],
+                "summary": "Anomalías por ruta",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -1209,6 +919,64 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/ciudadanos/fcm-token": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Actualiza u overwrita el token FCM del ciudadano autenticado en Redis.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ciudadano"
+                ],
+                "summary": "Actualizar token FCM de ciudadano",
+                "parameters": [
+                    {
+                        "description": "FCM Token Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/application_ciudadano.UpdateFCMTokenInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/core.ErrorResponse"
                         }
@@ -2975,287 +2743,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/incidencias/": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Incidencia"
-                ],
-                "summary": "Listar incidencias",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.IncidenciaListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Incidencia"
-                ],
-                "summary": "Crear incidencia",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateIncidenciaRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.IncidenciaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/incidencias/conductor/{conductor_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Incidencia"
-                ],
-                "summary": "Incidencias por conductor",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.IncidenciaListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/incidencias/fecha": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Incidencia"
-                ],
-                "summary": "Incidencias por fecha",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.IncidenciaListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/incidencias/punto/{punto_recoleccion_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Incidencia"
-                ],
-                "summary": "Incidencias por punto",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.IncidenciaListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/incidencias/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Incidencia"
-                ],
-                "summary": "Incidencia por ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.IncidenciaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Incidencia"
-                ],
-                "summary": "Actualizar incidencia",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.UpdateIncidenciaRequest"
-                        }
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.IncidenciaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Incidencia"
-                ],
-                "summary": "Eliminar incidencia",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.IncidenciaMessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/notificaciones/": {
             "get": {
                 "security": [
@@ -4926,317 +4413,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/registros-mantenimiento/": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RegistroMantenimiento"
-                ],
-                "summary": "Listar registros de mantenimiento",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RegistroMantenimiento"
-                ],
-                "summary": "Crear registro de mantenimiento",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateRegistroMantenimientoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/registros-mantenimiento/alerta/{alerta_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RegistroMantenimiento"
-                ],
-                "summary": "Registros por alerta",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/registros-mantenimiento/camion/{camion_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RegistroMantenimiento"
-                ],
-                "summary": "Registros por camión",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/registros-mantenimiento/coordinador/{coordinador_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RegistroMantenimiento"
-                ],
-                "summary": "Registros por coordinador",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/registros-mantenimiento/fecha": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RegistroMantenimiento"
-                ],
-                "summary": "Registros por rango de fecha",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/registros-mantenimiento/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RegistroMantenimiento"
-                ],
-                "summary": "Registro por ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RegistroMantenimiento"
-                ],
-                "summary": "Actualizar registro",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.UpdateRegistroMantenimientoRequest"
-                        }
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "RegistroMantenimiento"
-                ],
-                "summary": "Eliminar registro",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoMessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/relleno-sanitario/": {
             "get": {
                 "security": [
@@ -5541,879 +4717,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-conductor/": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteConductor"
-                ],
-                "summary": "Listar reportes conductor",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteConductorListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteConductor"
-                ],
-                "summary": "Crear reporte conductor",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateReporteConductorRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteConductorResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-conductor/camion/{camion_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteConductor"
-                ],
-                "summary": "Reportes conductor por camión",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteConductorResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-conductor/conductor/{conductor_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteConductor"
-                ],
-                "summary": "Reportes conductor por conductor",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteConductorResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-conductor/fecha": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteConductor"
-                ],
-                "summary": "Reportes conductor por fecha",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteConductorResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-conductor/ruta/{ruta_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteConductor"
-                ],
-                "summary": "Reportes conductor por ruta",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteConductorResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-conductor/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteConductor"
-                ],
-                "summary": "Reporte conductor por ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteConductorResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteConductor"
-                ],
-                "summary": "Actualizar reporte conductor",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.UpdateReporteConductorRequest"
-                        }
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteConductorResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteConductor"
-                ],
-                "summary": "Eliminar reporte conductor",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteConductorMessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-falla-critica/": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteFallaCritica"
-                ],
-                "summary": "Listar reportes falla crítica",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteFallaCriticaListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteFallaCritica"
-                ],
-                "summary": "Crear reporte falla crítica",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateReporteFallaCriticaRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteFallaCriticaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-falla-critica/camion/{camionId}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteFallaCritica"
-                ],
-                "summary": "Reportes falla crítica por camión",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteFallaCriticaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-falla-critica/conductor/{conductorId}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteFallaCritica"
-                ],
-                "summary": "Reportes falla crítica por conductor",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteFallaCriticaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-falla-critica/por-fecha": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteFallaCritica"
-                ],
-                "summary": "Reportes falla crítica por fecha",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteFallaCriticaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-falla-critica/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteFallaCritica"
-                ],
-                "summary": "Reporte falla crítica por ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteFallaCriticaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteFallaCritica"
-                ],
-                "summary": "Actualizar reporte falla crítica",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.UpdateReporteFallaCriticaRequest"
-                        }
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteFallaCriticaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteFallaCritica"
-                ],
-                "summary": "Eliminar reporte falla crítica",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.ReporteFallaCriticaMessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-mantenimiento-generado/": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteMantenimientoGenerado"
-                ],
-                "summary": "Listar reportes generados",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteMantenimientoGenerado"
-                ],
-                "summary": "Crear reporte de mantenimiento generado",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateRegistroMantenimientoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-mantenimiento-generado/coordinador/{coordinador_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteMantenimientoGenerado"
-                ],
-                "summary": "Reportes por coordinador",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-mantenimiento-generado/fecha": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteMantenimientoGenerado"
-                ],
-                "summary": "Reportes por rango de fecha",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-mantenimiento-generado/fecha-generacion": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteMantenimientoGenerado"
-                ],
-                "summary": "Reportes por fecha de generación",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/reportes-mantenimiento-generado/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteMantenimientoGenerado"
-                ],
-                "summary": "Reporte generado por ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteMantenimientoGenerado"
-                ],
-                "summary": "Actualizar reporte generado",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.UpdateRegistroMantenimientoRequest"
-                        }
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "ReporteMantenimientoGenerado"
-                ],
-                "summary": "Eliminar reporte generado",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoMessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/core.ErrorResponse"
                         }
@@ -7205,257 +5508,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/seguimientos-falla-critica/": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "SeguimientoFallaCritica"
-                ],
-                "summary": "Listar seguimientos falla crítica",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.SeguimientoFallaCriticaListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "SeguimientoFallaCritica"
-                ],
-                "summary": "Crear seguimiento falla crítica",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateSeguimientoFallaCriticaRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.SeguimientoFallaCriticaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/seguimientos-falla-critica/falla/{fallaId}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "SeguimientoFallaCritica"
-                ],
-                "summary": "Seguimientos por falla",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.SeguimientoFallaCriticaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/seguimientos-falla-critica/por-fecha": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "SeguimientoFallaCritica"
-                ],
-                "summary": "Seguimientos falla crítica por fecha",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.SeguimientoFallaCriticaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/seguimientos-falla-critica/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "SeguimientoFallaCritica"
-                ],
-                "summary": "Seguimiento falla crítica por ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.SeguimientoFallaCriticaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "SeguimientoFallaCritica"
-                ],
-                "summary": "Actualizar seguimiento falla crítica",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.UpdateSeguimientoFallaCriticaRequest"
-                        }
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.SeguimientoFallaCriticaResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "SeguimientoFallaCritica"
-                ],
-                "summary": "Eliminar seguimiento falla crítica",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.SeguimientoFallaCriticaMessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/tipo-camion/": {
             "get": {
                 "security": [
@@ -7605,200 +5657,17 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/api/tipos-mantenimiento/": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TipoMantenimiento"
-                ],
-                "summary": "Listar tipos de mantenimiento",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TipoMantenimiento"
-                ],
-                "summary": "Crear tipo de mantenimiento",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateRegistroMantenimientoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/tipos-mantenimiento/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TipoMantenimiento"
-                ],
-                "summary": "Tipo de mantenimiento por ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TipoMantenimiento"
-                ],
-                "summary": "Actualizar tipo de mantenimiento",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.UpdateRegistroMantenimientoRequest"
-                        }
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TipoMantenimiento"
-                ],
-                "summary": "Eliminar tipo de mantenimiento",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.RegistroMantenimientoMessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
+        "application_ciudadano.UpdateFCMTokenInput": {
+            "type": "object",
+            "properties": {
+                "fcm_token": {
+                    "type": "string"
+                }
+            }
+        },
         "core.ErrorDetail": {
             "type": "object",
             "properties": {
@@ -7896,16 +5765,19 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.AlertaMantenimiento": {
+        "entities.Anomalia": {
             "type": "object",
             "properties": {
-                "alerta_id": {
+                "anomalia_id": {
                     "type": "integer"
                 },
-                "atendido": {
-                    "type": "boolean"
+                "anomalia_referencia_id": {
+                    "type": "integer"
                 },
                 "camion_id": {
+                    "type": "integer"
+                },
+                "conductor_id": {
                     "type": "integer"
                 },
                 "created_at": {
@@ -7914,73 +5786,8 @@ const docTemplate = `{
                 "descripcion": {
                     "type": "string"
                 },
-                "observaciones": {
-                    "type": "string"
-                },
-                "tipo_mantenimiento_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "entities.AlertaMantenimientoListResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.AlertaMantenimiento"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
+                "eliminado": {
                     "type": "boolean"
-                }
-            }
-        },
-        "entities.AlertaMantenimientoMessageResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.AlertaMantenimientoResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "$ref": "#/definitions/entities.AlertaMantenimiento"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.Anomalia": {
-            "type": "object",
-            "properties": {
-                "anomalia_id": {
-                    "type": "integer"
-                },
-                "descripcion": {
-                    "type": "string"
                 },
                 "estado": {
                     "type": "string"
@@ -7991,13 +5798,19 @@ const docTemplate = `{
                 "fecha_resolucion": {
                     "type": "string"
                 },
-                "id_chofer_id": {
-                    "type": "integer"
+                "json_ruta": {
+                    "type": "string"
                 },
                 "punto_id": {
                     "type": "integer"
                 },
+                "ruta_id": {
+                    "type": "integer"
+                },
                 "tipo_anomalia": {
+                    "$ref": "#/definitions/entities.TipoAnomalia"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -8173,35 +5986,22 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.CreateAlertaMantenimientoRequest": {
-            "type": "object",
-            "required": [
-                "camion_id",
-                "tipo_mantenimiento_id"
-            ],
-            "properties": {
-                "camion_id": {
-                    "type": "integer"
-                },
-                "descripcion": {
-                    "type": "string"
-                },
-                "observaciones": {
-                    "type": "string"
-                },
-                "tipo_mantenimiento_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "entities.CreateAnomaliaRequest": {
             "type": "object",
             "required": [
                 "descripcion",
-                "id_chofer_id",
                 "tipo_anomalia"
             ],
             "properties": {
+                "anomalia_referencia_id": {
+                    "type": "integer"
+                },
+                "camion_id": {
+                    "type": "integer"
+                },
+                "conductor_id": {
+                    "type": "integer"
+                },
                 "descripcion": {
                     "type": "string"
                 },
@@ -8211,13 +6011,17 @@ const docTemplate = `{
                 "fecha_reporte": {
                     "type": "string"
                 },
-                "id_chofer_id": {
-                    "type": "integer"
+                "json_ruta": {
+                    "type": "string"
                 },
                 "punto_id": {
                     "type": "integer"
                 },
+                "ruta_id": {
+                    "type": "integer"
+                },
                 "tipo_anomalia": {
+                    "description": "ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA | SEGUIMIENTO_FALLA_CRITICA",
                     "type": "string"
                 }
             }
@@ -8382,30 +6186,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.CreateIncidenciaRequest": {
-            "type": "object",
-            "required": [
-                "conductor_id",
-                "descripcion"
-            ],
-            "properties": {
-                "conductor_id": {
-                    "type": "integer"
-                },
-                "descripcion": {
-                    "type": "string"
-                },
-                "fecha_reporte": {
-                    "type": "string"
-                },
-                "json_ruta": {
-                    "type": "string"
-                },
-                "punto_recoleccion_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "entities.CreateNotificacionRequest": {
             "type": "object",
             "properties": {
@@ -8458,35 +6238,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.CreateRegistroMantenimientoRequest": {
-            "type": "object",
-            "required": [
-                "camion_id"
-            ],
-            "properties": {
-                "alerta_id": {
-                    "type": "integer"
-                },
-                "camion_id": {
-                    "type": "integer"
-                },
-                "coordinador_id": {
-                    "type": "integer"
-                },
-                "fecha_realizada": {
-                    "type": "string"
-                },
-                "kilometraje_mantenimiento": {
-                    "type": "number"
-                },
-                "mecanico_responsable": {
-                    "type": "string"
-                },
-                "observaciones": {
-                    "type": "string"
-                }
-            }
-        },
         "entities.CreateRegistroVaciadoRequest": {
             "type": "object",
             "properties": {
@@ -8521,47 +6272,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.CreateReporteConductorRequest": {
-            "type": "object",
-            "required": [
-                "camion_id",
-                "conductor_id",
-                "descripcion"
-            ],
-            "properties": {
-                "camion_id": {
-                    "type": "integer"
-                },
-                "conductor_id": {
-                    "type": "integer"
-                },
-                "descripcion": {
-                    "type": "string"
-                },
-                "ruta_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "entities.CreateReporteFallaCriticaRequest": {
-            "type": "object",
-            "required": [
-                "camion_id",
-                "conductor_id",
-                "descripcion"
-            ],
-            "properties": {
-                "camion_id": {
-                    "type": "integer"
-                },
-                "conductor_id": {
-                    "type": "integer"
-                },
-                "descripcion": {
-                    "type": "string"
-                }
-            }
-        },
         "entities.CreateRutaRequest": {
             "type": "object",
             "required": [
@@ -8575,21 +6285,6 @@ const docTemplate = `{
                 "json_ruta": {},
                 "nombre": {
                     "type": "string"
-                }
-            }
-        },
-        "entities.CreateSeguimientoFallaCriticaRequest": {
-            "type": "object",
-            "required": [
-                "comentario",
-                "falla_id"
-            ],
-            "properties": {
-                "comentario": {
-                    "type": "string"
-                },
-                "falla_id": {
-                    "type": "integer"
                 }
             }
         },
@@ -8879,89 +6574,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.Incidencia": {
-            "type": "object",
-            "properties": {
-                "conductor_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "descripcion": {
-                    "type": "string"
-                },
-                "eliminado": {
-                    "type": "boolean"
-                },
-                "fecha_reporte": {
-                    "type": "string"
-                },
-                "incidencia_id": {
-                    "type": "integer"
-                },
-                "json_ruta": {
-                    "type": "string"
-                },
-                "punto_recoleccion_id": {
-                    "type": "integer"
-                },
-                "updated_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.IncidenciaListResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.Incidencia"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.IncidenciaMessageResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.IncidenciaResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "$ref": "#/definitions/entities.Incidencia"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
         "entities.LoginCiudadanoRequest": {
             "type": "object",
             "required": [
@@ -9198,89 +6810,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.RegistroMantenimiento": {
-            "type": "object",
-            "properties": {
-                "alerta_id": {
-                    "type": "integer"
-                },
-                "camion_id": {
-                    "type": "integer"
-                },
-                "coordinador_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "fecha_realizada": {
-                    "type": "string"
-                },
-                "kilometraje_mantenimiento": {
-                    "type": "number"
-                },
-                "mecanico_responsable": {
-                    "type": "string"
-                },
-                "observaciones": {
-                    "type": "string"
-                },
-                "registro_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "entities.RegistroMantenimientoListResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.RegistroMantenimiento"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.RegistroMantenimientoMessageResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.RegistroMantenimientoResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "$ref": "#/definitions/entities.RegistroMantenimiento"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
         "entities.RegistroVaciado": {
             "type": "object",
             "properties": {
@@ -9423,154 +6952,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.ReporteConductor": {
-            "type": "object",
-            "properties": {
-                "camion_id": {
-                    "type": "integer"
-                },
-                "conductor_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "descripcion": {
-                    "type": "string"
-                },
-                "reporte_id": {
-                    "type": "integer"
-                },
-                "ruta_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "entities.ReporteConductorListResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.ReporteConductor"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.ReporteConductorMessageResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.ReporteConductorResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "$ref": "#/definitions/entities.ReporteConductor"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.ReporteFallaCritica": {
-            "type": "object",
-            "properties": {
-                "camion_id": {
-                    "type": "integer"
-                },
-                "conductor_id": {
-                    "type": "integer"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "descripcion": {
-                    "type": "string"
-                },
-                "eliminado": {
-                    "type": "boolean"
-                },
-                "falla_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "entities.ReporteFallaCriticaListResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.ReporteFallaCritica"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.ReporteFallaCriticaMessageResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.ReporteFallaCriticaResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "$ref": "#/definitions/entities.ReporteFallaCritica"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
         "entities.Ruta": {
             "type": "object",
             "properties": {
@@ -9605,99 +6986,44 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.SeguimientoFallaCritica": {
-            "type": "object",
-            "properties": {
-                "comentario": {
-                    "type": "string"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "falla_id": {
-                    "type": "integer"
-                },
-                "seguimiento_id": {
-                    "type": "integer"
-                }
-            }
+        "entities.TipoAnomalia": {
+            "type": "string",
+            "enum": [
+                "ANOMALIA",
+                "INCIDENCIA",
+                "REPORTE_CONDUCTOR",
+                "REPORTE_FALLA_CRITICA",
+                "SEGUIMIENTO_FALLA_CRITICA"
+            ],
+            "x-enum-varnames": [
+                "TipoAnomaliaGeneral",
+                "TipoAnomaliaIncidencia",
+                "TipoAnomaliaReporteConductor",
+                "TipoAnomaliaReporteFallaCritica",
+                "TipoAnomaliaSeguimientoFallaCritica"
+            ]
         },
-        "entities.SeguimientoFallaCriticaListResponse": {
+        "entities.UpdateAnomaliaRequest": {
             "type": "object",
+            "required": [
+                "descripcion",
+                "tipo_anomalia"
+            ],
             "properties": {
-                "code": {
+                "anomalia_referencia_id": {
                     "type": "integer"
-                },
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.SeguimientoFallaCritica"
-                    }
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.SeguimientoFallaCriticaMessageResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.SeguimientoFallaCriticaResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {
-                    "$ref": "#/definitions/entities.SeguimientoFallaCritica"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "entities.UpdateAlertaMantenimientoRequest": {
-            "type": "object",
-            "properties": {
-                "atendido": {
-                    "type": "boolean"
                 },
                 "camion_id": {
                     "type": "integer"
                 },
-                "descripcion": {
-                    "type": "string"
-                },
-                "observaciones": {
-                    "type": "string"
-                },
-                "tipo_mantenimiento_id": {
+                "conductor_id": {
                     "type": "integer"
-                }
-            }
-        },
-        "entities.UpdateAnomaliaRequest": {
-            "type": "object",
-            "properties": {
+                },
                 "descripcion": {
                     "type": "string"
+                },
+                "eliminado": {
+                    "type": "boolean"
                 },
                 "estado": {
                     "type": "string"
@@ -9708,10 +7034,13 @@ const docTemplate = `{
                 "fecha_resolucion": {
                     "type": "string"
                 },
-                "id_chofer_id": {
-                    "type": "integer"
+                "json_ruta": {
+                    "type": "string"
                 },
                 "punto_id": {
+                    "type": "integer"
+                },
+                "ruta_id": {
                     "type": "integer"
                 },
                 "tipo_anomalia": {
@@ -9819,26 +7148,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.UpdateIncidenciaRequest": {
-            "type": "object",
-            "properties": {
-                "conductor_id": {
-                    "type": "integer"
-                },
-                "descripcion": {
-                    "type": "string"
-                },
-                "fecha_reporte": {
-                    "type": "string"
-                },
-                "json_ruta": {
-                    "type": "string"
-                },
-                "punto_recoleccion_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "entities.UpdateNotificacionRequest": {
             "type": "object",
             "properties": {
@@ -9891,32 +7200,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.UpdateRegistroMantenimientoRequest": {
-            "type": "object",
-            "properties": {
-                "alerta_id": {
-                    "type": "integer"
-                },
-                "camion_id": {
-                    "type": "integer"
-                },
-                "coordinador_id": {
-                    "type": "integer"
-                },
-                "fecha_realizada": {
-                    "type": "string"
-                },
-                "kilometraje_mantenimiento": {
-                    "type": "number"
-                },
-                "mecanico_responsable": {
-                    "type": "string"
-                },
-                "observaciones": {
-                    "type": "string"
-                }
-            }
-        },
         "entities.UpdateRellenoSanitarioRequest": {
             "type": "object",
             "properties": {
@@ -9931,48 +7214,6 @@ const docTemplate = `{
                 },
                 "nombre": {
                     "type": "string"
-                }
-            }
-        },
-        "entities.UpdateReporteConductorRequest": {
-            "type": "object",
-            "properties": {
-                "camion_id": {
-                    "type": "integer"
-                },
-                "conductor_id": {
-                    "type": "integer"
-                },
-                "descripcion": {
-                    "type": "string"
-                },
-                "ruta_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "entities.UpdateReporteFallaCriticaRequest": {
-            "type": "object",
-            "properties": {
-                "camion_id": {
-                    "type": "integer"
-                },
-                "conductor_id": {
-                    "type": "integer"
-                },
-                "descripcion": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.UpdateSeguimientoFallaCriticaRequest": {
-            "type": "object",
-            "properties": {
-                "comentario": {
-                    "type": "string"
-                },
-                "falla_id": {
-                    "type": "integer"
                 }
             }
         }
