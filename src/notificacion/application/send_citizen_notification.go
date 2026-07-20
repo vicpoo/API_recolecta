@@ -30,9 +30,28 @@ func (uc *SendCitizenNotificationUseCase) Execute(ctx context.Context, userIDs [
 		return nil, err
 	}
 
-	results, err := uc.sender.Send(ctx, tokens, notification)
-	if err != nil {
-		return nil, err
+	finalResults := make(map[string]domain.SendResult)
+	validTokens := make(map[string]string)
+
+	for _, uid := range userIDs {
+		if token, ok := tokens[uid]; ok && token != "" {
+			validTokens[uid] = token
+		} else {
+			finalResults[uid] = domain.SendResult{
+				Success: false,
+				Error:   "no FCM token found for user",
+			}
+		}
+	}
+
+	if len(validTokens) > 0 {
+		results, err := uc.sender.Send(ctx, validTokens, notification)
+		if err != nil {
+			return nil, err
+		}
+		for uid, res := range results {
+			finalResults[uid] = res
+		}
 	}
 
 	// Registrar resultados en Redis para auditoría y bandeja de entrada
@@ -41,7 +60,7 @@ func (uc *SendCitizenNotificationUseCase) Execute(ctx context.Context, userIDs [
 	nowUnix := float64(now.Unix())
 	nowStr := now.Format(time.RFC3339)
 
-	for citizenID, res := range results {
+	for citizenID, res := range finalResults {
 		// 1. Añadir a bandeja individual del ciudadano
 		inboxKey := fmt.Sprintf("citizen:notifications:%s", citizenID)
 		inboxRecord := map[string]interface{}{
@@ -82,5 +101,5 @@ func (uc *SendCitizenNotificationUseCase) Execute(ctx context.Context, userIDs [
 		_, _ = pipe.Exec(ctx)
 	}
 
-	return results, nil
+	return finalResults, nil
 }
