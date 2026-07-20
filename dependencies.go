@@ -55,7 +55,8 @@ import (
 	coloniaPostgres "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/postgres"
 	empleadoInfra "github.com/vicpoo/API_recolecta/src/empleado/infrastructure"
 	empleadoRoutes "github.com/vicpoo/API_recolecta/src/empleado/infrastructure/routes"
-	//notificacionInfra "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
+	notificacionInfra "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
+	appConfig "github.com/vicpoo/API_recolecta/config"
 	//rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
 	//listMisAlertasUC "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
 	//marcarLeidaUC "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
@@ -73,8 +74,20 @@ func InitDependencies() {
 	engine := gin.Default()
 	engine.Use(core.CORSMiddleware())
 	engine.GET("/api/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	db := core.GetBD()
 
-	db := core.GetBD()
+	alertaRepository := alertaPostgres.NewPostgresAlertaRepository(db)
+
+	cfg, err := appConfig.LoadConfig()
+	if err != nil {
+		panic(err)
+	}
+	fcmClient, err := notificacionInfra.NewFCMClient(cfg.FCMCredentialsFile)
+	if err != nil {
+		panic(err)
+	}
+	redisClient := core.GetRedis()
+	rulesRepo := notificacionInfra.NewRedisNotificationRuleRepository(redisClient)
 
 	//tipo camion
 	tipoCamionRepository := tipoCamionAdapters.NewPostgresTipoCamion()
@@ -95,6 +108,7 @@ func InitDependencies() {
 		getTipoCamionByNameCtr,
 		deleteTipoCamionByIdCtr,
 	)
+
 	tipoCamionRoutes.Run()
 
 	//camion
@@ -115,6 +129,10 @@ func InitDependencies() {
 	getCamionByPlacaCtr := camionControllers.NewGetCamionByPlacaController(getCamionByPlacaUc)
 	getCamionByModeloCtr := camionControllers.NewGetCamionByModeloController(getCamionByModeloUc)
 
+	// Usecase y controlador de Telemetría
+	processTelemetryUC := rutaCamionApp.NewProcessTruckTelemetryUseCase(redisClient, alertaRepository)
+	telemetryController := camionControllers.NewProcessTelemetryController(processTelemetryUC)
+
 	camionRoutes := camionRoutes.NewCamionRoutes(
 		engine, createCamionCtr,
 		getAllCamionCtr,
@@ -123,6 +141,7 @@ func InitDependencies() {
 		deleteCamionByIdCtr,
 		getCamionByPlacaCtr,
 		getCamionByModeloCtr,
+		telemetryController,
 	)
 	camionRoutes.Run()
 
@@ -225,6 +244,9 @@ func InitDependencies() {
 	deleteRutaCtr := rutaControllers.NewDeleteRutaController(deleteRutaUc)
 	getRutasActivasCtr := rutaControllers.NewGetRutaActivasController(getRutasActivasUc)
 
+	processArrivalUC := camionUseCases.NewProcessTruckArrivalUseCase(redisClient, rulesRepo, fcmClient)
+	arrivalController := rutaControllers.NewProcessArrivalController(processArrivalUC)
+
 	rutaRoutes := rutaRoutes.NewRutaRoutes(
 		engine,
 		createRutaCtr,
@@ -233,6 +255,7 @@ func InitDependencies() {
 		updateRutaCtr,
 		deleteRutaCtr,
 		getRutasActivasCtr,
+		arrivalController,
 	)
 
 	rutaRoutes.Run()
@@ -475,7 +498,6 @@ func InitDependencies() {
 	// ===============================
 	// ALERTA USUARIO
 	// ===============================
-	alertaRepository := alertaPostgres.NewPostgresAlertaRepository(db)
 	createAlertaUC := alertaApplication.NewCreateAlerta(alertaRepository)
 	listMisAlertasUC := alertaApplication.NewListMisAlertas(alertaRepository)
 	marcarLeidaUC := alertaApplication.NewMarcarLeida(alertaRepository)
@@ -488,9 +510,17 @@ func InitDependencies() {
 	// FALLAS Y MANTENIMIENTO
 	// ===============================
 
-	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine)
-
+	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine, alertaRepository)
 	anomaliaRoutes.Run()
+
+	// ===============================
+	// NOTIFICACIONES Y WS (NUEVO/REACTIVADO)
+	// ===============================
+	notificacionRoutes := notificacionInfra.NewNotificacionRouter(engine)
+	notificacionRoutes.Run()
+
+	pushNotifRouter := notificacionInfra.NewPushNotificationRouter(engine)
+	pushNotifRouter.Run()
 
 	engine.Run(":8080")
 }
