@@ -1,9 +1,65 @@
 basePath: /
 definitions:
+  application.FailedNotificationRecord:
+    properties:
+      body:
+        type: string
+      error:
+        type: string
+      timestamp:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
+    type: object
+  application.InboxRecord:
+    properties:
+      body:
+        type: string
+      delivered:
+        type: boolean
+      error:
+        type: string
+      sent_at:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+    type: object
   application_ciudadano.UpdateFCMTokenInput:
     properties:
       fcm_token:
         type: string
+    type: object
+  controllers.ProcessArrivalRequest:
+    properties:
+      point_id:
+        type: string
+      truck_id:
+        type: integer
+    required:
+    - point_id
+    - truck_id
+    type: object
+  controllers.ProcessTelemetryRequest:
+    properties:
+      lat:
+        type: number
+      lon:
+        type: number
+      state_code:
+        type: string
+      truck_id:
+        type: integer
+    required:
+    - lat
+    - lon
+    - state_code
+    - truck_id
     type: object
   core.ErrorDetail:
     properties:
@@ -68,6 +124,13 @@ definitions:
     required:
     - nombre
     - zona
+    type: object
+  domain.SendResult:
+    properties:
+      error:
+        type: string
+      success:
+        type: boolean
     type: object
   entities.Anomalia:
     properties:
@@ -348,27 +411,6 @@ definitions:
       id_chofer:
         type: integer
       id_historial:
-        type: integer
-    type: object
-  entities.CreateNotificacionRequest:
-    properties:
-      activa:
-        type: boolean
-      creado_por:
-        type: integer
-      id_camion_relacionado:
-        type: integer
-      id_falla_relacionado:
-        type: integer
-      id_mantenimiento_relacionado:
-        type: integer
-      mensaje:
-        type: string
-      tipo:
-        type: string
-      titulo:
-        type: string
-      usuario_id:
         type: integer
     type: object
   entities.CreatePuntoRecoleccionRequest:
@@ -688,15 +730,6 @@ definitions:
       success:
         type: boolean
     type: object
-  entities.NotificacionMessageResponse:
-    properties:
-      code:
-        type: integer
-      message:
-        type: string
-      success:
-        type: boolean
-    type: object
   entities.NotificacionResponse:
     properties:
       code:
@@ -981,27 +1014,6 @@ definitions:
       id_historial:
         type: integer
     type: object
-  entities.UpdateNotificacionRequest:
-    properties:
-      activa:
-        type: boolean
-      creado_por:
-        type: integer
-      id_camion_relacionado:
-        type: integer
-      id_falla_relacionado:
-        type: integer
-      id_mantenimiento_relacionado:
-        type: integer
-      mensaje:
-        type: string
-      tipo:
-        type: string
-      titulo:
-        type: string
-      usuario_id:
-        type: integer
-    type: object
   entities.UpdatePuntoRecoleccionRequest:
     properties:
       cp:
@@ -1025,6 +1037,33 @@ definitions:
         type: boolean
       nombre:
         type: string
+    type: object
+  infrastructure.broadcastMessageRequest:
+    properties:
+      body:
+        type: string
+      title:
+        type: string
+    required:
+    - body
+    - title
+    type: object
+  infrastructure.sendCitizenRequest:
+    properties:
+      body:
+        type: string
+      data:
+        additionalProperties:
+          type: string
+        type: object
+      title:
+        type: string
+      type:
+        type: string
+      user_ids:
+        items:
+          type: string
+        type: array
     type: object
 info:
   contact: {}
@@ -1548,6 +1587,46 @@ paths:
       security:
       - BearerAuth: []
       summary: Buscar camión por placa
+      tags:
+      - Camion
+  /api/camion/telemetry:
+    post:
+      consumes:
+      - application/json
+      description: 'Actualiza la posición del camión (latitud, longitud), su estado
+        operativo actual en Redis (1: En ruta, 2: Vaciando tolva, 3: Repostando gasolina,
+        4: Volviendo a base, 5: En base) y registra eventos en la base de datos PostgreSQL.'
+      parameters:
+      - description: Datos de telemetría y estado operativo
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.ProcessTelemetryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Status OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Procesar telemetría de camión
       tags:
       - Camion
   /api/ciudadanos:
@@ -2739,6 +2818,235 @@ paths:
       summary: Historial por chofer
       tags:
       - HistorialAsignacion
+  /api/notificaciones-push/ciudadanos/{citizen_id}/historial:
+    get:
+      description: Retorna las últimas 50 notificaciones recibidas o fallidas enviadas
+        al ciudadano, leídas de la lista en Redis.
+      parameters:
+      - description: ID del Ciudadano
+        in: path
+        name: citizen_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/application.InboxRecord'
+            type: array
+        "500":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener bandeja de entrada del ciudadano
+      tags:
+      - PushNotification
+  /api/notificaciones-push/ciudadanos/difusion:
+    post:
+      consumes:
+      - application/json
+      description: Envía una notificación push con título y cuerpo a todos los ciudadanos
+        registrados en el sistema.
+      parameters:
+      - description: Datos del mensaje general
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/infrastructure.broadcastMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Detalles de envío para cada ciudadano
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/domain.SendResult'
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Enviar notificación general a todos los ciudadanos (Broadcast)
+      tags:
+      - PushNotification
+  /api/notificaciones-push/ciudadanos/difusion/punto/{point_id}:
+    post:
+      consumes:
+      - application/json
+      description: Envía una notificación push con título y cuerpo a todos los ciudadanos
+        con domicilios en un radio de 200m del punto de parada especificado.
+      parameters:
+      - description: ID del Punto de Parada (ej. 15)
+        in: path
+        name: point_id
+        required: true
+        type: string
+      - description: Datos del mensaje general
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/infrastructure.broadcastMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Detalles de envío para cada ciudadano
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/domain.SendResult'
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Enviar notificación general a ciudadanos cerca de un punto
+      tags:
+      - PushNotification
+  /api/notificaciones-push/ciudadanos/difusion/ruta/{route_id}:
+    post:
+      consumes:
+      - application/json
+      description: Envía una notificación push con título y cuerpo a todos los ciudadanos
+        que tengan un domicilio registrado en la colonia de la ruta especificada.
+      parameters:
+      - description: ID de la Ruta
+        in: path
+        name: route_id
+        required: true
+        type: integer
+      - description: Datos del mensaje general
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/infrastructure.broadcastMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Detalles de envío para cada ciudadano
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/domain.SendResult'
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Enviar notificación general a ciudadanos de una ruta
+      tags:
+      - PushNotification
+  /api/notificaciones-push/ciudadanos/enviar:
+    post:
+      consumes:
+      - application/json
+      description: Envía una notificación push a una lista de IDs de ciudadanos específicos.
+      parameters:
+      - description: Datos del mensaje
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/infrastructure.sendCitizenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Detalles de envío para cada ciudadano
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/domain.SendResult'
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Enviar notificación push a ciudadanos específicos
+      tags:
+      - PushNotification
+  /api/notificaciones-push/fallidas:
+    get:
+      description: Retorna todas las notificaciones que no pudieron ser entregadas
+        en un rango de tiempo especificado. Soporta formatos RFC3339 (ej. 2026-07-19T18:00:00Z)
+        o solo fecha YYYY-MM-DD (ej. 2026-07-19).
+      parameters:
+      - description: Fecha de inicio (ej. 2026-07-19 o 2026-07-19T00:00:00Z)
+        in: query
+        name: start_time
+        type: string
+      - description: Fecha de fin (ej. 2026-07-19 o 2026-07-19T23:59:59Z)
+        in: query
+        name: end_time
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/application.FailedNotificationRecord'
+            type: array
+        "400":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Consultar fallas de entrega globales
+      tags:
+      - PushNotification
   /api/notificaciones/:
     get:
       produces:
@@ -2757,54 +3065,7 @@ paths:
       summary: Listar notificaciones
       tags:
       - Notificacion
-    post:
-      parameters:
-      - description: Body
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/entities.CreateNotificacionRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.NotificacionResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/core.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Crear notificación
-      tags:
-      - Notificacion
   /api/notificaciones/{id}:
-    delete:
-      parameters:
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.NotificacionMessageResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/core.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Eliminar notificación
-      tags:
-      - Notificacion
     get:
       parameters:
       - description: ID
@@ -2826,35 +3087,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Notificación por ID
-      tags:
-      - Notificacion
-    put:
-      parameters:
-      - description: Body
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/entities.UpdateNotificacionRequest'
-      - description: ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.NotificacionResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/core.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Actualizar notificación
       tags:
       - Notificacion
   /api/notificaciones/{id}/marcar-leida:
@@ -3049,142 +3281,6 @@ paths:
       summary: Contar notificaciones por usuario
       tags:
       - Notificacion
-  /api/notificaciones/creado-por/{creado_por}:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.NotificacionResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/core.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Notificaciones por creador
-      tags:
-      - Notificacion
-  /api/notificaciones/emergencia:
-    post:
-      parameters:
-      - description: Body
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/entities.CreateNotificacionRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.NotificacionResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/core.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Crear notificación de emergencia
-      tags:
-      - Notificacion
-  /api/notificaciones/enviar-multiples:
-    post:
-      parameters:
-      - description: Body
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/entities.CreateNotificacionRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.NotificacionResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/core.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Notificar a múltiples usuarios
-      tags:
-      - Notificacion
-  /api/notificaciones/enviar-todos:
-    post:
-      parameters:
-      - description: Body
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/entities.CreateNotificacionRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.NotificacionResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/core.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Notificar a todos los usuarios
-      tags:
-      - Notificacion
-  /api/notificaciones/falla:
-    post:
-      parameters:
-      - description: Body
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/entities.CreateNotificacionRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.NotificacionResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/core.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Crear notificación de falla
-      tags:
-      - Notificacion
-  /api/notificaciones/falla/{falla_id}:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.NotificacionResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/core.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Notificaciones por falla
-      tags:
-      - Notificacion
   /api/notificaciones/globales:
     get:
       produces:
@@ -3221,49 +3317,6 @@ paths:
       summary: Notificaciones inactivas
       tags:
       - Notificacion
-  /api/notificaciones/mantenimiento:
-    post:
-      parameters:
-      - description: Body
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/entities.CreateNotificacionRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.NotificacionResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/core.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Crear notificación de mantenimiento
-      tags:
-      - Notificacion
-  /api/notificaciones/mantenimiento/{mantenimiento_id}:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.NotificacionResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/core.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Notificaciones por mantenimiento
-      tags:
-      - Notificacion
   /api/notificaciones/no-leidas/usuario/{usuario_id}:
     get:
       produces:
@@ -3280,31 +3333,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Número de notificaciones no leídas
-      tags:
-      - Notificacion
-  /api/notificaciones/notificar:
-    post:
-      parameters:
-      - description: Body
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/entities.CreateNotificacionRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entities.NotificacionResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/core.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Notificar a un usuario
       tags:
       - Notificacion
   /api/notificaciones/rango-fecha:
@@ -4444,6 +4472,46 @@ paths:
       security:
       - BearerAuth: []
       summary: Listar rutas activas
+      tags:
+      - Ruta
+  /api/rutas/arrival:
+    post:
+      consumes:
+      - application/json
+      description: Actualiza el estado a ARRIVAL y registra el último punto visitado
+        en Redis. Además, realiza geofencing en el radio de la parada y dispara notificaciones
+        push en tiempo real a los ciudadanos cercanos.
+      parameters:
+      - description: Datos de arribo a parada
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.ProcessArrivalRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Status OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Procesar arribo de camión a parada
       tags:
       - Ruta
   /api/tipo-camion/:

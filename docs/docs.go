@@ -722,6 +722,66 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/camion/telemetry": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Actualiza la posición del camión (latitud, longitud), su estado operativo actual en Redis (1: En ruta, 2: Vaciando tolva, 3: Repostando gasolina, 4: Volviendo a base, 5: En base) y registra eventos en la base de datos PostgreSQL.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Camion"
+                ],
+                "summary": "Procesar telemetría de camión",
+                "parameters": [
+                    {
+                        "description": "Datos de telemetría y estado operativo",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.ProcessTelemetryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/camion/{id}": {
             "get": {
                 "security": [
@@ -2743,6 +2803,351 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/notificaciones-push/ciudadanos/difusion": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Envía una notificación push con título y cuerpo a todos los ciudadanos registrados en el sistema.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PushNotification"
+                ],
+                "summary": "Enviar notificación general a todos los ciudadanos (Broadcast)",
+                "parameters": [
+                    {
+                        "description": "Datos del mensaje general",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/infrastructure.broadcastMessageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalles de envío para cada ciudadano",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/domain.SendResult"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notificaciones-push/ciudadanos/difusion/punto/{point_id}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Envía una notificación push con título y cuerpo a todos los ciudadanos con domicilios en un radio de 200m del punto de parada especificado.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PushNotification"
+                ],
+                "summary": "Enviar notificación general a ciudadanos cerca de un punto",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID del Punto de Parada (ej. 15)",
+                        "name": "point_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos del mensaje general",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/infrastructure.broadcastMessageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalles de envío para cada ciudadano",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/domain.SendResult"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notificaciones-push/ciudadanos/difusion/ruta/{route_id}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Envía una notificación push con título y cuerpo a todos los ciudadanos que tengan un domicilio registrado en la colonia de la ruta especificada.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PushNotification"
+                ],
+                "summary": "Enviar notificación general a ciudadanos de una ruta",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la Ruta",
+                        "name": "route_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos del mensaje general",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/infrastructure.broadcastMessageRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalles de envío para cada ciudadano",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/domain.SendResult"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notificaciones-push/ciudadanos/enviar": {
+            "post": {
+                "description": "Envía una notificación push a una lista de IDs de ciudadanos específicos.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PushNotification"
+                ],
+                "summary": "Enviar notificación push a ciudadanos específicos",
+                "parameters": [
+                    {
+                        "description": "Datos del mensaje",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/infrastructure.sendCitizenRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalles de envío para cada ciudadano",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/domain.SendResult"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notificaciones-push/ciudadanos/{citizen_id}/historial": {
+            "get": {
+                "description": "Retorna las últimas 50 notificaciones recibidas o fallidas enviadas al ciudadano, leídas de la lista en Redis.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PushNotification"
+                ],
+                "summary": "Obtener bandeja de entrada del ciudadano",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID del Ciudadano",
+                        "name": "citizen_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/application.InboxRecord"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/notificaciones-push/fallidas": {
+            "get": {
+                "description": "Retorna todas las notificaciones que no pudieron ser entregadas en un rango de tiempo especificado. Soporta formatos RFC3339 (ej. 2026-07-19T18:00:00Z) o solo fecha YYYY-MM-DD (ej. 2026-07-19).",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PushNotification"
+                ],
+                "summary": "Consultar fallas de entrega globales",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Fecha de inicio (ej. 2026-07-19 o 2026-07-19T00:00:00Z)",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha de fin (ej. 2026-07-19 o 2026-07-19T23:59:59Z)",
+                        "name": "end_time",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/application.FailedNotificationRecord"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/notificaciones/": {
             "get": {
                 "security": [
@@ -2762,45 +3167,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/entities.NotificacionListResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Notificacion"
-                ],
-                "summary": "Crear notificación",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateNotificacionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.NotificacionResponse"
                         }
                     },
                     "400": {
@@ -3052,230 +3418,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/notificaciones/creado-por/{creado_por}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Notificacion"
-                ],
-                "summary": "Notificaciones por creador",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.NotificacionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/notificaciones/emergencia": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Notificacion"
-                ],
-                "summary": "Crear notificación de emergencia",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateNotificacionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.NotificacionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/notificaciones/enviar-multiples": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Notificacion"
-                ],
-                "summary": "Notificar a múltiples usuarios",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateNotificacionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.NotificacionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/notificaciones/enviar-todos": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Notificacion"
-                ],
-                "summary": "Notificar a todos los usuarios",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateNotificacionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.NotificacionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/notificaciones/falla": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Notificacion"
-                ],
-                "summary": "Crear notificación de falla",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateNotificacionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.NotificacionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/notificaciones/falla/{falla_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Notificacion"
-                ],
-                "summary": "Notificaciones por falla",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.NotificacionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/notificaciones/globales": {
             "get": {
                 "security": [
@@ -3336,77 +3478,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/notificaciones/mantenimiento": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Notificacion"
-                ],
-                "summary": "Crear notificación de mantenimiento",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateNotificacionRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.NotificacionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/notificaciones/mantenimiento/{mantenimiento_id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Notificacion"
-                ],
-                "summary": "Notificaciones por mantenimiento",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.NotificacionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/api/notificaciones/no-leidas/usuario/{usuario_id}": {
             "get": {
                 "security": [
@@ -3421,47 +3492,6 @@ const docTemplate = `{
                     "Notificacion"
                 ],
                 "summary": "Número de notificaciones no leídas",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.NotificacionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/notificaciones/notificar": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Notificacion"
-                ],
-                "summary": "Notificar a un usuario",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.CreateNotificacionRequest"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -3656,89 +3686,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/entities.NotificacionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Notificacion"
-                ],
-                "summary": "Actualizar notificación",
-                "parameters": [
-                    {
-                        "description": "Body",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/entities.UpdateNotificacionRequest"
-                        }
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.NotificacionResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/core.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Notificacion"
-                ],
-                "summary": "Eliminar notificación",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/entities.NotificacionMessageResponse"
                         }
                     },
                     "400": {
@@ -5359,6 +5306,66 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/rutas/arrival": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Actualiza el estado a ARRIVAL y registra el último punto visitado en Redis. Además, realiza geofencing en el radio de la parada y dispara notificaciones push en tiempo real a los ciudadanos cercanos.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ruta"
+                ],
+                "summary": "Procesar arribo de camión a parada",
+                "parameters": [
+                    {
+                        "description": "Datos de arribo a parada",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.ProcessArrivalRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Status OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/rutas/{id}": {
             "get": {
                 "security": [
@@ -5660,11 +5667,95 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "application.FailedNotificationRecord": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "timestamp": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "application.InboxRecord": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "delivered": {
+                    "type": "boolean"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "sent_at": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "application_ciudadano.UpdateFCMTokenInput": {
             "type": "object",
             "properties": {
                 "fcm_token": {
                     "type": "string"
+                }
+            }
+        },
+        "controllers.ProcessArrivalRequest": {
+            "type": "object",
+            "required": [
+                "point_id",
+                "truck_id"
+            ],
+            "properties": {
+                "point_id": {
+                    "type": "string"
+                },
+                "truck_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controllers.ProcessTelemetryRequest": {
+            "type": "object",
+            "required": [
+                "lat",
+                "lon",
+                "state_code",
+                "truck_id"
+            ],
+            "properties": {
+                "lat": {
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
+                },
+                "state_code": {
+                    "type": "string"
+                },
+                "truck_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -5762,6 +5853,17 @@ const docTemplate = `{
                 },
                 "zona": {
                     "type": "string"
+                }
+            }
+        },
+        "domain.SendResult": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
                 }
             }
         },
@@ -6182,38 +6284,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "id_historial": {
-                    "type": "integer"
-                }
-            }
-        },
-        "entities.CreateNotificacionRequest": {
-            "type": "object",
-            "properties": {
-                "activa": {
-                    "type": "boolean"
-                },
-                "creado_por": {
-                    "type": "integer"
-                },
-                "id_camion_relacionado": {
-                    "type": "integer"
-                },
-                "id_falla_relacionado": {
-                    "type": "integer"
-                },
-                "id_mantenimiento_relacionado": {
-                    "type": "integer"
-                },
-                "mensaje": {
-                    "type": "string"
-                },
-                "tipo": {
-                    "type": "string"
-                },
-                "titulo": {
-                    "type": "string"
-                },
-                "usuario_id": {
                     "type": "integer"
                 }
             }
@@ -6702,20 +6772,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.NotificacionMessageResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
         "entities.NotificacionResponse": {
             "type": "object",
             "properties": {
@@ -7148,38 +7204,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.UpdateNotificacionRequest": {
-            "type": "object",
-            "properties": {
-                "activa": {
-                    "type": "boolean"
-                },
-                "creado_por": {
-                    "type": "integer"
-                },
-                "id_camion_relacionado": {
-                    "type": "integer"
-                },
-                "id_falla_relacionado": {
-                    "type": "integer"
-                },
-                "id_mantenimiento_relacionado": {
-                    "type": "integer"
-                },
-                "mensaje": {
-                    "type": "string"
-                },
-                "tipo": {
-                    "type": "string"
-                },
-                "titulo": {
-                    "type": "string"
-                },
-                "usuario_id": {
-                    "type": "integer"
-                }
-            }
-        },
         "entities.UpdatePuntoRecoleccionRequest": {
             "type": "object",
             "properties": {
@@ -7214,6 +7238,47 @@ const docTemplate = `{
                 },
                 "nombre": {
                     "type": "string"
+                }
+            }
+        },
+        "infrastructure.broadcastMessageRequest": {
+            "type": "object",
+            "required": [
+                "body",
+                "title"
+            ],
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "infrastructure.sendCitizenRequest": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "user_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         }

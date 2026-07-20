@@ -3,9 +3,10 @@ package infrastructure
 
 import (
 	"github.com/vicpoo/API_recolecta/src/Fallas/application"
+	alertaDomain "github.com/vicpoo/API_recolecta/src/alerta_usuario/domain"
 )
 
-func InitAnomaliaDependencies() (
+func InitAnomaliaDependencies(alertaRepo alertaDomain.AlertaUsuarioRepository) (
 	*CreateAnomaliaController,
 	*GetAnomaliaByIdController,
 	*UpdateAnomaliaController,
@@ -24,7 +25,7 @@ func InitAnomaliaDependencies() (
 	repo := NewPostgresAnomaliaRepository()
 
 	// Casos de uso
-	createUseCase := application.NewCreateAnomaliaUseCase(repo)
+	createUseCase := application.NewCreateAnomaliaUseCase(repo, alertaRepo)
 	getByIDUseCase := application.NewGetAnomaliaByIdUseCase(repo)
 	updateUseCase := application.NewUpdateAnomaliaUseCase(repo)
 	deleteUseCase := application.NewDeleteAnomaliaUseCase(repo)

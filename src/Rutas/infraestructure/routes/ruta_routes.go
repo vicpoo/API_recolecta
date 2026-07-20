@@ -14,7 +14,8 @@ type RutaRoutes struct {
 	getByIdController *controllers.GetRutaByIdController
 	updateController  *controllers.UpdateRutaController
 	deleteController  *controllers.DeleteRutaController
-	getActivas *controllers.GetRutaActivasController
+	getActivas        *controllers.GetRutaActivasController
+	arrivalController *controllers.ProcessArrivalController // Controlador de arribos
 }
 
 func NewRutaRoutes(
@@ -25,6 +26,7 @@ func NewRutaRoutes(
 	updateController *controllers.UpdateRutaController,
 	deleteController *controllers.DeleteRutaController,
 	getActivasController *controllers.GetRutaActivasController,
+	arrivalController *controllers.ProcessArrivalController, // Inyección de arribos
 ) *RutaRoutes {
 	return &RutaRoutes{
 		engine: engine,
@@ -34,14 +36,18 @@ func NewRutaRoutes(
 		getByIdController: getByIdController,
 		updateController:  updateController,
 		deleteController:  deleteController,
-		getActivas: getActivasController,
+		getActivas:        getActivasController,
+		arrivalController: arrivalController,
 	}
 }
 
 func (r *RutaRoutes) Run() {
 	routes := r.engine.Group("/api/rutas")
-	routes.Use(core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN, core.CONDUCTOR, core.SUPERVISOR, core.COORDINADOR))
 	{
+		// Endpoint protegido para arribo a puntos (solo Conductores)
+		routes.POST("/arrival", core.JWTAuthMiddleware(), core.RequireRole(core.CONDUCTOR), r.arrivalController.Run)
+
+		routes.Use(core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN, core.CONDUCTOR, core.SUPERVISOR, core.COORDINADOR))
 		routes.POST("/", r.createController.Run)
 		routes.GET("/", r.getAllController.Run)
 		routes.GET("/:id", r.getByIdController.Run)

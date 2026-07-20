@@ -4,15 +4,18 @@ package infrastructure
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/core"
+	alertaDomain "github.com/vicpoo/API_recolecta/src/alerta_usuario/domain"
 )
 
 type AnomaliaRouter struct {
-	engine *gin.Engine
+	engine     *gin.Engine
+	alertaRepo alertaDomain.AlertaUsuarioRepository
 }
 
-func NewAnomaliaRouter(engine *gin.Engine) *AnomaliaRouter {
+func NewAnomaliaRouter(engine *gin.Engine, alertaRepo alertaDomain.AlertaUsuarioRepository) *AnomaliaRouter {
 	return &AnomaliaRouter{
-		engine: engine,
+		engine:     engine,
+		alertaRepo: alertaRepo,
 	}
 }
 
@@ -21,7 +24,7 @@ func (router *AnomaliaRouter) Run() {
 	createController, getByIdController, updateController, deleteController,
 		getAllController, getByPuntoIDController, getByChoferIDController,
 		getByCamionIDController, getByRutaIDController, getByReferenciaIDController,
-		getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController := InitAnomaliaDependencies()
+		getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController := InitAnomaliaDependencies(router.alertaRepo)
 
 	// Grupo de rutas para anomalías con prefijo /api
 	anomaliaGroup := router.engine.Group("/api/anomalias")
