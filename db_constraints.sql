@@ -344,6 +344,38 @@ BEGIN
     END IF;
 END $$;
 
+-- Migración: convertir tipo_anomalia de VARCHAR(50) + CHECK a un enum
+-- nativo de Postgres (tipo_anomalia_enum), equivalente al enum TipoAnomalia
+-- en Go. Es idempotente: no hace nada si la columna ya usa el enum.
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'tipo_anomalia_enum') THEN
+        CREATE TYPE tipo_anomalia_enum AS ENUM (
+            'ANOMALIA',
+            'INCIDENCIA',
+            'REPORTE_CONDUCTOR',
+            'REPORTE_FALLA_CRITICA',
+            'SEGUIMIENTO_FALLA_CRITICA'
+        );
+    END IF;
+
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'anomalia' AND column_name = 'tipo_anomalia' AND udt_name <> 'tipo_anomalia_enum'
+    ) THEN
+        IF EXISTS (
+            SELECT 1 FROM information_schema.check_constraints
+            WHERE constraint_name = 'chk_tipo_anomalia'
+        ) THEN
+            ALTER TABLE anomalia DROP CONSTRAINT chk_tipo_anomalia;
+        END IF;
+
+        ALTER TABLE anomalia
+            ALTER COLUMN tipo_anomalia TYPE tipo_anomalia_enum
+            USING tipo_anomalia::tipo_anomalia_enum;
+    END IF;
+END $$;
+
 DO $$
 BEGIN
     -- Anomalia Constraints
@@ -380,13 +412,6 @@ BEGIN
         WHERE constraint_name = 'fk_referencia_anomalia'
     ) THEN
         ALTER TABLE anomalia ADD CONSTRAINT fk_referencia_anomalia FOREIGN KEY (anomalia_referencia_id) REFERENCES anomalia(anomalia_id);
-    END IF;
-
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.check_constraints
-        WHERE constraint_name = 'chk_tipo_anomalia'
-    ) THEN
-        ALTER TABLE anomalia ADD CONSTRAINT chk_tipo_anomalia CHECK (tipo_anomalia IN ('ANOMALIA', 'INCIDENCIA', 'REPORTE_CONDUCTOR', 'REPORTE_FALLA_CRITICA', 'SEGUIMIENTO_FALLA_CRITICA'));
     END IF;
 
     IF NOT EXISTS (
