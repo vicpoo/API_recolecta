@@ -459,6 +459,31 @@ definitions:
     - json_ruta
     - nombre
     type: object
+  entities.DispositivoConductorResponse:
+    properties:
+      active:
+        type: boolean
+      api_key:
+        type: string
+      conductor_apellido:
+        type: string
+      conductor_id:
+        type: integer
+      conductor_mail:
+        type: string
+      conductor_nombre:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      mac_address:
+        type: string
+      nombre_dispositivo:
+        type: string
+      serial_number:
+        type: string
+    type: object
   entities.Domicilio:
     properties:
       alias:
@@ -904,6 +929,18 @@ definitions:
         $ref: '#/definitions/entities.Ruta'
       success:
         type: boolean
+    type: object
+  entities.SolicitarDispositivoRequest:
+    properties:
+      mac_address:
+        type: string
+      nombre_dispositivo:
+        type: string
+      serial_number:
+        type: string
+    required:
+    - mac_address
+    - serial_number
     type: object
   entities.TipoAnomalia:
     enum:
@@ -1597,6 +1634,21 @@ paths:
         operativo actual en Redis (1: En ruta, 2: Vaciando tolva, 3: Repostando gasolina,
         4: Volviendo a base, 5: En base) y registra eventos en la base de datos PostgreSQL.'
       parameters:
+      - description: Dirección MAC del dispositivo Android
+        in: header
+        name: X-Device-MAC
+        required: true
+        type: string
+      - description: Número de serie del dispositivo Android
+        in: header
+        name: X-Device-Serial
+        required: true
+        type: string
+      - description: API Key única del dispositivo
+        in: header
+        name: X-Device-API-Key
+        required: true
+        type: string
       - description: Datos de telemetría y estado operativo
         in: body
         name: body
@@ -2016,6 +2068,139 @@ paths:
       summary: Actualizar colonia
       tags:
       - Colonia
+  /api/dispositivos/aprobar/{conductor_id}:
+    put:
+      consumes:
+      - application/json
+      description: Activa el dispositivo de un conductor para permitirle conectarse
+        y enviar telemetría/arrival. Solo accesible para Supervisor, Coordinador o
+        Administrador.
+      parameters:
+      - description: ID del Conductor
+        in: path
+        name: conductor_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Dispositivo aprobado
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: ID inválido
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Aprobar vinculación de dispositivo
+      tags:
+      - Dispositivo
+  /api/dispositivos/desvincular/{conductor_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Elimina/desvincula de forma lógica el dispositivo de un conductor,
+        permitiendo que solicite vincular otro. Solo accesible para Supervisor, Coordinador
+        o Administrador.
+      parameters:
+      - description: ID del Conductor
+        in: path
+        name: conductor_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Dispositivo desvinculado
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: ID inválido
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Desvincular dispositivo de conductor
+      tags:
+      - Dispositivo
+  /api/dispositivos/pendientes:
+    get:
+      consumes:
+      - application/json
+      description: Devuelve la lista de dispositivos que están solicitando vinculación
+        y esperan aprobación del supervisor. Solo accesible para Supervisor, Coordinador
+        o Administrador.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de dispositivos pendientes
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.DispositivoConductorResponse'
+              type: array
+            type: object
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar dispositivos pendientes de aprobación
+      tags:
+      - Dispositivo
+  /api/dispositivos/solicitar:
+    post:
+      consumes:
+      - application/json
+      description: Registra una solicitud de vinculación para el conductor autenticado
+        y retorna la API Key generada (iniciando en estado inactivo hasta que el supervisor
+        la apruebe).
+      parameters:
+      - description: Datos físicos del dispositivo
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.SolicitarDispositivoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: API Key generada y mensaje de confirmación
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request / JSON inválido
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Solicitar vinculación de dispositivo
+      tags:
+      - Dispositivo
   /api/domicilios:
     get:
       produces:
@@ -4482,6 +4667,21 @@ paths:
         en Redis. Además, realiza geofencing en el radio de la parada y dispara notificaciones
         push en tiempo real a los ciudadanos cercanos.
       parameters:
+      - description: Dirección MAC del dispositivo Android
+        in: header
+        name: X-Device-MAC
+        required: true
+        type: string
+      - description: Número de serie del dispositivo Android
+        in: header
+        name: X-Device-Serial
+        required: true
+        type: string
+      - description: API Key única del dispositivo
+        in: header
+        name: X-Device-API-Key
+        required: true
+        type: string
       - description: Datos de arribo a parada
         in: body
         name: body

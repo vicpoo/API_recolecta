@@ -47,8 +47,8 @@ func NewCamionRoutes(
 func (camionRoutes *CamionRoutes) Run() {
 	routes := camionRoutes.engine.Group("/api/camion")
 	{
-		// Endpoint protegido para telemetría (solo Conductores)
-		routes.POST("/telemetry", core.JWTAuthMiddleware(), core.RequireRole(core.CONDUCTOR), camionRoutes.telemetryController.Run)
+		// Endpoint protegido para telemetría (solo Conductores con dispositivo validado)
+		routes.POST("/telemetry", core.JWTAuthMiddleware(), core.RequireRole(core.CONDUCTOR), core.DeviceValidationMiddleware(), camionRoutes.telemetryController.Run)
 
 		routes.Use(core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN, core.CONDUCTOR, core.SUPERVISOR, core.COORDINADOR))
 		routes.POST("/", camionRoutes.createCamionController.Run)

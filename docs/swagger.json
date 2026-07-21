@@ -735,6 +735,27 @@
                 "summary": "Procesar telemetría de camión",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Dirección MAC del dispositivo Android",
+                        "name": "X-Device-MAC",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Número de serie del dispositivo Android",
+                        "name": "X-Device-Serial",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "API Key única del dispositivo",
+                        "name": "X-Device-API-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Datos de telemetría y estado operativo",
                         "name": "body",
                         "in": "body",
@@ -1501,6 +1522,204 @@
                     },
                     "403": {
                         "description": "No autorizado (requiere rol ADMIN)",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/dispositivos/aprobar/{conductor_id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Activa el dispositivo de un conductor para permitirle conectarse y enviar telemetría/arrival. Solo accesible para Supervisor, Coordinador o Administrador.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dispositivo"
+                ],
+                "summary": "Aprobar vinculación de dispositivo",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del Conductor",
+                        "name": "conductor_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dispositivo aprobado",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ID inválido",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/dispositivos/desvincular/{conductor_id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Elimina/desvincula de forma lógica el dispositivo de un conductor, permitiendo que solicite vincular otro. Solo accesible para Supervisor, Coordinador o Administrador.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dispositivo"
+                ],
+                "summary": "Desvincular dispositivo de conductor",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del Conductor",
+                        "name": "conductor_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Dispositivo desvinculado",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "ID inválido",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/dispositivos/pendientes": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve la lista de dispositivos que están solicitando vinculación y esperan aprobación del supervisor. Solo accesible para Supervisor, Coordinador o Administrador.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dispositivo"
+                ],
+                "summary": "Listar dispositivos pendientes de aprobación",
+                "responses": {
+                    "200": {
+                        "description": "Lista de dispositivos pendientes",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/entities.DispositivoConductorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/dispositivos/solicitar": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Registra una solicitud de vinculación para el conductor autenticado y retorna la API Key generada (iniciando en estado inactivo hasta que el supervisor la apruebe).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dispositivo"
+                ],
+                "summary": "Solicitar vinculación de dispositivo",
+                "parameters": [
+                    {
+                        "description": "Datos físicos del dispositivo",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/entities.SolicitarDispositivoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "API Key generada y mensaje de confirmación",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request / JSON inválido",
                         "schema": {
                             "$ref": "#/definitions/core.ErrorResponse"
                         }
@@ -5319,6 +5538,27 @@
                 "summary": "Procesar arribo de camión a parada",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Dirección MAC del dispositivo Android",
+                        "name": "X-Device-MAC",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Número de serie del dispositivo Android",
+                        "name": "X-Device-Serial",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "API Key única del dispositivo",
+                        "name": "X-Device-API-Key",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Datos de arribo a parada",
                         "name": "body",
                         "in": "body",
@@ -6351,6 +6591,44 @@
                 }
             }
         },
+        "entities.DispositivoConductorResponse": {
+            "type": "object",
+            "properties": {
+                "active": {
+                    "type": "boolean"
+                },
+                "api_key": {
+                    "type": "string"
+                },
+                "conductor_apellido": {
+                    "type": "string"
+                },
+                "conductor_id": {
+                    "type": "integer"
+                },
+                "conductor_mail": {
+                    "type": "string"
+                },
+                "conductor_nombre": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mac_address": {
+                    "type": "string"
+                },
+                "nombre_dispositivo": {
+                    "type": "string"
+                },
+                "serial_number": {
+                    "type": "string"
+                }
+            }
+        },
         "entities.Domicilio": {
             "type": "object",
             "properties": {
@@ -7032,6 +7310,24 @@
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "entities.SolicitarDispositivoRequest": {
+            "type": "object",
+            "required": [
+                "mac_address",
+                "serial_number"
+            ],
+            "properties": {
+                "mac_address": {
+                    "type": "string"
+                },
+                "nombre_dispositivo": {
+                    "type": "string"
+                },
+                "serial_number": {
+                    "type": "string"
                 }
             }
         },

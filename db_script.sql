@@ -53,6 +53,24 @@ CREATE TABLE IF NOT EXISTS licencia (
 );
 
 -- =====================
+-- DOMINIO DISPOSITIVOS
+-- =====================
+
+CREATE TABLE IF NOT EXISTS dispositivos (
+  id SERIAL PRIMARY KEY,
+  conductor_id INTEGER NOT NULL UNIQUE,
+  mac_address VARCHAR(100) NOT NULL UNIQUE,
+  serial_number VARCHAR(100) NOT NULL UNIQUE,
+  api_key VARCHAR(255) NOT NULL UNIQUE,
+  nombre_dispositivo VARCHAR(100) NULL,
+  sistema_operativo VARCHAR(50) DEFAULT 'Android',
+  active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  deleted_at TIMESTAMP DEFAULT NULL
+);
+
+-- =====================
 -- DOMINIO CAMION
 -- =====================
 

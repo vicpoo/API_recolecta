@@ -50,6 +50,8 @@ import (
 	ciudadanosInfra "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure"
 	ciudadanosRoutes "github.com/vicpoo/API_recolecta/src/Ciudadanos/infrastructure/routes"
 	anomalia "github.com/vicpoo/API_recolecta/src/Fallas/infrastructure"
+	dispositivoInfra "github.com/vicpoo/API_recolecta/src/dispositivo/infrastructure"
+	dispositivoRoutes "github.com/vicpoo/API_recolecta/src/dispositivo/infrastructure/routes"
 	coloniaApplication "github.com/vicpoo/API_recolecta/src/colonia/application"
 	coloniaHttp "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/http"
 	coloniaPostgres "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/postgres"
@@ -521,6 +523,12 @@ func InitDependencies() {
 
 	pushNotifRouter := notificacionInfra.NewPushNotificationRouter(engine)
 	pushNotifRouter.Run()
+
+	// ===============================
+	// DISPOSITIVOS (NUEVO)
+	// ===============================
+	dispositivoDeps := dispositivoInfra.InitDispositivoDependencies(db)
+	dispositivoRoutes.RegisterDispositivoRoutes(engine, dispositivoDeps.DispositivoController)
 
 	engine.Run(":8080")
 }

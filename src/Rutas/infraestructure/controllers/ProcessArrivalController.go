@@ -26,6 +26,9 @@ type ProcessArrivalRequest struct {
 // @Tags         Ruta
 // @Accept       json
 // @Produce      json
+// @Param        X-Device-MAC header string true "Dirección MAC del dispositivo Android"
+// @Param        X-Device-Serial header string true "Número de serie del dispositivo Android"
+// @Param        X-Device-API-Key header string true "API Key única del dispositivo"
 // @Param        body body ProcessArrivalRequest true "Datos de arribo a parada"
 // @Success      200 {object} map[string]string "Status OK"
 // @Failure      400 {object} map[string]string "Bad Request"

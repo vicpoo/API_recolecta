@@ -69,6 +69,44 @@ BEGIN
     END IF;
 END $$;
 
+-- =====================
+-- DISPOSITIVOS CONSTRAINTS & VALIDATIONS
+-- =====================
+
+CREATE OR REPLACE FUNCTION check_conductor_role()
+RETURNS TRIGGER AS $$
+DECLARE
+    rol_id_emp SMALLINT;
+BEGIN
+    SELECT rol_id INTO rol_id_emp FROM empleado WHERE id = NEW.conductor_id;
+    IF rol_id_emp IS NULL OR rol_id_emp <> 4 THEN
+        RAISE EXCEPTION 'El empleado con ID % no tiene el rol de Conductor (rol_id = 4)', NEW.conductor_id;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DO $$
+BEGIN
+    -- Validar FK de conductor en dispositivos
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints
+        WHERE constraint_name = 'fk_conductor_dispositivos'
+    ) THEN
+        ALTER TABLE dispositivos ADD CONSTRAINT fk_conductor_dispositivos FOREIGN KEY (conductor_id) REFERENCES empleado(id);
+    END IF;
+
+    -- Crear el trigger si no existe
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger
+        WHERE tgname = 'trg_check_conductor_role'
+    ) THEN
+        CREATE TRIGGER trg_check_conductor_role
+        BEFORE INSERT OR UPDATE ON dispositivos
+        FOR EACH ROW
+        EXECUTE FUNCTION check_conductor_role();
+    END IF;
+END $$;
 
 DO $$
 BEGIN

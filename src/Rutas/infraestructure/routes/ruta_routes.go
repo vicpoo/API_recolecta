@@ -44,8 +44,8 @@ func NewRutaRoutes(
 func (r *RutaRoutes) Run() {
 	routes := r.engine.Group("/api/rutas")
 	{
-		// Endpoint protegido para arribo a puntos (solo Conductores)
-		routes.POST("/arrival", core.JWTAuthMiddleware(), core.RequireRole(core.CONDUCTOR), r.arrivalController.Run)
+		// Endpoint protegido para arribo a puntos (solo Conductores con dispositivo validado)
+		routes.POST("/arrival", core.JWTAuthMiddleware(), core.RequireRole(core.CONDUCTOR), core.DeviceValidationMiddleware(), r.arrivalController.Run)
 
 		routes.Use(core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN, core.CONDUCTOR, core.SUPERVISOR, core.COORDINADOR))
 		routes.POST("/", r.createController.Run)
