@@ -16,7 +16,7 @@ type IAnomalia interface {
 	// Métodos específicos para Anomalia (cubren los antiguos dominios
 	// Incidencia, ReporteConductor, ReporteFallaCritica y
 	// SeguimientoFallaCritica, ahora unificados por TipoAnomalia)
-	GetByTipoAnomalia(tipoAnomalia string) ([]entities.Anomalia, error)
+	GetByTipoAnomalia(tipoAnomalia entities.TipoAnomalia) ([]entities.Anomalia, error)
 	GetByEstado(estado string) ([]entities.Anomalia, error)
 	GetByPuntoID(puntoID int32) ([]entities.Anomalia, error)
 	GetByConductorID(conductorID int32) ([]entities.Anomalia, error)

@@ -16,7 +16,7 @@ import (
 // seguimiento (auto-relación dentro de la misma tabla).
 type Anomalia struct {
 	AnomaliaID           int32        `json:"anomalia_id" gorm:"column:anomalia_id;primaryKey;autoIncrement"`
-	TipoAnomalia         TipoAnomalia `json:"tipo_anomalia" gorm:"column:tipo_anomalia;type:varchar(50);not null"`
+	TipoAnomalia         TipoAnomalia `json:"tipo_anomalia" gorm:"column:tipo_anomalia;not null"`
 	PuntoID              *int32       `json:"punto_id" gorm:"column:punto_id"`
 	ConductorID          *int32       `json:"conductor_id" gorm:"column:conductor_id"`
 	CamionID             *int32       `json:"camion_id" gorm:"column:camion_id"`

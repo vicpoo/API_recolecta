@@ -245,7 +245,7 @@ func (pg *PostgresAnomaliaRepository) GetAll() ([]entities.Anomalia, error) {
 	return pg.collect(context.Background(), query)
 }
 
-func (pg *PostgresAnomaliaRepository) GetByTipoAnomalia(tipoAnomalia string) ([]entities.Anomalia, error) {
+func (pg *PostgresAnomaliaRepository) GetByTipoAnomalia(tipoAnomalia entities.TipoAnomalia) ([]entities.Anomalia, error) {
 	query := `SELECT ` + anomaliaColumnas + ` FROM anomalia WHERE tipo_anomalia = $1 AND eliminado = false ORDER BY fecha_reporte DESC`
 	return pg.collect(context.Background(), query, tipoAnomalia)
 }

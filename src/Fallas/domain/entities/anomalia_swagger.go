@@ -4,32 +4,32 @@ import "time"
 
 // swagger:model CreateAnomaliaRequest
 type CreateAnomaliaRequest struct {
-	TipoAnomalia         string    `json:"tipo_anomalia" binding:"required"` // ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA | SEGUIMIENTO_FALLA_CRITICA
-	PuntoID              *int32    `json:"punto_id"`
-	ConductorID          *int32    `json:"conductor_id"`
-	CamionID             *int32    `json:"camion_id"`
-	RutaID               *int32    `json:"ruta_id"`
-	AnomaliaReferenciaID *int32    `json:"anomalia_referencia_id"`
-	Descripcion          string    `json:"descripcion" binding:"required"`
-	JsonRuta             string    `json:"json_ruta"`
-	Estado               string    `json:"estado"`
-	FechaReporte         time.Time `json:"fecha_reporte"`
+	TipoAnomalia         TipoAnomalia `json:"tipo_anomalia" binding:"required"` // ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA | SEGUIMIENTO_FALLA_CRITICA
+	PuntoID              *int32       `json:"punto_id"`
+	ConductorID          *int32       `json:"conductor_id"`
+	CamionID             *int32       `json:"camion_id"`
+	RutaID               *int32       `json:"ruta_id"`
+	AnomaliaReferenciaID *int32       `json:"anomalia_referencia_id"`
+	Descripcion          string       `json:"descripcion" binding:"required"`
+	JsonRuta             string       `json:"json_ruta"`
+	Estado               string       `json:"estado"`
+	FechaReporte         time.Time    `json:"fecha_reporte"`
 }
 
 // swagger:model UpdateAnomaliaRequest
 type UpdateAnomaliaRequest struct {
-	TipoAnomalia         string     `json:"tipo_anomalia" binding:"required"`
-	PuntoID              *int32     `json:"punto_id"`
-	ConductorID          *int32     `json:"conductor_id"`
-	CamionID             *int32     `json:"camion_id"`
-	RutaID               *int32     `json:"ruta_id"`
-	AnomaliaReferenciaID *int32     `json:"anomalia_referencia_id"`
-	Descripcion          string     `json:"descripcion" binding:"required"`
-	JsonRuta             string     `json:"json_ruta"`
-	Estado               string     `json:"estado"`
-	Eliminado            bool       `json:"eliminado"`
-	FechaReporte         time.Time  `json:"fecha_reporte"`
-	FechaResolucion      *time.Time `json:"fecha_resolucion"`
+	TipoAnomalia         TipoAnomalia `json:"tipo_anomalia" binding:"required"`
+	PuntoID              *int32       `json:"punto_id"`
+	ConductorID          *int32       `json:"conductor_id"`
+	CamionID             *int32       `json:"camion_id"`
+	RutaID               *int32       `json:"ruta_id"`
+	AnomaliaReferenciaID *int32       `json:"anomalia_referencia_id"`
+	Descripcion          string       `json:"descripcion" binding:"required"`
+	JsonRuta             string       `json:"json_ruta"`
+	Estado               string       `json:"estado"`
+	Eliminado            bool         `json:"eliminado"`
+	FechaReporte         time.Time    `json:"fecha_reporte"`
+	FechaResolucion      *time.Time   `json:"fecha_resolucion"`
 }
 
 // swagger:model AnomaliaResponse

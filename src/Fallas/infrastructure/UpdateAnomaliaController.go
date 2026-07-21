@@ -60,6 +60,14 @@ func (ctrl *UpdateAnomaliaController) Run(c *gin.Context) {
 		return
 	}
 
+	tipoAnomalia, err := entities.ParseTipoAnomalia(request.TipoAnomalia)
+	if err != nil {
+		core.RespondValidationError(c, "Tipo de anomalía inválido", map[string]string{
+			"tipo_anomalia": err.Error(),
+		})
+		return
+	}
+
 	// Parsear fechas
 	fechaReporte, err := parseFecha(request.FechaReporte)
 	if err != nil {
@@ -85,7 +93,7 @@ func (ctrl *UpdateAnomaliaController) Run(c *gin.Context) {
 
 	anomalia := &entities.Anomalia{
 		AnomaliaID:           int32(id),
-		TipoAnomalia:         request.TipoAnomalia,
+		TipoAnomalia:         tipoAnomalia,
 		PuntoID:              request.PuntoID,
 		ConductorID:          request.ConductorID,
 		CamionID:             request.CamionID,

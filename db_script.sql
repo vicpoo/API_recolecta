@@ -252,9 +252,25 @@ CREATE TABLE IF NOT EXISTS aviso (
 -- indica cuál de esos conceptos representa cada registro.
 -- SeguimientoFallaCritica usa anomalia_referencia_id (auto-relación) para
 -- apuntar al anomalia_id del REPORTE_FALLA_CRITICA al que da seguimiento.
+
+-- Enum nativo de Postgres: único conjunto de valores válidos para
+-- tipo_anomalia (equivalente al enum TipoAnomalia en Go).
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'tipo_anomalia_enum') THEN
+        CREATE TYPE tipo_anomalia_enum AS ENUM (
+            'ANOMALIA',
+            'INCIDENCIA',
+            'REPORTE_CONDUCTOR',
+            'REPORTE_FALLA_CRITICA',
+            'SEGUIMIENTO_FALLA_CRITICA'
+        );
+    END IF;
+END $$;
+
 CREATE TABLE IF NOT EXISTS anomalia (
   anomalia_id SERIAL PRIMARY KEY,
-  tipo_anomalia VARCHAR(50) NOT NULL,
+  tipo_anomalia tipo_anomalia_enum NOT NULL,
   punto_id INTEGER DEFAULT NULL,
   conductor_id INTEGER DEFAULT NULL,
   camion_id INTEGER DEFAULT NULL,
