@@ -19,6 +19,26 @@ BEGIN
 END $$;
 
 -- =====================
+-- MULTITENANCY: TENANT
+-- =====================
+-- Modelo Pool: una sola base compartida, particionada por tenant_id. Ver
+-- docs/07-plan-multitenancy.md. tenant_id=1 es el tenant de respaldo/legacy
+-- al que caen los datos existentes y cualquier módulo aún no migrado.
+
+CREATE TABLE IF NOT EXISTS tenant (
+  tenant_id SERIAL PRIMARY KEY,
+  nombre VARCHAR(150) NOT NULL,
+  activo BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+INSERT INTO tenant (tenant_id, nombre, activo)
+VALUES (1, 'Tenant Demo/Legacy', TRUE)
+ON CONFLICT (tenant_id) DO NOTHING;
+
+SELECT setval('tenant_tenant_id_seq', GREATEST((SELECT MAX(tenant_id) FROM tenant), 1));
+
+-- =====================
 -- DOMINIO EMPLEADO
 -- =====================
 
@@ -30,6 +50,7 @@ CREATE TABLE IF NOT EXISTS rol (
 
 CREATE TABLE IF NOT EXISTS empleado (
     id SERIAL PRIMARY KEY,
+    tenant_id INTEGER NOT NULL DEFAULT 1,
     nombre VARCHAR(100) NOT NULL,
     apellidos VARCHAR(100) NOT NULL,
     mail VARCHAR(100) NOT NULL,
@@ -44,6 +65,7 @@ CREATE TABLE IF NOT EXISTS empleado (
 
 CREATE TABLE IF NOT EXISTS licencia (
   id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   licencia VARCHAR(100) NOT NULL,
   tipo_licencia SMALLINT NOT NULL,
   fecha_vencimiento DATE NOT NULL,
@@ -58,6 +80,7 @@ CREATE TABLE IF NOT EXISTS licencia (
 
 CREATE TABLE IF NOT EXISTS dispositivos (
   id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   conductor_id INTEGER NOT NULL UNIQUE,
   mac_address VARCHAR(100) NOT NULL UNIQUE,
   serial_number VARCHAR(100) NOT NULL UNIQUE,
@@ -80,6 +103,7 @@ CREATE TABLE IF NOT EXISTS dispositivos (
 
 CREATE TABLE IF NOT EXISTS historial_asignacion_camion (
   id_historial SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   id_chofer INTEGER NOT NULL,
   id_camion INTEGER NOT NULL,
   fecha_asignacion DATE NOT NULL,
@@ -99,6 +123,7 @@ CREATE TABLE IF NOT EXISTS tipo_camion (
 
 CREATE TABLE IF NOT EXISTS camion (
   id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   placa VARCHAR(20) NOT NULL,
   modelo VARCHAR(50) NOT NULL,
   rentado BOOLEAN DEFAULT FALSE,
@@ -118,6 +143,7 @@ CREATE TABLE IF NOT EXISTS tipo_mantenimiento (
 
 CREATE TABLE IF NOT EXISTS alerta_mantenimiento (
   alerta_id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   camion_id INTEGER NOT NULL,
   tipo_mantenimiento_id INTEGER NOT NULL,
   descripcion TEXT NOT NULL,
@@ -130,6 +156,7 @@ CREATE TABLE IF NOT EXISTS alerta_mantenimiento (
 
 CREATE TABLE IF NOT EXISTS registro_mantenimiento (
   registro_id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   alerta_id INTEGER DEFAULT NULL,
   camion_id INTEGER NOT NULL,
   coordinador_id INTEGER NOT NULL,
@@ -152,6 +179,7 @@ CREATE TABLE IF NOT EXISTS registro_mantenimiento (
 
 CREATE TABLE IF NOT EXISTS ruta_camion (
   ruta_camion_id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   ruta_id INTEGER NOT NULL,
   camion_id INTEGER NOT NULL,
   fecha DATE NOT NULL,
@@ -163,6 +191,7 @@ CREATE TABLE IF NOT EXISTS ruta_camion (
 
 CREATE TABLE IF NOT EXISTS ruta (
   id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   nombre VARCHAR(100) NOT NULL,
   descripcion VARCHAR(255) NOT NULL,
   colonia_id INTEGER NOT NULL,
@@ -174,6 +203,7 @@ CREATE TABLE IF NOT EXISTS ruta (
 
 CREATE TABLE IF NOT EXISTS punto_recoleccion (
   id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   ruta_id INTEGER NOT NULL,
   direccion VARCHAR(255) NOT NULL,
   orden DOUBLE PRECISION DEFAULT 0.0,
@@ -184,6 +214,7 @@ CREATE TABLE IF NOT EXISTS punto_recoleccion (
 
 CREATE TABLE IF NOT EXISTS relleno_sanitario (
   relleno_id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   nombre VARCHAR(100) NOT NULL,
   direccion VARCHAR(255) NOT NULL,
   es_rentado BOOLEAN DEFAULT FALSE,
@@ -196,6 +227,7 @@ CREATE TABLE IF NOT EXISTS relleno_sanitario (
 
 CREATE TABLE IF NOT EXISTS estado_camion (
   estado_id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   camion_id INTEGER NOT NULL,
   estado VARCHAR(50) NOT NULL,
   observaciones TEXT NULL,
@@ -205,6 +237,7 @@ CREATE TABLE IF NOT EXISTS estado_camion (
 
 CREATE TABLE IF NOT EXISTS registro_vaciado (
   vaciado_id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   relleno_id INTEGER NOT NULL,
   ruta_camion_id INTEGER NOT NULL,
   hora TIMESTAMP NOT NULL,
@@ -217,6 +250,7 @@ CREATE TABLE IF NOT EXISTS registro_vaciado (
 
 CREATE TABLE IF NOT EXISTS colonia (
   colonia_id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   nombre VARCHAR(100) NOT NULL,
   zona VARCHAR(50) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
@@ -228,6 +262,7 @@ CREATE TABLE IF NOT EXISTS colonia (
 
 CREATE TABLE IF NOT EXISTS ciudadano (
   id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   email VARCHAR(100) NOT NULL,
   alias VARCHAR(100) NOT NULL,
   password VARCHAR(100) NOT NULL,
@@ -237,6 +272,7 @@ CREATE TABLE IF NOT EXISTS ciudadano (
 
 CREATE TABLE IF NOT EXISTS domicilio (
   id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   alias VARCHAR(100) NOT NULL,
   calle VARCHAR(100) NOT NULL,
   numero VARCHAR(20) NOT NULL,
@@ -253,6 +289,7 @@ CREATE TABLE IF NOT EXISTS domicilio (
 
 CREATE TABLE IF NOT EXISTS alerta_usuario (
   alerta_id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   usuario_id INTEGER NOT NULL,
   titulo VARCHAR(150) NOT NULL,
   mensaje TEXT NOT NULL,
@@ -263,6 +300,7 @@ CREATE TABLE IF NOT EXISTS alerta_usuario (
 
 CREATE TABLE IF NOT EXISTS aviso (
   id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   enviado_por INTEGER NOT NULL,
   tipo_aviso VARCHAR(50) NOT NULL,
   descripcion VARCHAR(255) NOT NULL,
@@ -300,6 +338,7 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS anomalia (
   anomalia_id SERIAL PRIMARY KEY,
+  tenant_id INTEGER NOT NULL DEFAULT 1,
   tipo_anomalia tipo_anomalia_enum NOT NULL,
   punto_id INTEGER DEFAULT NULL,
   conductor_id INTEGER DEFAULT NULL,

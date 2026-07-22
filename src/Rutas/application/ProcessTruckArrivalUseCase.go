@@ -21,7 +21,7 @@ func NewProcessTruckArrivalUseCase(rdb *redis.Client, rulesRepo domain.INotifica
 	return &ProcessTruckArrivalUseCase{rdb: rdb, rulesRepo: rulesRepo, sender: sender}
 }
 
-func (uc *ProcessTruckArrivalUseCase) Execute(ctx context.Context, truckID int32, pointID string) error {
+func (uc *ProcessTruckArrivalUseCase) Execute(ctx context.Context, tenantID int, truckID int32, pointID string) error {
 	key := fmt.Sprintf("truck:%d", truckID)
 	nowStr := time.Now().Format(time.RFC3339)
 
@@ -50,7 +50,7 @@ func (uc *ProcessTruckArrivalUseCase) Execute(ctx context.Context, truckID int32
 
 	// 3. Obtener el radio de búsqueda (por defecto 100m) de las reglas de notificaciones
 	radius := 100.0
-	rule, err := uc.rulesRepo.GetByStateCode(ctx, "ARRIVAL")
+	rule, err := uc.rulesRepo.GetByStateCode(ctx, tenantID, "ARRIVAL")
 	if err == nil && rule.Enabled && rule.Threshold > 0 {
 		radius = float64(rule.Threshold)
 	}

@@ -6267,6 +6267,9 @@
                 },
                 "id": {
                     "type": "integer"
+                },
+                "tenant_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -6357,7 +6360,11 @@
                 },
                 "tipo_anomalia": {
                     "description": "ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA | SEGUIMIENTO_FALLA_CRITICA",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entities.TipoAnomalia"
+                        }
+                    ]
                 }
             }
         },
@@ -6700,6 +6707,9 @@
                     "type": "string"
                 },
                 "rol_id": {
+                    "type": "integer"
+                },
+                "tenant_id": {
                     "type": "integer"
                 },
                 "updated_at": {
@@ -7332,16 +7342,16 @@
             }
         },
         "entities.TipoAnomalia": {
-            "type": "string",
+            "type": "integer",
             "enum": [
-                "ANOMALIA",
-                "INCIDENCIA",
-                "REPORTE_CONDUCTOR",
-                "REPORTE_FALLA_CRITICA",
-                "SEGUIMIENTO_FALLA_CRITICA"
+                0,
+                1,
+                2,
+                3,
+                4
             ],
             "x-enum-varnames": [
-                "TipoAnomaliaGeneral",
+                "TipoAnomaliaAnomalia",
                 "TipoAnomaliaIncidencia",
                 "TipoAnomaliaReporteConductor",
                 "TipoAnomaliaReporteFallaCritica",
@@ -7389,7 +7399,7 @@
                     "type": "integer"
                 },
                 "tipo_anomalia": {
-                    "type": "string"
+                    "$ref": "#/definitions/entities.TipoAnomalia"
                 }
             }
         },

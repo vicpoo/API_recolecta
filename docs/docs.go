@@ -6274,6 +6274,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "tenant_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -6364,7 +6367,11 @@ const docTemplate = `{
                 },
                 "tipo_anomalia": {
                     "description": "ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA | SEGUIMIENTO_FALLA_CRITICA",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entities.TipoAnomalia"
+                        }
+                    ]
                 }
             }
         },
@@ -6707,6 +6714,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rol_id": {
+                    "type": "integer"
+                },
+                "tenant_id": {
                     "type": "integer"
                 },
                 "updated_at": {
@@ -7339,16 +7349,16 @@ const docTemplate = `{
             }
         },
         "entities.TipoAnomalia": {
-            "type": "string",
+            "type": "integer",
             "enum": [
-                "ANOMALIA",
-                "INCIDENCIA",
-                "REPORTE_CONDUCTOR",
-                "REPORTE_FALLA_CRITICA",
-                "SEGUIMIENTO_FALLA_CRITICA"
+                0,
+                1,
+                2,
+                3,
+                4
             ],
             "x-enum-varnames": [
-                "TipoAnomaliaGeneral",
+                "TipoAnomaliaAnomalia",
                 "TipoAnomaliaIncidencia",
                 "TipoAnomaliaReporteConductor",
                 "TipoAnomaliaReporteFallaCritica",
@@ -7396,7 +7406,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "tipo_anomalia": {
-                    "type": "string"
+                    "$ref": "#/definitions/entities.TipoAnomalia"
                 }
             }
         },
