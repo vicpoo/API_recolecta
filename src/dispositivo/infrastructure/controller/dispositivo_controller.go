@@ -51,6 +51,47 @@ func (ctr *DispositivoController) Solicitar(c *gin.Context) {
 	core.RespondOK(c, gin.H{
 		"message": "solicitud de vinculación registrada. En espera de aprobación del supervisor.",
 		"api_key": apiKey,
+		"active":  false,
+	})
+}
+
+// MiEstado devuelve el estado de vinculación del dispositivo del conductor autenticado.
+// @Summary      Consultar estado de mi dispositivo
+// @Description  Indica si el conductor ya registró un dispositivo y si fue aprobado por un administrador.
+// @Tags         Dispositivo
+// @Produce      json
+// @Success      200 {object} map[string]interface{} "Estado del dispositivo"
+// @Failure      500 {object} core.ErrorResponse "Error interno del servidor"
+// @Security     BearerAuth
+// @Router       /api/dispositivos/mi-estado [get]
+func (ctr *DispositivoController) MiEstado(c *gin.Context) {
+	conductorID := c.GetInt("user_id")
+	if conductorID == 0 {
+		core.RespondBadRequest(c, "id de conductor no encontrado en el contexto", nil)
+		return
+	}
+
+	d, err := ctr.useCases.FindByConductorID(c.Request.Context(), conductorID)
+	if err != nil {
+		core.RespondInternalServerError(c, "error al consultar el dispositivo", err)
+		return
+	}
+
+	if d == nil {
+		core.RespondOK(c, gin.H{
+			"registrado": false,
+			"active":     false,
+		})
+		return
+	}
+
+	core.RespondOK(c, gin.H{
+		"registrado":         true,
+		"active":             d.Active,
+		"mac_address":        d.MacAddress,
+		"serial_number":      d.SerialNumber,
+		"nombre_dispositivo": d.NombreDispositivo,
+		"api_key":            d.ApiKey,
 	})
 }
 

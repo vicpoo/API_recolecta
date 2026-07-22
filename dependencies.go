@@ -42,6 +42,8 @@ import (
 	registroVaciadoRoutesPkg "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
 	rsRoutes "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
 	rutaRoutes "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
+	recorridoRoutesPkg "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
+	recorridoApp "github.com/vicpoo/API_recolecta/src/Rutas/application/recorrido"
 	alertaApplication "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
 	alertaHttp "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/http"
 	alertaPostgres "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/postgres"
@@ -58,6 +60,7 @@ import (
 	empleadoInfra "github.com/vicpoo/API_recolecta/src/empleado/infrastructure"
 	empleadoRoutes "github.com/vicpoo/API_recolecta/src/empleado/infrastructure/routes"
 	notificacionInfra "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
+	"github.com/vicpoo/API_recolecta/src/tracking_ws"
 	appConfig "github.com/vicpoo/API_recolecta/config"
 	//rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
 	//listMisAlertasUC "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
@@ -76,7 +79,8 @@ func InitDependencies() {
 	engine := gin.Default()
 	engine.Use(core.CORSMiddleware())
 	engine.GET("/api/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	db := core.GetBD()
+
+	db := core.GetBD()
 
 	alertaRepository := alertaPostgres.NewPostgresAlertaRepository(db)
 
@@ -261,6 +265,11 @@ func InitDependencies() {
 	)
 
 	rutaRoutes.Run()
+
+	recorridoStore := recorridoApp.NewRedisStore(redisClient)
+	recorridoCtr := rutaControllers.NewRecorridoController(recorridoStore)
+	recorridoRoutes := recorridoRoutesPkg.NewRecorridoRoutes(engine, recorridoCtr)
+	recorridoRoutes.Run()
 
 	puntoRepository := puntoAdapters.NewPostgresPuntoRecoleccion()
 
@@ -529,6 +538,14 @@ func InitDependencies() {
 	// ===============================
 	dispositivoDeps := dispositivoInfra.InitDispositivoDependencies(db)
 	dispositivoRoutes.RegisterDispositivoRoutes(engine, dispositivoDeps.DispositivoController)
+
+	// ===============================
+	// TRACKING WS (GPS conductor → ciudadanos)
+	// ===============================
+	trackingHub := tracking_ws.NewHub()
+	go trackingHub.Run()
+	trackingHandler := tracking_ws.NewHandler(trackingHub)
+	tracking_ws.RegisterRoutes(engine, trackingHandler)
 
 	engine.Run(":8080")
 }

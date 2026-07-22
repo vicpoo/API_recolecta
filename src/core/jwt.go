@@ -30,3 +30,29 @@ func GenerateToken(userID int, roleID int, tenantID int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(jwtSecret)
 }
+
+// ParseToken valida un JWT HS256 y devuelve los claims (p. ej. auth de WebSocket por query).
+func ParseToken(tokenStr string) (*Claims, error) {
+	token, err := jwt.ParseWithClaims(
+		tokenStr,
+		&Claims{},
+		func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, jwt.ErrSignatureInvalid
+			}
+			return jwtSecret, nil
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	if !token.Valid {
+		return nil, jwt.ErrTokenInvalidClaims
+	}
+
+	claims, ok := token.Claims.(*Claims)
+	if !ok {
+		return nil, jwt.ErrTokenInvalidClaims
+	}
+	return claims, nil
+}

@@ -2143,6 +2143,27 @@ paths:
       summary: Desvincular dispositivo de conductor
       tags:
       - Dispositivo
+  /api/dispositivos/mi-estado:
+    get:
+      description: Indica si el conductor ya registró un dispositivo y si fue aprobado
+        por un administrador.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Estado del dispositivo
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Consultar estado de mi dispositivo
+      tags:
+      - Dispositivo
   /api/dispositivos/pendientes:
     get:
       consumes:

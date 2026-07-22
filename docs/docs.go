@@ -1646,6 +1646,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/dispositivos/mi-estado": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Indica si el conductor ya registró un dispositivo y si fue aprobado por un administrador.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dispositivo"
+                ],
+                "summary": "Consultar estado de mi dispositivo",
+                "responses": {
+                    "200": {
+                        "description": "Estado del dispositivo",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/dispositivos/pendientes": {
             "get": {
                 "security": [
