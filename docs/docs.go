@@ -6306,6 +6306,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "tenant_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -6743,6 +6746,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rol_id": {
+                    "type": "integer"
+                },
+                "tenant_id": {
                     "type": "integer"
                 },
                 "updated_at": {

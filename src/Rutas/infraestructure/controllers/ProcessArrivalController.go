@@ -36,13 +36,20 @@ type ProcessArrivalRequest struct {
 // @Security     BearerAuth
 // @Router       /api/rutas/arrival [post]
 func (ctrl *ProcessArrivalController) Run(c *gin.Context) {
+	tenantIDVal, exists := c.Get("tenant_id")
+	tenantID, ok := tenantIDVal.(int)
+	if !exists || !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "tenant no encontrado en token"})
+		return
+	}
+
 	var req ProcessArrivalRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	err := ctrl.uc.Execute(c.Request.Context(), req.TruckID, req.PointID)
+	err := ctrl.uc.Execute(c.Request.Context(), tenantID, req.TruckID, req.PointID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -1,6 +1,70 @@
 \c proyecto_recolecta;
 
 -- =====================
+-- MULTITENANCY: COLUMNA + FK EN TABLAS PREEXISTENTES
+-- =====================
+-- CREATE TABLE IF NOT EXISTS (db_script.sql) no modifica una tabla que ya
+-- existe -- este bloque es el que de verdad garantiza tenant_id sin importar
+-- si la tabla es nueva o si ya tenia datos de antes. Ver docs/07-plan-multitenancy.md.
+
+DO $$
+DECLARE
+    tbl text;
+    tenant_tables text[] := ARRAY[
+        'empleado','licencia','dispositivos','historial_asignacion_camion','camion',
+        'alerta_mantenimiento','registro_mantenimiento','ruta_camion','ruta','punto_recoleccion',
+        'relleno_sanitario','estado_camion','registro_vaciado','colonia','ciudadano','domicilio',
+        'alerta_usuario','aviso','anomalia'
+    ];
+BEGIN
+    FOREACH tbl IN ARRAY tenant_tables LOOP
+        EXECUTE format('ALTER TABLE %I ADD COLUMN IF NOT EXISTS tenant_id INTEGER NOT NULL DEFAULT 1', tbl);
+
+        IF NOT EXISTS (
+            SELECT 1 FROM information_schema.table_constraints
+            WHERE constraint_name = 'fk_' || tbl || '_tenant'
+        ) THEN
+            EXECUTE format('ALTER TABLE %I ADD CONSTRAINT %I FOREIGN KEY (tenant_id) REFERENCES tenant(tenant_id)', tbl, 'fk_' || tbl || '_tenant');
+        END IF;
+    END LOOP;
+END $$;
+
+-- =====================
+-- MULTITENANCY: ROW LEVEL SECURITY
+-- =====================
+-- empleado y ciudadano quedan fuera de RLS a proposito: el login los busca
+-- por email/username de forma global, antes de conocer el tenant -- forzar
+-- RLS ahi bloquearia el login de cualquiera que no fuera del tenant 1.
+-- El fallback a tenant 1 (en vez de bloquear todo sin contexto) permite
+-- activar RLS de forma incremental: los modulos que aun no llamen
+-- RunInTenantTx siguen funcionando igual que hoy. Ver docs/07-plan-multitenancy.md Fase 5.
+DO $$
+DECLARE
+    tbl text;
+    rls_tables text[] := ARRAY[
+        'licencia','dispositivos','historial_asignacion_camion','camion',
+        'alerta_mantenimiento','registro_mantenimiento','ruta_camion','ruta','punto_recoleccion',
+        'relleno_sanitario','estado_camion','registro_vaciado','colonia','domicilio',
+        'alerta_usuario','aviso','anomalia'
+    ];
+BEGIN
+    FOREACH tbl IN ARRAY rls_tables LOOP
+        EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', tbl);
+        EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY', tbl);
+
+        IF NOT EXISTS (
+            SELECT 1 FROM pg_policies
+            WHERE tablename = tbl AND policyname = 'tenant_isolation'
+        ) THEN
+            EXECUTE format(
+                'CREATE POLICY tenant_isolation ON %I USING (tenant_id = COALESCE(NULLIF(current_setting(%L, true), %L)::integer, 1))',
+                tbl, 'app.current_tenant', ''
+            );
+        END IF;
+    END LOOP;
+END $$;
+
+-- =====================
 -- CONSTRAINTS
 -- =====================
 
