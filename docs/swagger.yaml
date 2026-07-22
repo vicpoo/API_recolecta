@@ -297,9 +297,10 @@ definitions:
       ruta_id:
         type: integer
       tipo_anomalia:
+        allOf:
+        - $ref: '#/definitions/entities.TipoAnomalia'
         description: ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA
           | SEGUIMIENTO_FALLA_CRITICA
-        type: string
     required:
     - descripcion
     - tipo_anomalia
@@ -944,14 +945,14 @@ definitions:
     type: object
   entities.TipoAnomalia:
     enum:
-    - ANOMALIA
-    - INCIDENCIA
-    - REPORTE_CONDUCTOR
-    - REPORTE_FALLA_CRITICA
-    - SEGUIMIENTO_FALLA_CRITICA
-    type: string
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
     x-enum-varnames:
-    - TipoAnomaliaGeneral
+    - TipoAnomaliaAnomalia
     - TipoAnomaliaIncidencia
     - TipoAnomaliaReporteConductor
     - TipoAnomaliaReporteFallaCritica
@@ -981,7 +982,7 @@ definitions:
       ruta_id:
         type: integer
       tipo_anomalia:
-        type: string
+        $ref: '#/definitions/entities.TipoAnomalia'
     required:
     - descripcion
     - tipo_anomalia
@@ -2136,6 +2137,27 @@ paths:
       security:
       - BearerAuth: []
       summary: Desvincular dispositivo de conductor
+      tags:
+      - Dispositivo
+  /api/dispositivos/mi-estado:
+    get:
+      description: Indica si el conductor ya registró un dispositivo y si fue aprobado
+        por un administrador.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Estado del dispositivo
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Consultar estado de mi dispositivo
       tags:
       - Dispositivo
   /api/dispositivos/pendientes:

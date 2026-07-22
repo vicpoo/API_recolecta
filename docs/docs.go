@@ -1646,6 +1646,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/dispositivos/mi-estado": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Indica si el conductor ya registró un dispositivo y si fue aprobado por un administrador.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dispositivo"
+                ],
+                "summary": "Consultar estado de mi dispositivo",
+                "responses": {
+                    "200": {
+                        "description": "Estado del dispositivo",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/dispositivos/pendientes": {
             "get": {
                 "security": [
@@ -6364,7 +6396,11 @@ const docTemplate = `{
                 },
                 "tipo_anomalia": {
                     "description": "ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA | SEGUIMIENTO_FALLA_CRITICA",
-                    "type": "string"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/entities.TipoAnomalia"
+                        }
+                    ]
                 }
             }
         },
@@ -7339,16 +7375,16 @@ const docTemplate = `{
             }
         },
         "entities.TipoAnomalia": {
-            "type": "string",
+            "type": "integer",
             "enum": [
-                "ANOMALIA",
-                "INCIDENCIA",
-                "REPORTE_CONDUCTOR",
-                "REPORTE_FALLA_CRITICA",
-                "SEGUIMIENTO_FALLA_CRITICA"
+                0,
+                1,
+                2,
+                3,
+                4
             ],
             "x-enum-varnames": [
-                "TipoAnomaliaGeneral",
+                "TipoAnomaliaAnomalia",
                 "TipoAnomaliaIncidencia",
                 "TipoAnomaliaReporteConductor",
                 "TipoAnomaliaReporteFallaCritica",
@@ -7396,7 +7432,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "tipo_anomalia": {
-                    "type": "string"
+                    "$ref": "#/definitions/entities.TipoAnomalia"
                 }
             }
         },

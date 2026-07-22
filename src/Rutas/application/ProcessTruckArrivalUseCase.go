@@ -8,20 +8,31 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
+	"github.com/vicpoo/API_recolecta/src/Rutas/application/recorrido"
 	"github.com/vicpoo/API_recolecta/src/notificacion/domain"
 )
 
 type ProcessTruckArrivalUseCase struct {
-	rdb       *redis.Client
-	rulesRepo domain.INotificationRuleRepository
-	sender    domain.PushNotificationSender
+	rdb            *redis.Client
+	rulesRepo      domain.INotificationRuleRepository
+	sender         domain.PushNotificationSender
+	recorridoStore *recorrido.RedisStore
 }
 
 func NewProcessTruckArrivalUseCase(rdb *redis.Client, rulesRepo domain.INotificationRuleRepository, sender domain.PushNotificationSender) *ProcessTruckArrivalUseCase {
-	return &ProcessTruckArrivalUseCase{rdb: rdb, rulesRepo: rulesRepo, sender: sender}
+	return &ProcessTruckArrivalUseCase{
+		rdb:            rdb,
+		rulesRepo:      rulesRepo,
+		sender:         sender,
+		recorridoStore: recorrido.NewRedisStore(rdb),
+	}
 }
 
 func (uc *ProcessTruckArrivalUseCase) Execute(ctx context.Context, truckID int32, pointID string) error {
+	pausado, err := uc.recorridoStore.IsPausedByCamion(ctx, truckID)
+	if err == nil && pausado {
+		return nil
+	}
 	key := fmt.Sprintf("truck:%d", truckID)
 	nowStr := time.Now().Format(time.RFC3339)
 
@@ -30,7 +41,7 @@ func (uc *ProcessTruckArrivalUseCase) Execute(ctx context.Context, truckID int32
 	pipe.HSet(ctx, key, "state", "ARRIVAL")
 	pipe.HSet(ctx, key, "last_visited_point", pointID)
 	pipe.HSet(ctx, key, "updated_at", nowStr)
-	_, err := pipe.Exec(ctx)
+	_, err = pipe.Exec(ctx)
 	if err != nil {
 		return err
 	}

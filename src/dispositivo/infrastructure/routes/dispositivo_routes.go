@@ -9,8 +9,9 @@ import (
 func RegisterDispositivoRoutes(r *gin.Engine, ctrl *controller.DispositivoController) {
 	group := r.Group("/api/dispositivos")
 	{
-		// Ruta para que el conductor solicite vinculación de dispositivo
+		// Rutas del conductor autenticado
 		group.POST("/solicitar", core.JWTAuthMiddleware(), core.RequireRole(core.CONDUCTOR), ctrl.Solicitar)
+		group.GET("/mi-estado", core.JWTAuthMiddleware(), core.RequireRole(core.CONDUCTOR), ctrl.MiEstado)
 
 		// Rutas protegidas para supervisor, admin o coordinador
 		group.Use(core.JWTAuthMiddleware(), core.RequireRole(core.SUPERVISOR, core.ADMIN, core.COORDINADOR))
