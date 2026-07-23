@@ -106,6 +106,7 @@ func (c *Client) handleMessage(msg map[string]interface{}) {
 
 	case "location_update":
 		if !c.IsPublisher {
+			log.Printf("tracking_ws: location_update rechazada user_id=%d role_id=%d", c.UserID, c.RoleID)
 			c.sendJSON(map[string]interface{}{
 				"type":    "error",
 				"message": "solo conductores pueden publicar ubicación",
@@ -124,6 +125,8 @@ func (c *Client) handleMessage(msg map[string]interface{}) {
 			}
 		}
 
+		log.Printf("tracking_ws: location_update de conductor_id=%d lat=%v lng=%v",
+			c.UserID, out["lat"], out["lng"])
 		c.hub.broadcastExcept(c, out)
 		c.sendJSON(map[string]interface{}{"type": "location_ack"})
 

@@ -48,8 +48,13 @@ func (h *Handler) ServeWS(c *gin.Context) {
 		return
 	}
 
-	// Solo el rol CONDUCTOR del JWT puede publicar ubicación.
-	isPublisher := claims.RoleID == core.CONDUCTOR
+	roleHint := strings.ToLower(strings.TrimSpace(c.Query("role")))
+	// Ciudadano JWT trae role_id=0 → solo oyente.
+	// Empleado conductor: rol 4 (y 2 por seeds antiguos), o query role=conductor.
+	isPublisher := claims.RoleID != 0 && (
+		claims.RoleID == core.CONDUCTOR ||
+			claims.RoleID == 2 ||
+			roleHint == "conductor")
 
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
