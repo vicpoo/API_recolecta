@@ -16,7 +16,8 @@ func NewRecorridoRoutes(engine *gin.Engine, ctrl *controllers.RecorridoControlle
 }
 
 func (r *RecorridoRoutes) Run() {
-	group := r.engine.Group("/recorrido")
+	// Prefijo /api para coincidir con API_URL del móvil (.../api + /recorrido/...).
+	group := r.engine.Group("/api/recorrido")
 	{
 		conductor := group.Group("")
 		conductor.Use(

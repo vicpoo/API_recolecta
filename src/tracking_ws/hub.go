@@ -9,11 +9,12 @@ import (
 
 // Hub mantiene clientes WS y retransmite ubicaciones del conductor a oyentes.
 type Hub struct {
-	mu         sync.RWMutex
-	clients    map[*Client]bool
-	register   chan *Client
-	unregister chan *Client
-	broadcast  chan []byte
+	mu           sync.RWMutex
+	clients      map[*Client]bool
+	register     chan *Client
+	unregister   chan *Client
+	broadcast    chan []byte
+	lastLocation []byte // última location_update para oyentes que llegan tarde
 }
 
 func NewHub() *Hub {
@@ -31,9 +32,20 @@ func (h *Hub) Run() {
 		case client := <-h.register:
 			h.mu.Lock()
 			h.clients[client] = true
+			last := h.lastLocation
 			h.mu.Unlock()
+
 			log.Printf("tracking_ws: cliente conectado user_id=%d role_id=%d publisher=%v",
 				client.UserID, client.RoleID, client.IsPublisher)
+
+			// Ciudadano que entra después del conductor: recibe última posición conocida.
+			if !client.IsPublisher && len(last) > 0 {
+				select {
+				case client.send <- last:
+					log.Printf("tracking_ws: enviada última ubicación a user_id=%d", client.UserID)
+				default:
+				}
+			}
 
 		case client := <-h.unregister:
 			h.mu.Lock()
@@ -43,6 +55,9 @@ func (h *Hub) Run() {
 			}
 			wasPublisher := client.IsPublisher
 			userID := client.UserID
+			if wasPublisher {
+				h.lastLocation = nil
+			}
 			h.mu.Unlock()
 
 			if wasPublisher {
@@ -60,7 +75,6 @@ func (h *Hub) Run() {
 				select {
 				case client.send <- message:
 				default:
-					// Cliente lento: se descarta el mensaje para no bloquear el hub.
 				}
 			}
 			h.mu.RUnlock()
@@ -88,15 +102,24 @@ func (h *Hub) broadcastExcept(sender *Client, payload map[string]interface{}) {
 		return
 	}
 
+	h.mu.Lock()
+	if typ, _ := payload["type"].(string); typ == "location_update" {
+		h.lastLocation = data
+	}
+	h.mu.Unlock()
+
 	h.mu.RLock()
 	defer h.mu.RUnlock()
+	sent := 0
 	for client := range h.clients {
 		if client == sender {
 			continue
 		}
 		select {
 		case client.send <- data:
+			sent++
 		default:
 		}
 	}
+	log.Printf("tracking_ws: location_update reenviada a %d oyentes", sent)
 }
