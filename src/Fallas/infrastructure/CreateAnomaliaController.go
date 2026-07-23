@@ -19,6 +19,9 @@ func NewCreateAnomaliaController(createUseCase *application.CreateAnomaliaUseCas
 }
 
 // @Summary      Crear anomalía
+// @Description  Abierto a cualquier usuario autenticado (ciudadano, conductor
+// @Description  o staff) -- solo el resto del CRUD de anomalias queda
+// @Description  restringido a ADMIN/SUPERVISOR/COORDINADOR.
 // @Tags         Anomalia
 // @Produce      json
 // @Param        body body entities.CreateAnomaliaRequest true "Body"

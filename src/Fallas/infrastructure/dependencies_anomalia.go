@@ -6,7 +6,11 @@ import (
 	alertaDomain "github.com/vicpoo/API_recolecta/src/alerta_usuario/domain"
 )
 
-func InitAnomaliaDependencies(alertaRepo alertaDomain.AlertaUsuarioRepository) (
+// InitAnomaliaDependencies arma el dominio Fallas/Anomalia. modeloReportesURL
+// y clasificadorURL vienen de config.Config (env MODELO_REPORTES_URL /
+// CLASIFICADOR_URL) y alimentan al cliente HTTP del pipeline de
+// validacion/clasificacion de reportes.
+func InitAnomaliaDependencies(alertaRepo alertaDomain.AlertaUsuarioRepository, modeloReportesURL, clasificadorURL string) (
 	*CreateAnomaliaController,
 	*GetAnomaliaByIdController,
 	*UpdateAnomaliaController,
@@ -24,8 +28,12 @@ func InitAnomaliaDependencies(alertaRepo alertaDomain.AlertaUsuarioRepository) (
 	// Repositorio PostgreSQL
 	repo := NewPostgresAnomaliaRepository()
 
+	// Cliente del pipeline modelo_reportes -> clasificador_reportes
+	pipelineClient := NewHTTPPipelineClient(modeloReportesURL, clasificadorURL)
+	pipelineUseCase := application.NewProcesarPipelineAnomaliaUseCase(repo, pipelineClient)
+
 	// Casos de uso
-	createUseCase := application.NewCreateAnomaliaUseCase(repo, alertaRepo)
+	createUseCase := application.NewCreateAnomaliaUseCase(repo, alertaRepo, pipelineUseCase)
 	getByIDUseCase := application.NewGetAnomaliaByIdUseCase(repo)
 	updateUseCase := application.NewUpdateAnomaliaUseCase(repo)
 	deleteUseCase := application.NewDeleteAnomaliaUseCase(repo)

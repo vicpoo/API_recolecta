@@ -164,6 +164,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Abierto a cualquier usuario autenticado (ciudadano, conductor\no staff) -- solo el resto del CRUD de anomalias queda\nrestringido a ADMIN/SUPERVISOR/COORDINADOR.",
                 "produces": [
                     "application/json"
                 ],
@@ -6142,6 +6143,9 @@ const docTemplate = `{
         "entities.Anomalia": {
             "type": "object",
             "properties": {
+                "accion_sugerida": {
+                    "type": "string"
+                },
                 "anomalia_id": {
                     "type": "integer"
                 },
@@ -6150,6 +6154,9 @@ const docTemplate = `{
                 },
                 "camion_id": {
                     "type": "integer"
+                },
+                "categoria_clasificada": {
+                    "type": "string"
                 },
                 "conductor_id": {
                     "type": "integer"
@@ -6166,13 +6173,26 @@ const docTemplate = `{
                 "estado": {
                     "type": "string"
                 },
+                "estado_pipeline": {
+                    "description": "Pipeline modelo_reportes -\u003e clasificador_reportes. Se llenan por\nActualizarPipeline en background, no al crear la anomalia (por eso\nEstadoPipeline arranca en \"pendiente\" via DEFAULT de la columna).",
+                    "type": "string"
+                },
                 "fecha_reporte": {
                     "type": "string"
                 },
                 "fecha_resolucion": {
                     "type": "string"
                 },
+                "inferencia_id": {
+                    "type": "integer"
+                },
                 "json_ruta": {
+                    "type": "string"
+                },
+                "nivel_riesgo": {
+                    "type": "string"
+                },
+                "pipeline_error": {
                     "type": "string"
                 },
                 "punto_id": {
@@ -6180,6 +6200,9 @@ const docTemplate = `{
                 },
                 "ruta_id": {
                     "type": "integer"
+                },
+                "subtipo_clasificado": {
+                    "type": "string"
                 },
                 "tipo_anomalia": {
                     "$ref": "#/definitions/entities.TipoAnomalia"
@@ -6367,6 +6390,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "descripcion",
+                "fecha_reporte",
                 "tipo_anomalia"
             ],
             "properties": {
@@ -6386,7 +6410,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "fecha_reporte": {
-                    "type": "string"
+                    "description": "Formato ISO 8601: YYYY-MM-DDTHH:MM:SSZ",
+                    "type": "string",
+                    "example": "2026-07-22T19:30:00Z"
                 },
                 "json_ruta": {
                     "type": "string"
@@ -6398,12 +6424,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "tipo_anomalia": {
-                    "description": "ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA | SEGUIMIENTO_FALLA_CRITICA",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/entities.TipoAnomalia"
-                        }
-                    ]
+                    "description": "Valores validos: ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA | SEGUIMIENTO_FALLA_CRITICA",
+                    "type": "string",
+                    "example": "REPORTE_CONDUCTOR"
                 }
             }
         },
@@ -7401,6 +7424,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "descripcion",
+                "fecha_reporte",
                 "tipo_anomalia"
             ],
             "properties": {
@@ -7423,7 +7447,8 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "fecha_reporte": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-07-22T19:30:00Z"
                 },
                 "fecha_resolucion": {
                     "type": "string"
@@ -7438,7 +7463,8 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "tipo_anomalia": {
-                    "$ref": "#/definitions/entities.TipoAnomalia"
+                    "type": "string",
+                    "example": "REPORTE_CONDUCTOR"
                 }
             }
         },
