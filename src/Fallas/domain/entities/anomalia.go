@@ -30,6 +30,17 @@ type Anomalia struct {
 	FechaResolucion      *time.Time   `json:"fecha_resolucion" gorm:"column:fecha_resolucion"`
 	CreatedAt            time.Time    `json:"created_at" gorm:"column:created_at"`
 	UpdatedAt            time.Time    `json:"updated_at" gorm:"column:updated_at"`
+
+	// Pipeline modelo_reportes -> clasificador_reportes. Se llenan por
+	// ActualizarPipeline en background, no al crear la anomalia (por eso
+	// EstadoPipeline arranca en "pendiente" via DEFAULT de la columna).
+	EstadoPipeline        string  `json:"estado_pipeline" gorm:"column:estado_pipeline"`
+	NivelRiesgo           *string `json:"nivel_riesgo" gorm:"column:nivel_riesgo"`
+	InferenciaID          *int32  `json:"inferencia_id" gorm:"column:inferencia_id"`
+	CategoriaClasificada  *string `json:"categoria_clasificada" gorm:"column:categoria_clasificada"`
+	SubtipoClasificado    *string `json:"subtipo_clasificado" gorm:"column:subtipo_clasificado"`
+	AccionSugerida        *string `json:"accion_sugerida" gorm:"column:accion_sugerida"`
+	PipelineError         *string `json:"pipeline_error" gorm:"column:pipeline_error"`
 }
 
 // Setters

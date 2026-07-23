@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -38,7 +39,14 @@ const anomaliaColumnas = `
 	fecha_reporte,
 	fecha_resolucion,
 	created_at,
-	updated_at
+	updated_at,
+	estado_pipeline,
+	nivel_riesgo,
+	inferencia_id,
+	categoria_clasificada,
+	subtipo_clasificado,
+	accion_sugerida,
+	pipeline_error
 `
 
 // scanner es satisfecho tanto por pgx.Row (QueryRow) como por pgx.Rows (Query + Next).
@@ -63,6 +71,13 @@ func scanAnomalia(s scanner, a *entities.Anomalia) error {
 		&a.FechaResolucion,
 		&a.CreatedAt,
 		&a.UpdatedAt,
+		&a.EstadoPipeline,
+		&a.NivelRiesgo,
+		&a.InferenciaID,
+		&a.CategoriaClasificada,
+		&a.SubtipoClasificado,
+		&a.AccionSugerida,
+		&a.PipelineError,
 	)
 }
 
@@ -280,6 +295,59 @@ func (pg *PostgresAnomaliaRepository) GetByRutaID(rutaID int32) ([]entities.Anom
 func (pg *PostgresAnomaliaRepository) GetByReferenciaID(referenciaID int32) ([]entities.Anomalia, error) {
 	query := `SELECT ` + anomaliaColumnas + ` FROM anomalia WHERE anomalia_referencia_id = $1 AND eliminado = false ORDER BY fecha_reporte DESC`
 	return pg.collect(context.Background(), query, referenciaID)
+}
+
+// ActualizarPipeline hace un UPDATE dirigido solo a las columnas del pipeline
+// modelo_reportes -> clasificador_reportes (ver migrations/2026-07-22_pipeline_reportes_anomalia.sql).
+// No pasa por scanAnomalia/entities.Anomalia a proposito: es un efecto
+// secundario del pipeline en background, separado del CRUD normal de
+// anomalias, para no arriesgar romper Save/Update/GetAll existentes.
+// Los punteros nil dejan la columna correspondiente sin tocar.
+func (pg *PostgresAnomaliaRepository) ActualizarPipeline(anomaliaID int32, estadoPipeline string, nivelRiesgo *string, inferenciaID *int32, categoria *string, subtipo *string, accion *string, pipelineError *string) error {
+	setClauses := []string{"estado_pipeline = $1", "updated_at = $2"}
+	args := []interface{}{estadoPipeline, time.Now()}
+	nextParam := 3
+
+	addField := func(column string, value interface{}) {
+		setClauses = append(setClauses, fmt.Sprintf("%s = $%d", column, nextParam))
+		args = append(args, value)
+		nextParam++
+	}
+
+	if nivelRiesgo != nil {
+		addField("nivel_riesgo", *nivelRiesgo)
+	}
+	if inferenciaID != nil {
+		addField("inferencia_id", *inferenciaID)
+	}
+	if categoria != nil {
+		addField("categoria_clasificada", *categoria)
+	}
+	if subtipo != nil {
+		addField("subtipo_clasificado", *subtipo)
+	}
+	if accion != nil {
+		addField("accion_sugerida", *accion)
+	}
+	if pipelineError != nil {
+		addField("pipeline_error", *pipelineError)
+	}
+
+	query := fmt.Sprintf("UPDATE anomalia SET %s WHERE anomalia_id = $%d", strings.Join(setClauses, ", "), nextParam)
+	args = append(args, anomaliaID)
+
+	ctx := context.Background()
+	cmdTag, err := pg.pool.Exec(ctx, query, args...)
+	if err != nil {
+		log.Println("Error al actualizar el pipeline de la anomalía:", err)
+		return err
+	}
+
+	if cmdTag.RowsAffected() == 0 {
+		return fmt.Errorf("anomalía con ID %d no encontrada", anomaliaID)
+	}
+
+	return nil
 }
 
 func (pg *PostgresAnomaliaRepository) GetByFechaRange(fechaInicio, fechaFin string) ([]entities.Anomalia, error) {

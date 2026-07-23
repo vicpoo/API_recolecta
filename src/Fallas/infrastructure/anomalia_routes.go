@@ -8,14 +8,18 @@ import (
 )
 
 type AnomaliaRouter struct {
-	engine     *gin.Engine
-	alertaRepo alertaDomain.AlertaUsuarioRepository
+	engine            *gin.Engine
+	alertaRepo        alertaDomain.AlertaUsuarioRepository
+	modeloReportesURL string
+	clasificadorURL   string
 }
 
-func NewAnomaliaRouter(engine *gin.Engine, alertaRepo alertaDomain.AlertaUsuarioRepository) *AnomaliaRouter {
+func NewAnomaliaRouter(engine *gin.Engine, alertaRepo alertaDomain.AlertaUsuarioRepository, modeloReportesURL, clasificadorURL string) *AnomaliaRouter {
 	return &AnomaliaRouter{
-		engine:     engine,
-		alertaRepo: alertaRepo,
+		engine:            engine,
+		alertaRepo:        alertaRepo,
+		modeloReportesURL: modeloReportesURL,
+		clasificadorURL:   clasificadorURL,
 	}
 }
 
@@ -24,14 +28,25 @@ func (router *AnomaliaRouter) Run() {
 	createController, getByIdController, updateController, deleteController,
 		getAllController, getByPuntoIDController, getByChoferIDController,
 		getByCamionIDController, getByRutaIDController, getByReferenciaIDController,
-		getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController := InitAnomaliaDependencies(router.alertaRepo)
+		getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController := InitAnomaliaDependencies(router.alertaRepo, router.modeloReportesURL, router.clasificadorURL)
 
-	// Grupo de rutas para anomalías con prefijo /api
+	// Crear anomalia: un solo endpoint, abierto a cualquier usuario
+	// autenticado. Los ciudadanos no tienen role_id en el esquema de roles
+	// de empleados (su JWT trae role_id: 0, ver login_ciudadano.go) y
+	// CONDUCTOR (4) tampoco es staff, asi que este POST va en su propio
+	// grupo con solo JWTAuthMiddleware (sin RequireRole) -- en Gin el
+	// middleware se aplica por grupo, por eso no puede ir junto al resto
+	// del CRUD de abajo, que si debe quedar restringido a staff.
+	crearGroup := router.engine.Group("/api/anomalias")
+	crearGroup.Use(core.JWTAuthMiddleware())
+	{
+		crearGroup.POST("/", createController.Run)
+	}
+
+	// Resto del CRUD: solo staff (ADMIN/SUPERVISOR/COORDINADOR)
 	anomaliaGroup := router.engine.Group("/api/anomalias")
 	anomaliaGroup.Use(core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN, core.SUPERVISOR, core.COORDINADOR))
 	{
-		// Rutas CRUD básicas
-		anomaliaGroup.POST("/", createController.Run)
 		anomaliaGroup.GET("/:id", getByIdController.Run)
 		anomaliaGroup.PUT("/:id", updateController.Run)
 		anomaliaGroup.DELETE("/:id", deleteController.Run)

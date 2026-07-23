@@ -24,4 +24,11 @@ type IAnomalia interface {
 	GetByRutaID(rutaID int32) ([]entities.Anomalia, error)
 	GetByReferenciaID(referenciaID int32) ([]entities.Anomalia, error)
 	GetByFechaRange(fechaInicio, fechaFin string) ([]entities.Anomalia, error)
+
+	// ActualizarPipeline persiste el resultado del pipeline
+	// modelo_reportes -> clasificador_reportes sobre una anomalia ya
+	// existente. Es una actualizacion dirigida (no pasa por Update/la
+	// entidad completa) para no interferir con el flujo CRUD normal.
+	// Los punteros nil dejan la columna correspondiente sin tocar.
+	ActualizarPipeline(anomaliaID int32, estadoPipeline string, nivelRiesgo *string, inferenciaID *int32, categoria *string, subtipo *string, accion *string, pipelineError *string) error
 }

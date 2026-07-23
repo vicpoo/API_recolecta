@@ -352,7 +352,15 @@ CREATE TABLE IF NOT EXISTS anomalia (
   fecha_reporte TIMESTAMP NOT NULL,
   fecha_resolucion TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  -- Pipeline modelo_reportes -> clasificador_reportes (ver migrations/2026-07-22_pipeline_reportes_anomalia.sql)
+  estado_pipeline VARCHAR(30) NOT NULL DEFAULT 'pendiente',
+  nivel_riesgo VARCHAR(20) DEFAULT NULL,
+  inferencia_id INTEGER DEFAULT NULL,
+  categoria_clasificada VARCHAR(50) DEFAULT NULL,
+  subtipo_clasificado VARCHAR(50) DEFAULT NULL,
+  accion_sugerida VARCHAR(50) DEFAULT NULL,
+  pipeline_error TEXT DEFAULT NULL
 );
 
 -- =====================

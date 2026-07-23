@@ -134,12 +134,16 @@ definitions:
     type: object
   entities.Anomalia:
     properties:
+      accion_sugerida:
+        type: string
       anomalia_id:
         type: integer
       anomalia_referencia_id:
         type: integer
       camion_id:
         type: integer
+      categoria_clasificada:
+        type: string
       conductor_id:
         type: integer
       created_at:
@@ -150,16 +154,30 @@ definitions:
         type: boolean
       estado:
         type: string
+      estado_pipeline:
+        description: |-
+          Pipeline modelo_reportes -> clasificador_reportes. Se llenan por
+          ActualizarPipeline en background, no al crear la anomalia (por eso
+          EstadoPipeline arranca en "pendiente" via DEFAULT de la columna).
+        type: string
       fecha_reporte:
         type: string
       fecha_resolucion:
         type: string
+      inferencia_id:
+        type: integer
       json_ruta:
+        type: string
+      nivel_riesgo:
+        type: string
+      pipeline_error:
         type: string
       punto_id:
         type: integer
       ruta_id:
         type: integer
+      subtipo_clasificado:
+        type: string
       tipo_anomalia:
         $ref: '#/definitions/entities.TipoAnomalia'
       updated_at:
@@ -291,6 +309,8 @@ definitions:
       estado:
         type: string
       fecha_reporte:
+        description: 'Formato ISO 8601: YYYY-MM-DDTHH:MM:SSZ'
+        example: "2026-07-22T19:30:00Z"
         type: string
       json_ruta:
         type: string
@@ -299,12 +319,13 @@ definitions:
       ruta_id:
         type: integer
       tipo_anomalia:
-        allOf:
-        - $ref: '#/definitions/entities.TipoAnomalia'
-        description: ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA
-          | SEGUIMIENTO_FALLA_CRITICA
+        description: 'Valores validos: ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR |
+          REPORTE_FALLA_CRITICA | SEGUIMIENTO_FALLA_CRITICA'
+        example: REPORTE_CONDUCTOR
+        type: string
     required:
     - descripcion
+    - fecha_reporte
     - tipo_anomalia
     type: object
   entities.CreateCamionRequest:
@@ -976,6 +997,7 @@ definitions:
       estado:
         type: string
       fecha_reporte:
+        example: "2026-07-22T19:30:00Z"
         type: string
       fecha_resolucion:
         type: string
@@ -986,9 +1008,11 @@ definitions:
       ruta_id:
         type: integer
       tipo_anomalia:
-        $ref: '#/definitions/entities.TipoAnomalia'
+        example: REPORTE_CONDUCTOR
+        type: string
     required:
     - descripcion
+    - fecha_reporte
     - tipo_anomalia
     type: object
   entities.UpdateCamionRequest:
@@ -1202,6 +1226,10 @@ paths:
       tags:
       - Anomalia
     post:
+      description: |-
+        Abierto a cualquier usuario autenticado (ciudadano, conductor
+        o staff) -- solo el resto del CRUD de anomalias queda
+        restringido a ADMIN/SUPERVISOR/COORDINADOR.
       parameters:
       - description: Body
         in: body
