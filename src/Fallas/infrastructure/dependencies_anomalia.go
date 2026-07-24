@@ -9,8 +9,11 @@ import (
 // InitAnomaliaDependencies arma el dominio Fallas/Anomalia. modeloReportesURL
 // y clasificadorURL vienen de config.Config (env MODELO_REPORTES_URL /
 // CLASIFICADOR_URL) y alimentan al cliente HTTP del pipeline de
-// validacion/clasificacion de reportes.
-func InitAnomaliaDependencies(alertaRepo alertaDomain.AlertaUsuarioRepository, modeloReportesURL, clasificadorURL string) (
+// validacion/clasificacion de reportes. anomaliaCreadaWebhookURL (env
+// ANOMALIA_CREADA_WEBHOOK_URL) alimenta al notifier del webhook externo que
+// se avisa cuando se crea una anomalia con coordenadas (ver
+// anomalia_creada_notifier.go).
+func InitAnomaliaDependencies(alertaRepo alertaDomain.AlertaUsuarioRepository, modeloReportesURL, clasificadorURL, anomaliaCreadaWebhookURL string) (
 	*CreateAnomaliaController,
 	*GetAnomaliaByIdController,
 	*UpdateAnomaliaController,
@@ -39,8 +42,14 @@ func InitAnomaliaDependencies(alertaRepo alertaDomain.AlertaUsuarioRepository, m
 	// arranca con `go worker.Run()` una sola vez al levantar el backend.
 	pipelineRetryWorker := NewPipelineRetryWorker(repo, pipelineUseCase)
 
+	// Notifier del webhook externo POST /anomalia_creada (hoy: algoritmo
+	// genetico de rutas). Ver anomalia_creada_notifier.go -- "mejor
+	// esfuerzo", sin retry, porque a diferencia del pipeline de arriba no es
+	// informacion que Recolecta necesite de vuelta.
+	creadaNotifier := NewHTTPAnomaliaCreadaNotifier(anomaliaCreadaWebhookURL)
+
 	// Casos de uso
-	createUseCase := application.NewCreateAnomaliaUseCase(repo, alertaRepo, pipelineUseCase)
+	createUseCase := application.NewCreateAnomaliaUseCase(repo, alertaRepo, pipelineUseCase, creadaNotifier)
 	getByIDUseCase := application.NewGetAnomaliaByIdUseCase(repo)
 	updateUseCase := application.NewUpdateAnomaliaUseCase(repo)
 	deleteUseCase := application.NewDeleteAnomaliaUseCase(repo)

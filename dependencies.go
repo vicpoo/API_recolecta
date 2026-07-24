@@ -521,7 +521,7 @@ func InitDependencies() {
 	// FALLAS Y MANTENIMIENTO
 	// ===============================
 
-	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine, alertaRepository, cfg.ModeloReportesURL, cfg.ClasificadorURL)
+	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine, alertaRepository, cfg.ModeloReportesURL, cfg.ClasificadorURL, cfg.AnomaliaCreadaWebhookURL)
 	anomaliaRoutes.Run()
 
 	// ===============================

@@ -16,10 +16,13 @@ type CreateAnomaliaUseCase struct {
 	// pipelineUseCase es opcional: si es nil (ej. tests que no lo inyectan),
 	// simplemente no se dispara el pipeline de validacion/clasificacion.
 	pipelineUseCase *ProcesarPipelineAnomaliaUseCase
+	// creadaNotifier es opcional (mismo criterio que pipelineUseCase): si es
+	// nil, simplemente no se notifica al webhook externo de anomalia_creada.
+	creadaNotifier repositories.AnomaliaCreadaNotifier
 }
 
-func NewCreateAnomaliaUseCase(repo repositories.IAnomalia, alertaRepo alertaDomain.AlertaUsuarioRepository, pipelineUseCase *ProcesarPipelineAnomaliaUseCase) *CreateAnomaliaUseCase {
-	return &CreateAnomaliaUseCase{repo: repo, alertaRepo: alertaRepo, pipelineUseCase: pipelineUseCase}
+func NewCreateAnomaliaUseCase(repo repositories.IAnomalia, alertaRepo alertaDomain.AlertaUsuarioRepository, pipelineUseCase *ProcesarPipelineAnomaliaUseCase, creadaNotifier repositories.AnomaliaCreadaNotifier) *CreateAnomaliaUseCase {
+	return &CreateAnomaliaUseCase{repo: repo, alertaRepo: alertaRepo, pipelineUseCase: pipelineUseCase, creadaNotifier: creadaNotifier}
 }
 
 // tiposConPipeline son los tipos de Anomalia que representan texto libre
@@ -78,6 +81,17 @@ func (uc *CreateAnomaliaUseCase) Run(anomalia *entities.Anomalia) (*entities.Ano
 		go uc.pipelineUseCase.Run(anomalia.AnomaliaID, anomalia.Descripcion, 1, &origen)
 	} else {
 		log.Println("pipeline reportes: NO se dispara para anomalia", anomalia.AnomaliaID, "tipo:", tipo, "(pipelineUseCase nil:", uc.pipelineUseCase == nil, ")")
+	}
+
+	// Notifica en background al webhook externo de anomalia_creada (hoy: el
+	// algoritmo genetico de rutas). Solo tiene sentido si hay coordenadas --
+	// sin lat/lon el otro sistema no puede hacer nada con el aviso. No
+	// bloquea la respuesta, igual que el pipeline de arriba.
+	if uc.creadaNotifier != nil && anomalia.Lat != nil && anomalia.Lon != nil {
+		log.Println("anomalia_creada webhook: disparando goroutine para anomalia", anomalia.AnomaliaID)
+		go uc.creadaNotifier.Notificar(anomalia.AnomaliaID, *anomalia.Lat, *anomalia.Lon, anomalia.Descripcion)
+	} else {
+		log.Println("anomalia_creada webhook: NO se notifica para anomalia", anomalia.AnomaliaID, "(creadaNotifier nil:", uc.creadaNotifier == nil, ", tiene coordenadas:", anomalia.Lat != nil && anomalia.Lon != nil, ")")
 	}
 
 	return anomalia, nil

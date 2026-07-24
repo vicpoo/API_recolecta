@@ -8,18 +8,20 @@ import (
 )
 
 type AnomaliaRouter struct {
-	engine            *gin.Engine
-	alertaRepo        alertaDomain.AlertaUsuarioRepository
-	modeloReportesURL string
-	clasificadorURL   string
+	engine                   *gin.Engine
+	alertaRepo               alertaDomain.AlertaUsuarioRepository
+	modeloReportesURL        string
+	clasificadorURL          string
+	anomaliaCreadaWebhookURL string
 }
 
-func NewAnomaliaRouter(engine *gin.Engine, alertaRepo alertaDomain.AlertaUsuarioRepository, modeloReportesURL, clasificadorURL string) *AnomaliaRouter {
+func NewAnomaliaRouter(engine *gin.Engine, alertaRepo alertaDomain.AlertaUsuarioRepository, modeloReportesURL, clasificadorURL, anomaliaCreadaWebhookURL string) *AnomaliaRouter {
 	return &AnomaliaRouter{
-		engine:            engine,
-		alertaRepo:        alertaRepo,
-		modeloReportesURL: modeloReportesURL,
-		clasificadorURL:   clasificadorURL,
+		engine:                   engine,
+		alertaRepo:               alertaRepo,
+		modeloReportesURL:        modeloReportesURL,
+		clasificadorURL:          clasificadorURL,
+		anomaliaCreadaWebhookURL: anomaliaCreadaWebhookURL,
 	}
 }
 
@@ -29,7 +31,7 @@ func (router *AnomaliaRouter) Run() {
 		getAllController, getByPuntoIDController, getByChoferIDController,
 		getByCamionIDController, getByRutaIDController, getByReferenciaIDController,
 		getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController,
-		getMisAnomaliasController, pipelineRetryWorker := InitAnomaliaDependencies(router.alertaRepo, router.modeloReportesURL, router.clasificadorURL)
+		getMisAnomaliasController, pipelineRetryWorker := InitAnomaliaDependencies(router.alertaRepo, router.modeloReportesURL, router.clasificadorURL, router.anomaliaCreadaWebhookURL)
 
 	// Red de seguridad del pipeline modelo_reportes -> clasificador_reportes:
 	// corre durante toda la vida del proceso, igual que tracking_ws.Hub mas
