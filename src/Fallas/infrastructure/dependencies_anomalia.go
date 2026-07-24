@@ -24,6 +24,8 @@ func InitAnomaliaDependencies(alertaRepo alertaDomain.AlertaUsuarioRepository, m
 	*GetAnomaliasByEstadoController,
 	*GetAnomaliasByTipoAnomaliaController,
 	*GetAnomaliasByFechaRangeController,
+	*GetMisAnomaliasController,
+	*PipelineRetryWorker,
 ) {
 	// Repositorio PostgreSQL
 	repo := NewPostgresAnomaliaRepository()
@@ -31,6 +33,11 @@ func InitAnomaliaDependencies(alertaRepo alertaDomain.AlertaUsuarioRepository, m
 	// Cliente del pipeline modelo_reportes -> clasificador_reportes
 	pipelineClient := NewHTTPPipelineClient(modeloReportesURL, clasificadorURL)
 	pipelineUseCase := application.NewProcesarPipelineAnomaliaUseCase(repo, pipelineClient)
+
+	// Red de seguridad del pipeline: reintenta pendientes/abandonadas/con
+	// error acotado (ver pipeline_retry_worker.go). anomalia_routes.go lo
+	// arranca con `go worker.Run()` una sola vez al levantar el backend.
+	pipelineRetryWorker := NewPipelineRetryWorker(repo, pipelineUseCase)
 
 	// Casos de uso
 	createUseCase := application.NewCreateAnomaliaUseCase(repo, alertaRepo, pipelineUseCase)
@@ -46,6 +53,7 @@ func InitAnomaliaDependencies(alertaRepo alertaDomain.AlertaUsuarioRepository, m
 	getByEstadoUseCase := application.NewGetAnomaliasByEstadoUseCase(repo)
 	getByTipoAnomaliaUseCase := application.NewGetAnomaliasByTipoAnomaliaUseCase(repo)
 	getByFechaRangeUseCase := application.NewGetAnomaliasByFechaRangeUseCase(repo)
+	getByCiudadanoIDUseCase := application.NewGetAnomaliasByCiudadanoIDUseCase(repo)
 
 	// Controladores
 	createController := NewCreateAnomaliaController(createUseCase)
@@ -61,8 +69,10 @@ func InitAnomaliaDependencies(alertaRepo alertaDomain.AlertaUsuarioRepository, m
 	getByEstadoController := NewGetAnomaliasByEstadoController(getByEstadoUseCase)
 	getByTipoAnomaliaController := NewGetAnomaliasByTipoAnomaliaController(getByTipoAnomaliaUseCase)
 	getByFechaRangeController := NewGetAnomaliasByFechaRangeController(getByFechaRangeUseCase)
+	getMisAnomaliasController := NewGetMisAnomaliasController(getByChoferIDUseCase, getByCiudadanoIDUseCase)
 
 	return createController, getByIDController, updateController, deleteController, getAllController,
 		getByPuntoIDController, getByChoferIDController, getByCamionIDController, getByRutaIDController,
-		getByReferenciaIDController, getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController
+		getByReferenciaIDController, getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController,
+		getMisAnomaliasController, pipelineRetryWorker
 }

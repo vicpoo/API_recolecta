@@ -4,8 +4,25 @@ package application
 import (
 	"context"
 	"log"
+	"time"
 
 	repositories "github.com/vicpoo/API_recolecta/src/Fallas/domain"
+)
+
+const (
+	// MaxIntentosPipeline: cuantas veces se reintenta automaticamente una
+	// anomalia cuyo pipeline quedo en estado_pipeline = 'error' (modelo_
+	// reportes o clasificador_reportes caido/timeout) antes de dejarla
+	// quieta para revision manual (el pipeline_error queda visible para
+	// staff en /api/anomalias). Lo usan tanto ReclamarPipeline como
+	// PipelineRetryWorker.
+	MaxIntentosPipeline = 5
+
+	// PipelineProcesandoStaleDespues: si una anomalia lleva mas de este
+	// tiempo en estado_pipeline = 'procesando', se asume que el proceso que
+	// la reclamo se cayo/reinicio a la mitad (p. ej. Air en dev) y vuelve a
+	// ser reclamable.
+	PipelineProcesandoStaleDespues = 2 * time.Minute
 )
 
 // ProcesarPipelineAnomaliaUseCase orquesta la validacion/clasificacion de un
@@ -32,7 +49,24 @@ func NewProcesarPipelineAnomaliaUseCase(repo repositories.IAnomalia, pipeline re
 // Run no devuelve error al caller: como corre en background despues de que
 // el reporte ya fue aceptado y persistido, el unico lugar donde puede dejar
 // constancia de como termino es en la propia fila (estado_pipeline).
+//
+// Antes de llamar a los microservicios, reclama la fila atomicamente
+// (ReclamarPipeline). Esto es lo que hace seguro llamar a Run() desde dos
+// disparadores distintos para la misma anomalia -- el goroutine del alta
+// (camino rapido) y PipelineRetryWorker (red de seguridad) -- sin riesgo de
+// procesarla dos veces: el que pierda la carrera simplemente no hace nada.
 func (uc *ProcesarPipelineAnomaliaUseCase) Run(anomaliaID int32, descripcion string, tenantID int, origen *string) {
+	reclamada, err := uc.repo.ReclamarPipeline(anomaliaID, MaxIntentosPipeline, PipelineProcesandoStaleDespues)
+	if err != nil {
+		log.Println("pipeline reportes: error al reclamar anomalia", anomaliaID, ":", err)
+		return
+	}
+	if !reclamada {
+		log.Println("pipeline reportes: anomalia", anomaliaID, "ya fue procesada o esta en curso, se omite")
+		return
+	}
+
+	log.Println("pipeline reportes: iniciando para anomalia", anomaliaID)
 	ctx := context.Background()
 
 	inferencia, err := uc.pipeline.InferirRiesgo(ctx, descripcion, tenantID, nil)
@@ -41,6 +75,7 @@ func (uc *ProcesarPipelineAnomaliaUseCase) Run(anomaliaID int32, descripcion str
 		uc.marcarError(anomaliaID, "modelo_reportes no disponible: "+err.Error())
 		return
 	}
+	log.Println("pipeline reportes: modelo_reportes respondio para anomalia", anomaliaID, "-> nivel_riesgo_final:", inferencia.NivelRiesgoFinal, "inferencia_id:", inferencia.ID)
 
 	nivelRiesgo := inferencia.NivelRiesgoFinal
 	inferenciaID := int32(inferencia.ID)
@@ -50,6 +85,8 @@ func (uc *ProcesarPipelineAnomaliaUseCase) Run(anomaliaID int32, descripcion str
 		// sentido gastar el clasificador en el. Se marca y se corta aqui.
 		if err := uc.repo.ActualizarPipeline(anomaliaID, "rechazado", &nivelRiesgo, &inferenciaID, nil, nil, nil, nil); err != nil {
 			log.Println("pipeline reportes: no se pudo guardar el rechazo de la anomalia", anomaliaID, ":", err)
+		} else {
+			log.Println("pipeline reportes: anomalia", anomaliaID, "marcada como rechazado")
 		}
 		return
 	}
@@ -60,6 +97,7 @@ func (uc *ProcesarPipelineAnomaliaUseCase) Run(anomaliaID int32, descripcion str
 		uc.marcarError(anomaliaID, "clasificador_reportes no disponible: "+err.Error())
 		return
 	}
+	log.Println("pipeline reportes: clasificador_reportes respondio para anomalia", anomaliaID, "-> categoria:", clasificacion.Categoria, "accion:", clasificacion.Accion)
 
 	if err := uc.repo.ActualizarPipeline(
 		anomaliaID,
@@ -72,6 +110,8 @@ func (uc *ProcesarPipelineAnomaliaUseCase) Run(anomaliaID int32, descripcion str
 		nil,
 	); err != nil {
 		log.Println("pipeline reportes: no se pudo guardar la clasificacion de la anomalia", anomaliaID, ":", err)
+	} else {
+		log.Println("pipeline reportes: anomalia", anomaliaID, "marcada como clasificado correctamente")
 	}
 
 	// TODO(algoritmo genetico de rutas): cuando exista ese componente, aqui

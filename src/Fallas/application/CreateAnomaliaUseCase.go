@@ -2,6 +2,7 @@
 package application
 
 import (
+	"log"
 	"time"
 
 	repositories "github.com/vicpoo/API_recolecta/src/Fallas/domain"
@@ -70,10 +71,13 @@ func (uc *CreateAnomaliaUseCase) Run(anomalia *entities.Anomalia) (*entities.Ano
 		if anomalia.ConductorID != nil {
 			origen = "conductor"
 		}
+		log.Println("pipeline reportes: disparando goroutine para anomalia", anomalia.AnomaliaID, "tipo:", tipo, "origen:", origen)
 		// TenantID: por ahora la entidad Anomalia no lo expone (no hay
 		// multi-tenant real todavia en este dominio); se usa el default 1
 		// que ya usa la columna tenant_id en BD.
 		go uc.pipelineUseCase.Run(anomalia.AnomaliaID, anomalia.Descripcion, 1, &origen)
+	} else {
+		log.Println("pipeline reportes: NO se dispara para anomalia", anomalia.AnomaliaID, "tipo:", tipo, "(pipelineUseCase nil:", uc.pipelineUseCase == nil, ")")
 	}
 
 	return anomalia, nil
