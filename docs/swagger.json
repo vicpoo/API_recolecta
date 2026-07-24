@@ -282,6 +282,37 @@
                 }
             }
         },
+        "/api/anomalias/mis-reportes": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve los reportes del usuario autenticado -- ciudadano o\nconductor, segun el role_id del JWT. No aplica a staff.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Anomalia"
+                ],
+                "summary": "Mis anomalías (ciudadano o conductor)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.AnomaliaListResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/anomalias/por-fecha": {
             "get": {
                 "security": [
@@ -522,6 +553,7 @@
                         "BearerAuth": []
                     }
                 ],
+                "description": "Staff puede eliminar cualquier anomalia. Un conductor o\nciudadano solo puede eliminar un reporte propio\n(conductor_id/ciudadano_id == su user_id, segun corresponda).",
                 "produces": [
                     "application/json"
                 ],
@@ -6151,6 +6183,10 @@
                 "categoria_clasificada": {
                     "type": "string"
                 },
+                "ciudadano_id": {
+                    "description": "CiudadanoID: quien reporto, cuando fue un ciudadano (nunca junto con\nConductorID -- ver CreateAnomaliaController.go, que deriva cual de los\ndos llenar segun el role_id del JWT, no segun lo que mande el cliente).",
+                    "type": "integer"
+                },
                 "conductor_id": {
                     "type": "integer"
                 },
@@ -6182,11 +6218,22 @@
                 "json_ruta": {
                     "type": "string"
                 },
+                "lat": {
+                    "description": "Lat/Lon: coordenadas GPS de donde ocurrio la anomalia (no necesariamente\ncoinciden con un punto_recoleccion existente -- un \"calle bloqueada\"\npuede pasar en cualquier punto de una ruta). Nullable: no todo cliente\npuede capturar ubicacion todavia. Mismo nombre/tipo que\nRutas/domain/entities/PuntoRecoleccion.go (Lat/Lon float64) para\nmantener la convencion, pero como puntero porque aqui es opcional.\nInsumo para el algoritmo genetico de rutas (AG): necesita saber donde\nesta el bloqueo/incidente para decidir que arista del grafo modificar.",
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
+                },
                 "nivel_riesgo": {
                     "type": "string"
                 },
                 "pipeline_error": {
                     "type": "string"
+                },
+                "pipeline_intentos": {
+                    "description": "PipelineIntentos cuenta cuantas veces se corrio/reclamo el pipeline\nsobre esta fila. Lo usa PipelineRetryWorker para acotar los reintentos\nautomaticos de un estado_pipeline = 'error'.",
+                    "type": "integer"
                 },
                 "punto_id": {
                     "type": "integer"
@@ -6393,7 +6440,11 @@
                 "camion_id": {
                     "type": "integer"
                 },
+                "ciudadano_id": {
+                    "type": "integer"
+                },
                 "conductor_id": {
+                    "description": "ConductorID/CiudadanoID: solo staff puede fijarlos libremente aqui. Si\nquien crea es ciudadano o conductor, el backend ignora estos dos\ncampos y deriva el que corresponda del JWT (ver CreateAnomaliaController.go).",
                     "type": "integer"
                 },
                 "descripcion": {
@@ -6409,6 +6460,13 @@
                 },
                 "json_ruta": {
                     "type": "string"
+                },
+                "lat": {
+                    "description": "Coordenadas GPS de donde ocurrio la anomalia. Opcionales, insumo futuro\ndel algoritmo genetico de rutas.",
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
                 },
                 "punto_id": {
                     "type": "integer"
@@ -7427,6 +7485,9 @@
                 "camion_id": {
                     "type": "integer"
                 },
+                "ciudadano_id": {
+                    "type": "integer"
+                },
                 "conductor_id": {
                     "type": "integer"
                 },
@@ -7448,6 +7509,12 @@
                 },
                 "json_ruta": {
                     "type": "string"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
                 },
                 "punto_id": {
                     "type": "integer"

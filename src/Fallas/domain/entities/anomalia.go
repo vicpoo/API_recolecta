@@ -19,11 +19,25 @@ type Anomalia struct {
 	TipoAnomalia         TipoAnomalia `json:"tipo_anomalia" gorm:"column:tipo_anomalia;not null"`
 	PuntoID              *int32       `json:"punto_id" gorm:"column:punto_id"`
 	ConductorID          *int32       `json:"conductor_id" gorm:"column:conductor_id"`
+	// CiudadanoID: quien reporto, cuando fue un ciudadano (nunca junto con
+	// ConductorID -- ver CreateAnomaliaController.go, que deriva cual de los
+	// dos llenar segun el role_id del JWT, no segun lo que mande el cliente).
+	CiudadanoID          *int32       `json:"ciudadano_id" gorm:"column:ciudadano_id"`
 	CamionID             *int32       `json:"camion_id" gorm:"column:camion_id"`
 	RutaID               *int32       `json:"ruta_id" gorm:"column:ruta_id"`
 	AnomaliaReferenciaID *int32       `json:"anomalia_referencia_id" gorm:"column:anomalia_referencia_id"`
 	Descripcion          string       `json:"descripcion" gorm:"column:descripcion;type:text;not null"`
 	JsonRuta             string       `json:"json_ruta" gorm:"column:json_ruta;type:text"`
+	// Lat/Lon: coordenadas GPS de donde ocurrio la anomalia (no necesariamente
+	// coinciden con un punto_recoleccion existente -- un "calle bloqueada"
+	// puede pasar en cualquier punto de una ruta). Nullable: no todo cliente
+	// puede capturar ubicacion todavia. Mismo nombre/tipo que
+	// Rutas/domain/entities/PuntoRecoleccion.go (Lat/Lon float64) para
+	// mantener la convencion, pero como puntero porque aqui es opcional.
+	// Insumo para el algoritmo genetico de rutas (AG): necesita saber donde
+	// esta el bloqueo/incidente para decidir que arista del grafo modificar.
+	Lat                  *float64 `json:"lat" gorm:"column:lat"`
+	Lon                  *float64 `json:"lon" gorm:"column:lon"`
 	Estado               string       `json:"estado" gorm:"column:estado;type:varchar(30)"`
 	Eliminado            bool         `json:"eliminado" gorm:"column:eliminado;default:false"`
 	FechaReporte         time.Time    `json:"fecha_reporte" gorm:"column:fecha_reporte;not null"`
@@ -41,6 +55,10 @@ type Anomalia struct {
 	SubtipoClasificado    *string `json:"subtipo_clasificado" gorm:"column:subtipo_clasificado"`
 	AccionSugerida        *string `json:"accion_sugerida" gorm:"column:accion_sugerida"`
 	PipelineError         *string `json:"pipeline_error" gorm:"column:pipeline_error"`
+	// PipelineIntentos cuenta cuantas veces se corrio/reclamo el pipeline
+	// sobre esta fila. Lo usa PipelineRetryWorker para acotar los reintentos
+	// automaticos de un estado_pipeline = 'error'.
+	PipelineIntentos int32 `json:"pipeline_intentos" gorm:"column:pipeline_intentos;default:0"`
 }
 
 // Setters
@@ -58,6 +76,10 @@ func (a *Anomalia) SetPuntoID(puntoID *int32) {
 
 func (a *Anomalia) SetConductorID(conductorID *int32) {
 	a.ConductorID = conductorID
+}
+
+func (a *Anomalia) SetCiudadanoID(ciudadanoID *int32) {
+	a.CiudadanoID = ciudadanoID
 }
 
 func (a *Anomalia) SetCamionID(camionID *int32) {
@@ -117,6 +139,10 @@ func (a *Anomalia) GetConductorID() *int32 {
 	return a.ConductorID
 }
 
+func (a *Anomalia) GetCiudadanoID() *int32 {
+	return a.CiudadanoID
+}
+
 func (a *Anomalia) GetCamionID() *int32 {
 	return a.CamionID
 }
@@ -162,7 +188,7 @@ func (a *Anomalia) GetUpdatedAt() time.Time {
 }
 
 // NewAnomalia crea una anomalía lista para persistir, fijando timestamps.
-func NewAnomalia(tipoAnomalia TipoAnomalia, puntoID, conductorID, camionID, rutaID, anomaliaReferenciaID *int32, descripcion, jsonRuta, estado string, fechaReporte time.Time) *Anomalia {
+func NewAnomalia(tipoAnomalia TipoAnomalia, puntoID, conductorID, ciudadanoID, camionID, rutaID, anomaliaReferenciaID *int32, descripcion, jsonRuta, estado string, fechaReporte time.Time, lat, lon *float64) *Anomalia {
 	if fechaReporte.IsZero() {
 		fechaReporte = time.Now()
 	}
@@ -171,11 +197,14 @@ func NewAnomalia(tipoAnomalia TipoAnomalia, puntoID, conductorID, camionID, ruta
 		TipoAnomalia:         tipoAnomalia,
 		PuntoID:              puntoID,
 		ConductorID:          conductorID,
+		CiudadanoID:          ciudadanoID,
 		CamionID:             camionID,
 		RutaID:               rutaID,
 		AnomaliaReferenciaID: anomaliaReferenciaID,
 		Descripcion:          descripcion,
 		JsonRuta:             jsonRuta,
+		Lat:                  lat,
+		Lon:                  lon,
 		Estado:               estado,
 		Eliminado:            false,
 		FechaReporte:         fechaReporte,
@@ -185,17 +214,20 @@ func NewAnomalia(tipoAnomalia TipoAnomalia, puntoID, conductorID, camionID, ruta
 }
 
 // NewAnomaliaCompleta reconstruye una anomalía completa (actualización o consulta).
-func NewAnomaliaCompleta(anomaliaID int32, tipoAnomalia TipoAnomalia, puntoID, conductorID, camionID, rutaID, anomaliaReferenciaID *int32, descripcion, jsonRuta, estado string, eliminado bool, fechaReporte time.Time, fechaResolucion *time.Time, createdAt, updatedAt time.Time) *Anomalia {
+func NewAnomaliaCompleta(anomaliaID int32, tipoAnomalia TipoAnomalia, puntoID, conductorID, ciudadanoID, camionID, rutaID, anomaliaReferenciaID *int32, descripcion, jsonRuta, estado string, eliminado bool, fechaReporte time.Time, fechaResolucion *time.Time, createdAt, updatedAt time.Time, lat, lon *float64) *Anomalia {
 	return &Anomalia{
 		AnomaliaID:           anomaliaID,
 		TipoAnomalia:         tipoAnomalia,
 		PuntoID:              puntoID,
 		ConductorID:          conductorID,
+		CiudadanoID:          ciudadanoID,
 		CamionID:             camionID,
 		RutaID:               rutaID,
 		AnomaliaReferenciaID: anomaliaReferenciaID,
 		Descripcion:          descripcion,
 		JsonRuta:             jsonRuta,
+		Lat:                  lat,
+		Lon:                  lon,
 		Estado:               estado,
 		Eliminado:            eliminado,
 		FechaReporte:         fechaReporte,

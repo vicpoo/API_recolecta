@@ -144,6 +144,12 @@ definitions:
         type: integer
       categoria_clasificada:
         type: string
+      ciudadano_id:
+        description: |-
+          CiudadanoID: quien reporto, cuando fue un ciudadano (nunca junto con
+          ConductorID -- ver CreateAnomaliaController.go, que deriva cual de los
+          dos llenar segun el role_id del JWT, no segun lo que mande el cliente).
+        type: integer
       conductor_id:
         type: integer
       created_at:
@@ -168,10 +174,29 @@ definitions:
         type: integer
       json_ruta:
         type: string
+      lat:
+        description: |-
+          Lat/Lon: coordenadas GPS de donde ocurrio la anomalia (no necesariamente
+          coinciden con un punto_recoleccion existente -- un "calle bloqueada"
+          puede pasar en cualquier punto de una ruta). Nullable: no todo cliente
+          puede capturar ubicacion todavia. Mismo nombre/tipo que
+          Rutas/domain/entities/PuntoRecoleccion.go (Lat/Lon float64) para
+          mantener la convencion, pero como puntero porque aqui es opcional.
+          Insumo para el algoritmo genetico de rutas (AG): necesita saber donde
+          esta el bloqueo/incidente para decidir que arista del grafo modificar.
+        type: number
+      lon:
+        type: number
       nivel_riesgo:
         type: string
       pipeline_error:
         type: string
+      pipeline_intentos:
+        description: |-
+          PipelineIntentos cuenta cuantas veces se corrio/reclamo el pipeline
+          sobre esta fila. Lo usa PipelineRetryWorker para acotar los reintentos
+          automaticos de un estado_pipeline = 'error'.
+        type: integer
       punto_id:
         type: integer
       ruta_id:
@@ -302,7 +327,13 @@ definitions:
         type: integer
       camion_id:
         type: integer
+      ciudadano_id:
+        type: integer
       conductor_id:
+        description: |-
+          ConductorID/CiudadanoID: solo staff puede fijarlos libremente aqui. Si
+          quien crea es ciudadano o conductor, el backend ignora estos dos
+          campos y deriva el que corresponda del JWT (ver CreateAnomaliaController.go).
         type: integer
       descripcion:
         type: string
@@ -314,6 +345,13 @@ definitions:
         type: string
       json_ruta:
         type: string
+      lat:
+        description: |-
+          Coordenadas GPS de donde ocurrio la anomalia. Opcionales, insumo futuro
+          del algoritmo genetico de rutas.
+        type: number
+      lon:
+        type: number
       punto_id:
         type: integer
       ruta_id:
@@ -988,6 +1026,8 @@ definitions:
         type: integer
       camion_id:
         type: integer
+      ciudadano_id:
+        type: integer
       conductor_id:
         type: integer
       descripcion:
@@ -1003,6 +1043,10 @@ definitions:
         type: string
       json_ruta:
         type: string
+      lat:
+        type: number
+      lon:
+        type: number
       punto_id:
         type: integer
       ruta_id:
@@ -1255,6 +1299,10 @@ paths:
       - Anomalia
   /api/anomalias/{id}:
     delete:
+      description: |-
+        Staff puede eliminar cualquier anomalia. Un conductor o
+        ciudadano solo puede eliminar un reporte propio
+        (conductor_id/ciudadano_id == su user_id, segun corresponda).
       parameters:
       - description: ID
         in: path
@@ -1381,6 +1429,27 @@ paths:
       security:
       - BearerAuth: []
       summary: Anomalías por estado
+      tags:
+      - Anomalia
+  /api/anomalias/mis-reportes:
+    get:
+      description: |-
+        Devuelve los reportes del usuario autenticado -- ciudadano o
+        conductor, segun el role_id del JWT. No aplica a staff.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Mis anomalías (ciudadano o conductor)
       tags:
       - Anomalia
   /api/anomalias/por-fecha:

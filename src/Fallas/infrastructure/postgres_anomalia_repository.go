@@ -46,7 +46,11 @@ const anomaliaColumnas = `
 	categoria_clasificada,
 	subtipo_clasificado,
 	accion_sugerida,
-	pipeline_error
+	pipeline_error,
+	pipeline_intentos,
+	lat,
+	lon,
+	ciudadano_id
 `
 
 // scanner es satisfecho tanto por pgx.Row (QueryRow) como por pgx.Rows (Query + Next).
@@ -78,6 +82,10 @@ func scanAnomalia(s scanner, a *entities.Anomalia) error {
 		&a.SubtipoClasificado,
 		&a.AccionSugerida,
 		&a.PipelineError,
+		&a.PipelineIntentos,
+		&a.Lat,
+		&a.Lon,
+		&a.CiudadanoID,
 	)
 }
 
@@ -122,9 +130,12 @@ func (pg *PostgresAnomaliaRepository) Save(anomalia *entities.Anomalia) error {
 			fecha_reporte,
 			fecha_resolucion,
 			created_at,
-			updated_at
+			updated_at,
+			lat,
+			lon,
+			ciudadano_id
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
 		RETURNING anomalia_id
 	`
 
@@ -148,6 +159,9 @@ func (pg *PostgresAnomaliaRepository) Save(anomalia *entities.Anomalia) error {
 		anomalia.FechaResolucion,
 		anomalia.CreatedAt,
 		anomalia.UpdatedAt,
+		anomalia.Lat,
+		anomalia.Lon,
+		anomalia.CiudadanoID,
 	).Scan(&id)
 
 	if err != nil {
@@ -175,8 +189,11 @@ func (pg *PostgresAnomaliaRepository) Update(anomalia *entities.Anomalia) error 
 			eliminado = $10,
 			fecha_reporte = $11,
 			fecha_resolucion = $12,
-			updated_at = $13
-		WHERE anomalia_id = $14
+			updated_at = $13,
+			lat = $14,
+			lon = $15,
+			ciudadano_id = $16
+		WHERE anomalia_id = $17
 	`
 
 	ctx := context.Background()
@@ -196,6 +213,9 @@ func (pg *PostgresAnomaliaRepository) Update(anomalia *entities.Anomalia) error 
 		anomalia.FechaReporte,
 		anomalia.FechaResolucion,
 		time.Now(),
+		anomalia.Lat,
+		anomalia.Lon,
+		anomalia.CiudadanoID,
 		anomalia.AnomaliaID,
 	)
 
@@ -280,6 +300,11 @@ func (pg *PostgresAnomaliaRepository) GetByConductorID(conductorID int32) ([]ent
 	return pg.collect(context.Background(), query, conductorID)
 }
 
+func (pg *PostgresAnomaliaRepository) GetByCiudadanoID(ciudadanoID int32) ([]entities.Anomalia, error) {
+	query := `SELECT ` + anomaliaColumnas + ` FROM anomalia WHERE ciudadano_id = $1 AND eliminado = false ORDER BY fecha_reporte DESC`
+	return pg.collect(context.Background(), query, ciudadanoID)
+}
+
 func (pg *PostgresAnomaliaRepository) GetByCamionID(camionID int32) ([]entities.Anomalia, error) {
 	query := `SELECT ` + anomaliaColumnas + ` FROM anomalia WHERE camion_id = $1 AND eliminado = false ORDER BY fecha_reporte DESC`
 	return pg.collect(context.Background(), query, camionID)
@@ -348,6 +373,59 @@ func (pg *PostgresAnomaliaRepository) ActualizarPipeline(anomaliaID int32, estad
 	}
 
 	return nil
+}
+
+// ReclamarPipeline es un UPDATE condicional: solo tiene efecto (RowsAffected
+// > 0) si la fila esta en un estado reclamable ahora mismo. Es la forma de
+// garantizar, sin necesidad de locks explicitos, que el goroutine disparado
+// al crear la anomalia y un tick del PipelineRetryWorker no procesen la
+// misma fila dos veces: el que llegue primero gana la carrera y flipea
+// estado_pipeline a 'procesando'; el otro ve 0 filas afectadas y se retira.
+func (pg *PostgresAnomaliaRepository) ReclamarPipeline(anomaliaID int32, maxIntentos int, procesandoStaleDespues time.Duration) (bool, error) {
+	query := `
+		UPDATE anomalia
+		SET estado_pipeline = 'procesando', pipeline_intentos = pipeline_intentos + 1, updated_at = $1
+		WHERE anomalia_id = $2
+		  AND (
+		    estado_pipeline = 'pendiente'
+		    OR (estado_pipeline = 'procesando' AND updated_at < $3)
+		    OR (estado_pipeline = 'error' AND pipeline_intentos < $4)
+		  )
+	`
+
+	ctx := context.Background()
+	ahora := time.Now()
+	staleAntes := ahora.Add(-procesandoStaleDespues)
+
+	cmdTag, err := pg.pool.Exec(ctx, query, ahora, anomaliaID, staleAntes, maxIntentos)
+	if err != nil {
+		log.Println("Error al reclamar el pipeline de la anomalía:", err)
+		return false, err
+	}
+
+	return cmdTag.RowsAffected() > 0, nil
+}
+
+// ListoParaPipeline lista candidatas para PipelineRetryWorker: mismos
+// criterios de "reclamable" que ReclamarPipeline, pero de solo lectura (el
+// worker reclama cada una individualmente antes de procesarla, para no
+// pisarse con el camino rapido).
+func (pg *PostgresAnomaliaRepository) ListoParaPipeline(maxIntentos int, procesandoStaleDespues time.Duration, limit int) ([]entities.Anomalia, error) {
+	query := `
+		SELECT ` + anomaliaColumnas + `
+		FROM anomalia
+		WHERE eliminado = false
+		  AND (
+		    estado_pipeline = 'pendiente'
+		    OR (estado_pipeline = 'procesando' AND updated_at < $1)
+		    OR (estado_pipeline = 'error' AND pipeline_intentos < $2)
+		  )
+		ORDER BY fecha_reporte ASC
+		LIMIT $3
+	`
+
+	staleAntes := time.Now().Add(-procesandoStaleDespues)
+	return pg.collect(context.Background(), query, staleAntes, maxIntentos, limit)
 }
 
 func (pg *PostgresAnomaliaRepository) GetByFechaRange(fechaInicio, fechaFin string) ([]entities.Anomalia, error) {

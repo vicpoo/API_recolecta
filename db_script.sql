@@ -360,7 +360,11 @@ CREATE TABLE IF NOT EXISTS anomalia (
   categoria_clasificada VARCHAR(50) DEFAULT NULL,
   subtipo_clasificado VARCHAR(50) DEFAULT NULL,
   accion_sugerida VARCHAR(50) DEFAULT NULL,
-  pipeline_error TEXT DEFAULT NULL
+  pipeline_error TEXT DEFAULT NULL,
+  pipeline_intentos INTEGER NOT NULL DEFAULT 0,
+  lat DOUBLE PRECISION DEFAULT NULL,
+  lon DOUBLE PRECISION DEFAULT NULL,
+  ciudadano_id INTEGER DEFAULT NULL
 );
 
 -- =====================

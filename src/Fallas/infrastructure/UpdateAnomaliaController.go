@@ -42,11 +42,14 @@ func (ctrl *UpdateAnomaliaController) Run(c *gin.Context) {
 		TipoAnomalia         string  `json:"tipo_anomalia" binding:"required"`
 		PuntoID              *int32  `json:"punto_id"`
 		ConductorID          *int32  `json:"conductor_id"`
+		CiudadanoID          *int32  `json:"ciudadano_id"`
 		CamionID             *int32  `json:"camion_id"`
 		RutaID               *int32  `json:"ruta_id"`
 		AnomaliaReferenciaID *int32  `json:"anomalia_referencia_id"`
 		Descripcion          string  `json:"descripcion" binding:"required"`
 		JsonRuta             string  `json:"json_ruta"`
+		Lat                  *float64 `json:"lat"`
+		Lon                  *float64 `json:"lon"`
 		Estado               string  `json:"estado" binding:"required"`
 		Eliminado            bool    `json:"eliminado"`
 		FechaReporte         string  `json:"fecha_reporte" binding:"required"`
@@ -96,11 +99,14 @@ func (ctrl *UpdateAnomaliaController) Run(c *gin.Context) {
 		TipoAnomalia:         tipoAnomalia,
 		PuntoID:              request.PuntoID,
 		ConductorID:          request.ConductorID,
+		CiudadanoID:          request.CiudadanoID,
 		CamionID:             request.CamionID,
 		RutaID:               request.RutaID,
 		AnomaliaReferenciaID: request.AnomaliaReferenciaID,
 		Descripcion:          request.Descripcion,
 		JsonRuta:             request.JsonRuta,
+		Lat:                  request.Lat,
+		Lon:                  request.Lon,
 		Estado:               request.Estado,
 		Eliminado:            request.Eliminado,
 		FechaReporte:         fechaReporte,
