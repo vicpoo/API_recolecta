@@ -9,4 +9,7 @@ type Ruta struct {
 	JsonRuta    string    `json:"json_ruta"`
 	Eliminado   bool      `json:"eliminado"`
 	CreatedAt   time.Time `json:"created_at"`
+	// ConductorID es el id_chofer con asignación activa (historial_asignacion_camion)
+	// del camión actualmente asignado a la ruta (ruta_camion). Solo lo llena GetActivas.
+	ConductorID *int32 `json:"conductor_id"`
 }
