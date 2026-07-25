@@ -40,12 +40,13 @@ func (ctr *GetRutaActivasController) Run(ctx *gin.Context) {
 		}
 
 		rutasResponse = append(rutasResponse, gin.H{
-			"ruta_id":     ruta.RutaID,
-			"nombre":      ruta.Nombre,
-			"descripcion": ruta.Descripcion,
-			"json_ruta":   jsonRuta,
-			"eliminado":   ruta.Eliminado,
-			"created_at":  ruta.CreatedAt,
+			"ruta_id":      ruta.RutaID,
+			"nombre":       ruta.Nombre,
+			"descripcion":  ruta.Descripcion,
+			"json_ruta":    jsonRuta,
+			"eliminado":    ruta.Eliminado,
+			"created_at":   ruta.CreatedAt,
+			"conductor_id": ruta.ConductorID,
 		})
 	}
 

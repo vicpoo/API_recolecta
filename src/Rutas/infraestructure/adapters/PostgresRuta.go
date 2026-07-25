@@ -218,11 +218,37 @@ func (pg *PostgresRuta) Delete(id int32) error {
 }
 
 func (pg *PostgresRuta) GetActivas() ([]entities.Ruta, error) {
+	// El conductor de una ruta activa se resuelve en dos saltos:
+	// 1) ruta_camion: el camión más recientemente asignado a la ruta.
+	// 2) historial_asignacion_camion: el chofer con asignación activa
+	//    (fecha_baja IS NULL) para ese camión.
+	// "ruta" no guarda conductor_id de forma directa.
 	sql := `
-		SELECT id, nombre, descripcion, json_ruta, (deleted_at IS NOT NULL) AS eliminado, created_at
-		FROM ruta
-		WHERE deleted_at IS NULL
-		ORDER BY id DESC
+		SELECT
+			r.id,
+			r.nombre,
+			r.descripcion,
+			r.json_ruta,
+			(r.deleted_at IS NOT NULL) AS eliminado,
+			r.created_at,
+			hac.id_chofer AS conductor_id
+		FROM ruta r
+		LEFT JOIN LATERAL (
+			SELECT camion_id
+			FROM ruta_camion
+			WHERE ruta_id = r.id AND eliminado = false
+			ORDER BY fecha DESC
+			LIMIT 1
+		) rc ON true
+		LEFT JOIN LATERAL (
+			SELECT id_chofer
+			FROM historial_asignacion_camion
+			WHERE id_camion = rc.camion_id AND fecha_baja IS NULL AND eliminado = false
+			ORDER BY fecha_asignacion DESC
+			LIMIT 1
+		) hac ON true
+		WHERE r.deleted_at IS NULL
+		ORDER BY r.id DESC
 	`
 
 	rows, err := pg.conn.Query(context.Background(), sql)
@@ -234,6 +260,7 @@ func (pg *PostgresRuta) GetActivas() ([]entities.Ruta, error) {
 	var rutas []entities.Ruta
 	for rows.Next() {
 		var r entities.Ruta
+		var conductorID *int32
 
 		err := rows.Scan(
 			&r.RutaID,
@@ -242,10 +269,12 @@ func (pg *PostgresRuta) GetActivas() ([]entities.Ruta, error) {
 			&r.JsonRuta,
 			&r.Eliminado,
 			&r.CreatedAt,
+			&conductorID,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error al escanear ruta: %w", err)
 		}
+		r.ConductorID = conductorID
 
 		rutas = append(rutas, r)
 	}
