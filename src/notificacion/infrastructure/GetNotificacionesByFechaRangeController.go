@@ -16,6 +16,13 @@ func NewGetNotificacionesByFechaRangeController(useCase *application.GetNotifica
 	return &GetNotificacionesByFechaRangeController{useCase: useCase}
 }
 
+// @Summary      Notificaciones por rango de fecha
+// @Tags         Notificacion
+// @Produce      json
+// @Success      200 {object} entities.NotificacionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/notificaciones/rango-fecha [get]
 func (ctrl *GetNotificacionesByFechaRangeController) Run(c *gin.Context) {
 	fechaInicio := c.Query("fecha_inicio")
 	fechaFin := c.Query("fecha_fin")

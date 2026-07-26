@@ -17,6 +17,13 @@ func NewGetNotificacionesByUsuarioIDController(useCase *application.GetNotificac
 	return &GetNotificacionesByUsuarioIDController{useCase: useCase}
 }
 
+// @Summary      Notificaciones por usuario
+// @Tags         Notificacion
+// @Produce      json
+// @Success      200 {object} entities.NotificacionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/notificaciones/usuario/{usuario_id} [get]
 func (ctrl *GetNotificacionesByUsuarioIDController) Run(c *gin.Context) {
 	idParam := c.Param("usuario_id")
 	id, err := strconv.Atoi(idParam)

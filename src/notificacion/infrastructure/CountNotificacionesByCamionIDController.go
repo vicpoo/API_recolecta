@@ -17,6 +17,13 @@ func NewCountNotificacionesByCamionIDController(useCase *application.CountNotifi
 	return &CountNotificacionesByCamionIDController{useCase: useCase}
 }
 
+// @Summary      Contar notificaciones por camión
+// @Tags         Notificacion
+// @Produce      json
+// @Success      200 {object} entities.NotificacionListResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/notificaciones/count/camion/{camion_id} [get]
 func (ctrl *CountNotificacionesByCamionIDController) Run(c *gin.Context) {
 	camionIDParam := c.Param("camion_id")
 	camionID, err := strconv.Atoi(camionIDParam)

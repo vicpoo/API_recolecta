@@ -16,6 +16,14 @@ func NewGetHistorialAsignacionByIdController(uc *application.GetHistorialAsignac
 	return &GetHistorialAsignacionByIdController{uc: uc}
 }
 
+// @Summary      Obtener historial por ID
+// @Tags         HistorialAsignacion
+// @Produce      json
+// @Param        id path int true "ID historial"
+// @Success      200 {object} entities.HistorialAsignacionCamionResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/historial-asignacion/{id} [get]
 func (ctr *GetHistorialAsignacionByIdController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

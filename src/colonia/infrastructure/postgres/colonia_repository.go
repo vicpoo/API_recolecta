@@ -3,36 +3,37 @@ package postgres
 import (
 	"context"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/vicpoo/API_recolecta/src/colonia/domain"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
-type ColoniaRepository struct {
+type PostgresColoniaRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewColoniaRepository(db *pgxpool.Pool) *ColoniaRepository {
-	return &ColoniaRepository{db}
+func NewColoniaRepository() domain.ColoniaRepository {
+	db := core.GetBD()
+
+	return &PostgresColoniaRepository{
+		db: db,
+	}
 }
 
-func (r *ColoniaRepository) Create(c *domain.Colonia) error {
-	query := `
-		INSERT INTO colonia (nombre, zona, created_at)
-		VALUES ($1,$2,$3)
-	`
+func (r *PostgresColoniaRepository) Create(ctx context.Context, tenantID int, c *domain.Colonia) error {
+	return core.RunInTenantTx(ctx, r.db, tenantID, func(tx pgx.Tx) error {
+		query := `
+			INSERT INTO colonia (nombre, zona, created_at, tenant_id)
+			VALUES ($1,$2,$3,$4)
+		`
 
-	_, err := r.db.Exec(
-		context.Background(),
-		query,
-		c.Nombre,
-		c.Zona,
-		c.CreatedAt,
-	)
-
-	return err
+		_, err := tx.Exec(ctx, query, c.Nombre, c.Zona, c.CreatedAt, tenantID)
+		return err
+	})
 }
 
-func (r *ColoniaRepository) GetByID(id int) (*domain.Colonia, error) {
+func (r *PostgresColoniaRepository) GetByID(id int) (*domain.Colonia, error) {
 	query := `
 		SELECT colonia_id, nombre, zona, created_at
 		FROM colonia
@@ -56,7 +57,7 @@ func (r *ColoniaRepository) GetByID(id int) (*domain.Colonia, error) {
 	return &c, nil
 }
 
-func (r *ColoniaRepository) GetAll() ([]domain.Colonia, error) {
+func (r *PostgresColoniaRepository) GetAll() ([]domain.Colonia, error) {
 	query := `
 		SELECT colonia_id, nombre, zona, created_at
 		FROM colonia
@@ -87,32 +88,29 @@ func (r *ColoniaRepository) GetAll() ([]domain.Colonia, error) {
 	return colonias, nil
 }
 
-func (r *ColoniaRepository) Update(c *domain.Colonia) error {
-	query := `
-		UPDATE colonia
-		SET nombre = $1,
-		    zona = $2
-		WHERE colonia_id = $3
-	`
+func (r *PostgresColoniaRepository) Update(ctx context.Context, tenantID int, c *domain.Colonia) error {
+	return core.RunInTenantTx(ctx, r.db, tenantID, func(tx pgx.Tx) error {
+		query := `
+			UPDATE colonia
+			SET nombre = $1,
+			    zona = $2
+			WHERE colonia_id = $3
+		`
 
-	_, err := r.db.Exec(
-		context.Background(),
-		query,
-		c.Nombre,
-		c.Zona,
-		c.ColoniaID,
-	)
-
-	return err
+		_, err := tx.Exec(ctx, query, c.Nombre, c.Zona, c.ColoniaID)
+		return err
+	})
 }
 
-func (r *ColoniaRepository) Delete(id int) error {
-	query := `
-		UPDATE colonia
-		SET eliminado = true
-		WHERE colonia_id = $1
-	`
+func (r *PostgresColoniaRepository) Delete(ctx context.Context, tenantID int, id int) error {
+	return core.RunInTenantTx(ctx, r.db, tenantID, func(tx pgx.Tx) error {
+		query := `
+			UPDATE colonia
+			SET eliminado = true
+			WHERE colonia_id = $1
+		`
 
-	_, err := r.db.Exec(context.Background(), query, id)
-	return err
+		_, err := tx.Exec(ctx, query, id)
+		return err
+	})
 }

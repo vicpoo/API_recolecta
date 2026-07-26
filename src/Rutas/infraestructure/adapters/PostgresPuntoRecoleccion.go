@@ -3,11 +3,14 @@ package adapters
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/vicpoo/API_recolecta/src/Rutas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/Rutas/domain/ports"
 	"github.com/vicpoo/API_recolecta/src/core"
 )
 
@@ -15,7 +18,7 @@ type PostgresPuntoRecoleccion struct {
 	conn *pgxpool.Pool
 }
 
-func NewPostgresPuntoRecoleccion() *PostgresPuntoRecoleccion {
+func NewPostgresPuntoRecoleccion() ports.IPuntoRecoleccion {
 	conn, _ := core.ConnectPostgres()
 	return &PostgresPuntoRecoleccion{conn: conn}
 }
@@ -29,12 +32,11 @@ func (pg *PostgresPuntoRecoleccion) Save(p *entities.PuntoRecoleccion) (*entitie
 	INSERT INTO punto_recoleccion
 	(
 		ruta_id,
-		cp,
-		eliminado,
+		direccion,
 		created_at
 	)
-	VALUES ($1, $2, false, $3)
-	RETURNING punto_id
+	VALUES ($1, $2, $3)
+	RETURNING id
 	`
 
 	err := pg.conn.QueryRow(
@@ -42,13 +44,26 @@ func (pg *PostgresPuntoRecoleccion) Save(p *entities.PuntoRecoleccion) (*entitie
 		sql,
 		p.RutaID,
 		p.CP,
-		p.CreatedAt, // 👈 tú lo insertas
+		p.CreatedAt,
 	).Scan(&p.PuntoID)
 
 	if err != nil {
 		return nil, err
 	}
 
+	// Guardar coordenadas geográficas en Redis
+	rdb, err := core.ConnectRedis()
+	if err == nil {
+		ctx := context.Background()
+		rdb.HSet(ctx, fmt.Sprintf("point:%d", p.PuntoID), map[string]interface{}{
+			"route_id": p.RutaID,
+			"lat":      p.Lat,
+			"lon":      p.Lon,
+			"label":    p.CP,
+		})
+	}
+
+	p.Eliminado = false
 	return p, nil
 }
 
@@ -61,8 +76,8 @@ func (pg *PostgresPuntoRecoleccion) Update(id int32, p *entities.PuntoRecoleccio
 	UPDATE punto_recoleccion
 	SET
 		ruta_id = $1,
-		cp = $2
-	WHERE punto_id = $3 AND eliminado = false
+		direccion = $2
+	WHERE id = $3 AND deleted_at IS NULL
 	`
 
 	ct, err := pg.conn.Exec(
@@ -81,6 +96,19 @@ func (pg *PostgresPuntoRecoleccion) Update(id int32, p *entities.PuntoRecoleccio
 		return nil, errors.New("punto de recolección no encontrado")
 	}
 
+	// Actualizar coordenadas en Redis
+	rdb, err := core.ConnectRedis()
+	if err == nil {
+		ctx := context.Background()
+		rdb.HSet(ctx, fmt.Sprintf("point:%d", id), map[string]interface{}{
+			"route_id": p.RutaID,
+			"lat":      p.Lat,
+			"lon":      p.Lon,
+			"label":    p.CP,
+		})
+	}
+
+	p.PuntoID = id
 	return p, nil
 }
 
@@ -89,10 +117,10 @@ func (pg *PostgresPuntoRecoleccion) Update(id int32, p *entities.PuntoRecoleccio
 //
 func (pg *PostgresPuntoRecoleccion) ListAll() ([]entities.PuntoRecoleccion, error) {
 	sql := `
-	SELECT punto_id, ruta_id, cp, eliminado
+	SELECT id, ruta_id, direccion, (deleted_at IS NOT NULL) AS eliminado
 	FROM punto_recoleccion
-	WHERE eliminado = false
-	ORDER BY punto_id DESC
+	WHERE deleted_at IS NULL
+	ORDER BY id DESC
 	`
 
 	rows, err := pg.conn.Query(context.Background(), sql)
@@ -102,6 +130,7 @@ func (pg *PostgresPuntoRecoleccion) ListAll() ([]entities.PuntoRecoleccion, erro
 	defer rows.Close()
 
 	var puntos []entities.PuntoRecoleccion
+	rdb, _ := core.ConnectRedis()
 
 	for rows.Next() {
 		var p entities.PuntoRecoleccion
@@ -109,6 +138,16 @@ func (pg *PostgresPuntoRecoleccion) ListAll() ([]entities.PuntoRecoleccion, erro
 		if err != nil {
 			return nil, err
 		}
+
+		// Hydrate coordinates from Redis
+		if rdb != nil {
+			vals, err := rdb.HGetAll(context.Background(), fmt.Sprintf("point:%d", p.PuntoID)).Result()
+			if err == nil && len(vals) > 0 {
+				p.Lat, _ = strconv.ParseFloat(vals["lat"], 64)
+				p.Lon, _ = strconv.ParseFloat(vals["lon"], 64)
+			}
+		}
+
 		puntos = append(puntos, p)
 	}
 
@@ -122,9 +161,9 @@ func (pg *PostgresPuntoRecoleccion) GetById(id int32) (*entities.PuntoRecoleccio
 	var p entities.PuntoRecoleccion
 
 	sql := `
-	SELECT punto_id, ruta_id, cp, eliminado
+	SELECT id, ruta_id, direccion, (deleted_at IS NOT NULL) AS eliminado
 	FROM punto_recoleccion
-	WHERE punto_id = $1 AND eliminado = false
+	WHERE id = $1 AND deleted_at IS NULL
 	`
 
 	err := pg.conn.QueryRow(context.Background(), sql, id).Scan(
@@ -141,6 +180,16 @@ func (pg *PostgresPuntoRecoleccion) GetById(id int32) (*entities.PuntoRecoleccio
 		return nil, err
 	}
 
+	// Hydrate coordinates from Redis
+	rdb, err := core.ConnectRedis()
+	if err == nil {
+		vals, err := rdb.HGetAll(context.Background(), fmt.Sprintf("point:%d", p.PuntoID)).Result()
+		if err == nil && len(vals) > 0 {
+			p.Lat, _ = strconv.ParseFloat(vals["lat"], 64)
+			p.Lon, _ = strconv.ParseFloat(vals["lon"], 64)
+		}
+	}
+
 	return &p, nil
 }
 
@@ -149,10 +198,10 @@ func (pg *PostgresPuntoRecoleccion) GetById(id int32) (*entities.PuntoRecoleccio
 //
 func (pg *PostgresPuntoRecoleccion) GetByRuta(rutaId int32) ([]entities.PuntoRecoleccion, error) {
 	sql := `
-	SELECT punto_id, ruta_id, cp, eliminado
+	SELECT id, ruta_id, direccion, (deleted_at IS NOT NULL) AS eliminado
 	FROM punto_recoleccion
-	WHERE ruta_id = $1 AND eliminado = false
-	ORDER BY punto_id
+	WHERE ruta_id = $1 AND deleted_at IS NULL
+	ORDER BY id
 	`
 
 	rows, err := pg.conn.Query(context.Background(), sql, rutaId)
@@ -162,6 +211,7 @@ func (pg *PostgresPuntoRecoleccion) GetByRuta(rutaId int32) ([]entities.PuntoRec
 	defer rows.Close()
 
 	var puntos []entities.PuntoRecoleccion
+	rdb, _ := core.ConnectRedis()
 
 	for rows.Next() {
 		var p entities.PuntoRecoleccion
@@ -169,6 +219,16 @@ func (pg *PostgresPuntoRecoleccion) GetByRuta(rutaId int32) ([]entities.PuntoRec
 		if err != nil {
 			return nil, err
 		}
+
+		// Hydrate coordinates from Redis
+		if rdb != nil {
+			vals, err := rdb.HGetAll(context.Background(), fmt.Sprintf("point:%d", p.PuntoID)).Result()
+			if err == nil && len(vals) > 0 {
+				p.Lat, _ = strconv.ParseFloat(vals["lat"], 64)
+				p.Lon, _ = strconv.ParseFloat(vals["lon"], 64)
+			}
+		}
+
 		puntos = append(puntos, p)
 	}
 
@@ -181,8 +241,8 @@ func (pg *PostgresPuntoRecoleccion) GetByRuta(rutaId int32) ([]entities.PuntoRec
 func (pg *PostgresPuntoRecoleccion) Delete(id int32) error {
 	sql := `
 	UPDATE punto_recoleccion
-	SET eliminado = true
-	WHERE punto_id = $1
+	SET deleted_at = NOW()
+	WHERE id = $1 AND deleted_at IS NULL
 	`
 
 	ct, err := pg.conn.Exec(context.Background(), sql, id)
@@ -192,6 +252,12 @@ func (pg *PostgresPuntoRecoleccion) Delete(id int32) error {
 
 	if ct.RowsAffected() == 0 {
 		return errors.New("punto de recolección no encontrado")
+	}
+
+	// Eliminar coordenadas de Redis
+	rdb, err := core.ConnectRedis()
+	if err == nil {
+		rdb.Del(context.Background(), fmt.Sprintf("point:%d", id))
 	}
 
 	return nil

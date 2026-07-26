@@ -7,7 +7,7 @@ type ListMisAlertas struct {
 }
 
 func NewListMisAlertas(repo domain.AlertaUsuarioRepository) *ListMisAlertas {
-	return &ListMisAlertas{repo}
+	return &ListMisAlertas{repo: repo}
 }
 
 func (uc *ListMisAlertas) Execute(usuarioID int) ([]domain.AlertaUsuario, error) {
