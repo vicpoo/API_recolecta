@@ -5567,6 +5567,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Devuelve rutas no eliminadas. Cada item incluye conductor_id: id_chofer con asignación activa (historial_asignacion_camion.fecha_baja IS NULL) del camión más reciente en ruta_camion. Es null si no hay camión o chofer asignado.",
                 "produces": [
                     "application/json"
                 ],
@@ -5578,7 +5579,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.EstadoCamionListResponse"
+                            "$ref": "#/definitions/entities.RutaActivasListResponse"
                         }
                     },
                     "500": {
@@ -7412,23 +7413,82 @@ const docTemplate = `{
         "entities.Ruta": {
             "type": "object",
             "properties": {
+                "conductor_id": {
+                    "description": "ID del conductor asignado (null si no hay asignación activa). Solo se llena en GET /api/rutas/activas.",
+                    "type": "integer",
+                    "example": 12,
+                    "x-nullable": true
+                },
                 "created_at": {
                     "type": "string"
                 },
                 "descripcion": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Recolección zona centro"
                 },
                 "eliminado": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
                 },
                 "json_ruta": {
                     "type": "string"
                 },
                 "nombre": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Ruta Centro"
                 },
                 "ruta_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "entities.RutaActivaItem": {
+            "type": "object",
+            "properties": {
+                "conductor_id": {
+                    "description": "ID del empleado chofer con asignación activa (fecha_baja IS NULL) del camión más reciente de la ruta. Null si no hay asignación.",
+                    "type": "integer",
+                    "example": 12,
+                    "x-nullable": true
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2026-07-22T19:30:00Z"
+                },
+                "descripcion": {
+                    "type": "string",
+                    "example": "Recolección zona centro"
+                },
+                "eliminado": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "json_ruta": {
+                    "description": "Geometría ya parseada (array/objeto JSON), no el string crudo de BD."
+                },
+                "nombre": {
+                    "type": "string",
+                    "example": "Ruta Centro"
+                },
+                "ruta_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "entities.RutaActivasListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.RutaActivaItem"
+                    }
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
