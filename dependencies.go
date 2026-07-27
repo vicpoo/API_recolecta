@@ -60,7 +60,6 @@ import (
 	empleadoInfra "github.com/vicpoo/API_recolecta/src/empleado/infrastructure"
 	empleadoRoutes "github.com/vicpoo/API_recolecta/src/empleado/infrastructure/routes"
 	notificacionInfra "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
-	"github.com/vicpoo/API_recolecta/src/tracking_ws"
 	appConfig "github.com/vicpoo/API_recolecta/config"
 	//rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
 	//listMisAlertasUC "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
@@ -539,13 +538,6 @@ func InitDependencies() {
 	dispositivoDeps := dispositivoInfra.InitDispositivoDependencies(db)
 	dispositivoRoutes.RegisterDispositivoRoutes(engine, dispositivoDeps.DispositivoController)
 
-	// ===============================
-	// TRACKING WS (GPS conductor → ciudadanos)
-	// ===============================
-	trackingHub := tracking_ws.NewHub()
-	go trackingHub.Run()
-	trackingHandler := tracking_ws.NewHandler(trackingHub)
-	tracking_ws.RegisterRoutes(engine, trackingHandler)
 
 	engine.Run(":8080")
 }
