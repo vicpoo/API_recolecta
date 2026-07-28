@@ -18,6 +18,15 @@ func NewDeleteRutaCamionController(
 	return &DeleteRutaCamionController{uc}
 }
 
+// @Summary      Eliminar ruta-camión
+// @Tags         RutaCamion
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} entities.HistorialAsignacionCamionMessageResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/ruta-camion/{id} [delete]
 func (c *DeleteRutaCamionController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

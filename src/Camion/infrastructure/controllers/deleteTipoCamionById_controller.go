@@ -20,6 +20,14 @@ func NewDeleteTipoCamionController(
 	}
 }
 
+// @Summary      Eliminar tipo de camión
+// @Tags         TipoCamion
+// @Produce      json
+// @Param        id path int true "ID tipo camión"
+// @Success      200 {object} entities.HistorialAsignacionCamionMessageResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/tipo-camion/{id} [delete]
 func (ctr *DeleteTipoCamionController) Run(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 

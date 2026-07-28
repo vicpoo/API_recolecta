@@ -49,6 +49,9 @@ func NewFCMClient(credentialsFile string) (*FCMClient, error) {
 }
 
 func (c *FCMClient) Send(ctx context.Context, userTokens map[string]string, notification *domain.PushNotification) (map[string]domain.SendResult, error) {
+	if len(userTokens) == 0 {
+		return make(map[string]domain.SendResult), nil
+	}
 	userIDs := make([]string, 0, len(userTokens))
 	for userID := range userTokens {
 		userIDs = append(userIDs, userID)

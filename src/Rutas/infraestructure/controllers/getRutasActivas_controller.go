@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetRutaActivasController struct {
@@ -16,10 +16,17 @@ func NewGetRutaActivasController(uc *application.GetRutaActivasUseCase) *GetRuta
 	return &GetRutaActivasController{uc}
 }
 
+// @Summary      Listar rutas activas
+// @Tags         Ruta
+// @Produce      json
+// @Success      200 {object} entities.EstadoCamionListResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/rutas/activas [get]
 func (ctr *GetRutaActivasController) Run(ctx *gin.Context) {
 	rutas, err := ctr.uc.Run()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": err.Error()})
+		core.RespondInternalServerError(ctx, "Error listando rutas activas", err)
 		return
 	}
 
@@ -42,5 +49,5 @@ func (ctr *GetRutaActivasController) Run(ctx *gin.Context) {
 		})
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"success": true, "data": rutasResponse})
+	core.RespondOK(ctx, gin.H{"success": true, "data": rutasResponse})
 }

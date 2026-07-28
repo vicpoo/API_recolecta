@@ -1,10 +1,9 @@
 package core
 
 const (
-	CIUDADANO   = 1
-	CONDUCTOR   = 2
+	ADMIN       = 1
+	COORDINADOR = 2
 	SUPERVISOR  = 3
-	COORDINADOR = 4
-	ADMIN       = 5
+	CONDUCTOR   = 4
 )
 

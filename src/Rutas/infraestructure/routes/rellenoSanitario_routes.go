@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type RellenoSanitarioRoutes struct {
@@ -43,6 +44,7 @@ func NewRellenoSanitarioRoutes(
 
 func (r *RellenoSanitarioRoutes) Run() {
 	routes := r.engine.Group("/api/relleno-sanitario")
+	routes.Use(core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN, core.SUPERVISOR, core.COORDINADOR, core.CONDUCTOR))
 	{
 		routes.POST("/", r.createRellenoSanitarioController.Execute)
 		routes.GET("/", r.getAllRellenoSanitarioController.Execute)

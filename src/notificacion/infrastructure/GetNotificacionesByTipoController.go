@@ -16,6 +16,13 @@ func NewGetNotificacionesByTipoController(useCase *application.GetNotificaciones
 	return &GetNotificacionesByTipoController{useCase: useCase}
 }
 
+// @Summary      Notificaciones por tipo
+// @Tags         Notificacion
+// @Produce      json
+// @Success      200 {object} entities.NotificacionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/notificaciones/tipo/{tipo} [get]
 func (ctrl *GetNotificacionesByTipoController) Run(c *gin.Context) {
 	tipo := c.Param("tipo")
 	result, err := ctrl.useCase.Run(tipo)

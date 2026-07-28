@@ -16,6 +16,16 @@ func NewGetActivoByChoferController(uc *application.GetActivoByChoferUseCase) *G
 	return &GetActivoByChoferController{uc: uc}
 }
 
+// @Summary      Asignación activa por chofer
+// @Tags         HistorialAsignacion
+// @Produce      json
+// @Param        choferId path int true "ID chofer"
+// @Success      200 {object} entities.HistorialAsignacionCamionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/historial-asignacion/activo/chofer/{choferId} [get]
 func (ctr *GetActivoByChoferController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("choferId"))
 	if err != nil {

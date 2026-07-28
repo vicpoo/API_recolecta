@@ -17,6 +17,13 @@ func NewMarcarTodasNotificacionesComoLeidasController(useCase *application.Marca
 	return &MarcarTodasNotificacionesComoLeidasController{useCase: useCase}
 }
 
+// @Summary      Marcar todas como leídas
+// @Tags         Notificacion
+// @Produce      json
+// @Success      200 {object} entities.NotificacionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/notificaciones/usuario/{usuario_id}/marcar-todas-leidas [patch]
 func (ctrl *MarcarTodasNotificacionesComoLeidasController) Run(c *gin.Context) {
 	usuarioIDParam := c.Param("usuario_id")
 	usuarioID, err := strconv.Atoi(usuarioIDParam)

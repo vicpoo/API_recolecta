@@ -18,6 +18,16 @@ func NewGetRutaCamionByIDController(
 	return &GetRutaCamionByIDController{uc}
 }
 
+// @Summary      Obtener ruta-camión por ID
+// @Tags         RutaCamion
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} entities.HistorialAsignacionCamionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/ruta-camion/{id} [get]
 func (c *GetRutaCamionByIDController) Run(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

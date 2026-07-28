@@ -1,8 +1,7 @@
 package infrastructure
 
 import (
-	"github.com/jackc/pgx/v5/pgxpool"
-
+	"github.com/vicpoo/API_recolecta/src/core"
 	rolApp "github.com/vicpoo/API_recolecta/src/rol/application"
 	rolController "github.com/vicpoo/API_recolecta/src/rol/infrastructure/controller"
 	rolPostgres "github.com/vicpoo/API_recolecta/src/rol/infrastructure/postgres"
@@ -15,7 +14,8 @@ type RolDependencies struct {
 	Delete *rolController.RolController
 }
 
-func NewRolDependencies(db *pgxpool.Pool) *rolController.RolController {
+func NewRolDependencies() *rolController.RolController {
+	db := core.GetBD()
 	repo := rolPostgres.NewRolRepository(db)
 
 	createUC := rolApp.NewCreateRol(repo)

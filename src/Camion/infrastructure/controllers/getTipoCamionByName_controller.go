@@ -17,6 +17,14 @@ func NewGetTipoCamionByNameController(
 	return &GetTipoCamionByNameController{uc: uc}
 }
 
+// @Summary      Obtener tipo de camión por nombre
+// @Tags         TipoCamion
+// @Produce      json
+// @Param        nombre path string true "Nombre del tipo"
+// @Success      200 {object} entities.HistorialAsignacionCamionResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/tipo-camion/nombre/{nombre} [get]
 func (ctr *GetTipoCamionByNameController) Run(ctx *gin.Context) {
 	nombre := ctx.Param("nombre")
 

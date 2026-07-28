@@ -15,6 +15,15 @@ func NewGetCamionByPlacaController(uc *application.GetCamionByPlacaUseCase) *Get
 	return &GetCamionByPlacaController{uc: uc}
 }
 
+// @Summary      Buscar camión por placa
+// @Tags         Camion
+// @Produce      json
+// @Param        placa path string true "Placa"
+// @Success      200 {object} entities.EstadoCamionResponse
+// @Failure      404 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/camion/placa/{placa} [get]
 func (ctr *GetCamionByPlacaController) Run(ctx *gin.Context) {
 	placa := ctx.Param("placa")
 

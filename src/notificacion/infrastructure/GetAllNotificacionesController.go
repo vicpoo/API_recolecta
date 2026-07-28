@@ -18,6 +18,13 @@ func NewGetAllNotificacionesController(getAllUseCase *application.GetAllNotifica
 	}
 }
 
+// @Summary      Listar notificaciones
+// @Tags         Notificacion
+// @Produce      json
+// @Success      200 {object} entities.NotificacionListResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/notificaciones/ [get]
 func (ctrl *GetAllNotificacionesController) Run(c *gin.Context) {
 	notificaciones, err := ctrl.getAllUseCase.Run()
 	if err != nil {

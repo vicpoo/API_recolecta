@@ -17,6 +17,14 @@ func NewMarcarNotificacionComoLeidaController(useCase *application.MarcarNotific
 	return &MarcarNotificacionComoLeidaController{useCase: useCase}
 }
 
+// @Summary      Marcar notificación como leída
+// @Tags         Notificacion
+// @Produce      json
+// @Param        id path int true "ID"
+// @Success      200 {object} entities.NotificacionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/notificaciones/{id}/marcar-leida [patch]
 func (ctrl *MarcarNotificacionComoLeidaController) Run(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

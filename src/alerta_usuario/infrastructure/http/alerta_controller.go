@@ -25,24 +25,37 @@ func NewAlertaController(
 }
 
 func (c *AlertaController) RegisterRoutes(r *gin.RouterGroup) {
+	// Aplicar middleware de autenticación JWT a todas las rutas
+	r.Use(core.JWTAuthMiddleware())
+
 	r.POST(
-	"/alertas",
-	core.RequireRole(core.SUPERVISOR),
-	c.Create,
-)
+		"/alertas",
+		core.RequireRole(core.ADMIN, core.SUPERVISOR),
+		c.Create,
+	)
 	r.GET("/alertas", c.ListMine)
 	r.PUT("/alertas/:id/leida", c.MarkAsRead)
 }
 
+// @Summary      Crear alerta de usuario
+// @Tags         AlertaUsuario
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        body body domain.AlertaUsuario true "Datos de la alerta"
+// @Success      201
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Router       /api/alertas [post]
 func (c *AlertaController) Create(ctx *gin.Context) {
 	var body struct {
-		Titulo    string `json:"titulo"`
-		Mensaje   string `json:"mensaje"`
-		UsuarioID int    `json:"usuario_id"`
+		Titulo    string `json:"titulo" binding:"required"`
+		Mensaje   string `json:"mensaje" binding:"required"`
+		UsuarioID int    `json:"usuario_id" binding:"required"`
 	}
 
 	if err := ctx.ShouldBindJSON(&body); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		core.RespondValidationError(ctx, "Datos de alerta inválidos", map[string]string{"error": err.Error()})
 		return
 	}
 
@@ -54,28 +67,47 @@ func (c *AlertaController) Create(ctx *gin.Context) {
 	}
 
 	if err := c.create.Execute(&alerta); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		core.RespondInternalServerError(ctx, "Error al crear la alerta", err)
 		return
 	}
 
 	ctx.Status(http.StatusCreated)
 }
 
+// @Summary      Listar mis alertas
+// @Tags         AlertaUsuario
+// @Produce      json
+// @Success      200 {array} domain.AlertaUsuario
+// @Failure      500 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/alertas [get]
 func (c *AlertaController) ListMine(ctx *gin.Context) {
 	alertas, err := c.list.Execute(ctx.GetInt("user_id"))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		core.RespondInternalServerError(ctx, "Error al listar alertas", err)
 		return
 	}
 
 	ctx.JSON(http.StatusOK, alertas)
 }
 
+// @Summary      Marcar alerta como leída
+// @Tags         AlertaUsuario
+// @Produce      json
+// @Param        id path int true "ID de la alerta"
+// @Success      200
+// @Failure      403 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/alertas/{id}/leida [put]
 func (c *AlertaController) MarkAsRead(ctx *gin.Context) {
-	id, _ := strconv.Atoi(ctx.Param("id"))
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		core.RespondInvalidInput(ctx, "ID de alerta inválido")
+		return
+	}
 
 	if err := c.read.Execute(id, ctx.GetInt("user_id")); err != nil {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": "no autorizado"})
+		core.RespondError(ctx, http.StatusForbidden, core.ErrCodeForbidden, "No autorizado para marcar esta alerta como leída", map[string]string{"error": err.Error()})
 		return
 	}
 

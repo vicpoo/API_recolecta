@@ -1,11 +1,10 @@
 package controllers
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
 	"github.com/vicpoo/API_recolecta/src/Rutas/domain/entities"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type CreatePuntoRecoleccionController struct {
@@ -16,19 +15,28 @@ func NewCreatePuntoRecoleccionController(uc *application.SavePuntoRecoleccionUse
 	return &CreatePuntoRecoleccionController{uc: uc}
 }
 
+// @Summary      Crear punto de recolección
+// @Tags         PuntoRecoleccion
+// @Accept       json
+// @Produce      json
+// @Param        body body entities.CreatePuntoRecoleccionRequest true "Body"
+// @Success      201 {object} entities.PuntoRecoleccionResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/puntos-recoleccion/ [post]
 func (c *CreatePuntoRecoleccionController) Run(ctx *gin.Context) {
 	var p entities.PuntoRecoleccion
 
 	if err := ctx.ShouldBindJSON(&p); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		core.RespondBadRequest(ctx, "body inválido", map[string]string{"error": err.Error()})
 		return
 	}
 
 	result, err := c.uc.Execute(&p)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		core.RespondInternalServerError(ctx, "No se pudo crear el punto de recolección", err)
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, result)
+	core.RespondCreated(ctx, result)
 }

@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
+	"github.com/vicpoo/API_recolecta/src/core"
 )
 
 type GetRegistroVaciadoByRutaCamionIDController struct {
@@ -18,16 +19,25 @@ func NewGetRegistroVaciadoByRutaCamionIDController(
 	return &GetRegistroVaciadoByRutaCamionIDController{uc: uc}
 }
 
+// @Summary      Registros vaciado por ruta-camión
+// @Tags         RegistroVaciado
+// @Produce      json
+// @Param        ruta_camion_id path int true "ID ruta-camión"
+// @Success      200 {object} entities.RegistroVaciadoResponse
+// @Failure      400 {object} core.ErrorResponse
+// @Failure      500 {object} core.ErrorResponse
+// @Security     BearerAuth
+// @Router       /api/registro-vaciado/ruta-camion/{ruta_camion_id} [get]
 func (c *GetRegistroVaciadoByRutaCamionIDController) Run(ctx *gin.Context) {
 	rutaCamionID, err := strconv.Atoi(ctx.Param("ruta_camion_id"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ruta_camion_id inválido"})
+		core.RespondInvalidInput(ctx, "ruta_camion_id inválido")
 		return
 	}
 
 	result, err := c.uc.Execute(int32(rutaCamionID))
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		core.RespondInternalServerError(ctx, "No se pudieron obtener los registros de vaciado por ruta-camión", err)
 		return
 	}
 

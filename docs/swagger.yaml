@@ -1,0 +1,4815 @@
+basePath: /
+definitions:
+  application.FailedNotificationRecord:
+    properties:
+      body:
+        type: string
+      error:
+        type: string
+      timestamp:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
+    type: object
+  application.InboxRecord:
+    properties:
+      body:
+        type: string
+      delivered:
+        type: boolean
+      error:
+        type: string
+      sent_at:
+        type: string
+      title:
+        type: string
+      type:
+        type: string
+    type: object
+  application_ciudadano.UpdateFCMTokenInput:
+    properties:
+      fcm_token:
+        type: string
+    type: object
+  controllers.ProcessArrivalRequest:
+    properties:
+      point_id:
+        type: string
+      truck_id:
+        type: integer
+    required:
+    - point_id
+    - truck_id
+    type: object
+  controllers.ProcessTelemetryRequest:
+    properties:
+      lat:
+        type: number
+      lon:
+        type: number
+      state_code:
+        type: string
+      truck_id:
+        type: integer
+    required:
+    - lat
+    - lon
+    - state_code
+    - truck_id
+    type: object
+  core.ErrorDetail:
+    properties:
+      code:
+        type: string
+      details: {}
+      message:
+        type: string
+    type: object
+  core.ErrorResponse:
+    properties:
+      error:
+        $ref: '#/definitions/core.ErrorDetail'
+    type: object
+  domain.AlertaUsuario:
+    properties:
+      alerta_id:
+        type: integer
+      creado_por:
+        description: supervisor
+        type: integer
+      created_at:
+        type: string
+      leida:
+        type: boolean
+      mensaje:
+        type: string
+      titulo:
+        type: string
+      usuario_id:
+        description: receptor
+        type: integer
+    type: object
+  domain.Colonia:
+    properties:
+      colonia_id:
+        type: integer
+      created_at:
+        type: string
+      nombre:
+        type: string
+      zona:
+        type: string
+    type: object
+  domain.ColoniaResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/domain.Colonia'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  domain.CreateColoniaRequest:
+    properties:
+      nombre:
+        type: string
+      zona:
+        type: string
+    required:
+    - nombre
+    - zona
+    type: object
+  domain.SendResult:
+    properties:
+      error:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.Anomalia:
+    properties:
+      anomalia_id:
+        type: integer
+      anomalia_referencia_id:
+        type: integer
+      camion_id:
+        type: integer
+      conductor_id:
+        type: integer
+      created_at:
+        type: string
+      descripcion:
+        type: string
+      eliminado:
+        type: boolean
+      estado:
+        type: string
+      fecha_reporte:
+        type: string
+      fecha_resolucion:
+        type: string
+      json_ruta:
+        type: string
+      punto_id:
+        type: integer
+      ruta_id:
+        type: integer
+      tipo_anomalia:
+        $ref: '#/definitions/entities.TipoAnomalia'
+      updated_at:
+        type: string
+    type: object
+  entities.AnomaliaListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/entities.Anomalia'
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.AnomaliaMessageResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.AnomaliaResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.Anomalia'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.Camion:
+    properties:
+      camion_id:
+        type: integer
+      color_disponibilidad:
+        type: string
+      created_at:
+        type: string
+      disponibilidad_id:
+        type: integer
+      es_rentado:
+        type: boolean
+      modelo:
+        type: string
+      nombre_disponibilidad:
+        type: string
+      placa:
+        type: string
+      tipo_camion_id:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  entities.CamionResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.Camion'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.Ciudadano:
+    properties:
+      alias:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+    type: object
+  entities.CiudadanoListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/entities.Ciudadano'
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.CiudadanoMessageResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.CiudadanoResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.Ciudadano'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.CreateAnomaliaRequest:
+    properties:
+      anomalia_referencia_id:
+        type: integer
+      camion_id:
+        type: integer
+      conductor_id:
+        type: integer
+      descripcion:
+        type: string
+      estado:
+        type: string
+      fecha_reporte:
+        type: string
+      json_ruta:
+        type: string
+      punto_id:
+        type: integer
+      ruta_id:
+        type: integer
+      tipo_anomalia:
+        description: ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA
+          | SEGUIMIENTO_FALLA_CRITICA
+        type: string
+    required:
+    - descripcion
+    - tipo_anomalia
+    type: object
+  entities.CreateCamionRequest:
+    properties:
+      disponibilidad_id:
+        type: integer
+      es_rentado:
+        type: boolean
+      modelo:
+        type: string
+      placa:
+        type: string
+      tipo_camion_id:
+        type: integer
+    required:
+    - disponibilidad_id
+    - modelo
+    - placa
+    - tipo_camion_id
+    type: object
+  entities.CreateCiudadanoRequest:
+    properties:
+      alias:
+        type: string
+      email:
+        type: string
+      fcm_token:
+        type: string
+      password:
+        type: string
+    required:
+    - alias
+    - email
+    - fcm_token
+    - password
+    type: object
+  entities.CreateDomicilioRequest:
+    properties:
+      alias:
+        type: string
+      calle:
+        type: string
+      ciudadano_id:
+        type: integer
+      colonia_id:
+        type: integer
+      lat:
+        type: number
+      lon:
+        type: number
+      numero:
+        type: string
+      referencia:
+        type: string
+    required:
+    - alias
+    - calle
+    - colonia_id
+    - numero
+    type: object
+  entities.CreateEmpleadoRequest:
+    properties:
+      apellidos:
+        type: string
+      desactivado:
+        type: boolean
+      mail:
+        type: string
+      nombre:
+        type: string
+      password:
+        type: string
+      rol_id:
+        type: integer
+      username:
+        type: string
+    required:
+    - apellidos
+    - mail
+    - nombre
+    - password
+    - username
+    type: object
+  entities.CreateEstadoCamionRequest:
+    properties:
+      camion_id:
+        type: integer
+      estado:
+        type: string
+      estado_id:
+        type: integer
+      observaciones:
+        type: string
+      timestamp:
+        type: string
+    required:
+    - camion_id
+    type: object
+  entities.CreateHistorialAsignacionCamionRequest:
+    properties:
+      fecha_asignacion:
+        type: string
+      fecha_baja:
+        type: string
+      id_camion:
+        type: integer
+      id_chofer:
+        type: integer
+      id_historial:
+        type: integer
+    type: object
+  entities.CreatePuntoRecoleccionRequest:
+    properties:
+      cp:
+        type: string
+      lat:
+        type: number
+      lon:
+        type: number
+      punto_id:
+        type: integer
+      ruta_id:
+        type: integer
+    type: object
+  entities.CreateRegistroVaciadoRequest:
+    properties:
+      hora:
+        type: string
+      relleno_id:
+        type: integer
+      ruta_camion_id:
+        type: integer
+    type: object
+  entities.CreateRellenoSanitarioRequest:
+    properties:
+      capacidad_toneladas:
+        type: number
+      direccion:
+        type: string
+      es_rentado:
+        type: boolean
+      nombre:
+        type: string
+    required:
+    - nombre
+    type: object
+  entities.CreateRutaRequest:
+    properties:
+      descripcion:
+        type: string
+      json_ruta: {}
+      nombre:
+        type: string
+    required:
+    - json_ruta
+    - nombre
+    type: object
+  entities.DispositivoConductorResponse:
+    properties:
+      active:
+        type: boolean
+      api_key:
+        type: string
+      conductor_apellido:
+        type: string
+      conductor_id:
+        type: integer
+      conductor_mail:
+        type: string
+      conductor_nombre:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      mac_address:
+        type: string
+      nombre_dispositivo:
+        type: string
+      serial_number:
+        type: string
+    type: object
+  entities.Domicilio:
+    properties:
+      alias:
+        type: string
+      calle:
+        type: string
+      ciudadano_id:
+        type: integer
+      colonia_id:
+        type: integer
+      created_at:
+        type: string
+      id:
+        type: integer
+      numero:
+        type: string
+      referencia:
+        type: string
+    type: object
+  entities.DomicilioResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.Domicilio'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.Empleado:
+    properties:
+      apellidos:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      desactivado:
+        type: boolean
+      id:
+        type: integer
+      mail:
+        type: string
+      nombre:
+        type: string
+      rol_id:
+        type: integer
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  entities.EmpleadoListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/entities.Empleado'
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.EmpleadoMessageResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.EmpleadoResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.Empleado'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.EstadoCamion:
+    properties:
+      camion_id:
+        type: integer
+      estado:
+        description: nullable
+        type: string
+      estado_id:
+        type: integer
+      observaciones:
+        description: nullable
+        type: string
+      timestamp:
+        description: nullable
+        type: string
+    type: object
+  entities.EstadoCamionListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/entities.EstadoCamion'
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.EstadoCamionMessageResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.EstadoCamionResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.EstadoCamion'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.HistorialAsignacionCamion:
+    properties:
+      created_at:
+        type: string
+      eliminado:
+        type: boolean
+      fecha_asignacion:
+        type: string
+      fecha_baja:
+        type: string
+      id_camion:
+        type: integer
+      id_chofer:
+        type: integer
+      id_historial:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  entities.HistorialAsignacionCamionListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/entities.HistorialAsignacionCamion'
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.HistorialAsignacionCamionMessageResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.HistorialAsignacionCamionResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.HistorialAsignacionCamion'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.LoginCiudadanoRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  entities.LoginCiudadanoResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.Ciudadano'
+      message:
+        type: string
+      success:
+        type: boolean
+      token:
+        type: string
+    type: object
+  entities.LoginEmpleadoRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  entities.LoginEmpleadoResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.Empleado'
+      message:
+        type: string
+      success:
+        type: boolean
+      token:
+        type: string
+    type: object
+  entities.Notificacion:
+    properties:
+      activa:
+        type: boolean
+      creado_por:
+        type: integer
+      created_at:
+        type: string
+      id_camion_relacionado:
+        type: integer
+      id_falla_relacionado:
+        type: integer
+      id_mantenimiento_relacionado:
+        type: integer
+      mensaje:
+        type: string
+      notificacion_id:
+        type: integer
+      tipo:
+        type: string
+      titulo:
+        type: string
+      usuario_id:
+        type: integer
+    type: object
+  entities.NotificacionListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/entities.Notificacion'
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.NotificacionResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.Notificacion'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.PuntoRecoleccion:
+    properties:
+      cp:
+        type: string
+      created_at:
+        type: string
+      eliminado:
+        type: boolean
+      lat:
+        type: number
+      lon:
+        type: number
+      punto_id:
+        type: integer
+      ruta_id:
+        type: integer
+    type: object
+  entities.PuntoRecoleccionListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/entities.PuntoRecoleccion'
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.PuntoRecoleccionMessageResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.PuntoRecoleccionResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.PuntoRecoleccion'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.RegistroVaciado:
+    properties:
+      hora:
+        type: string
+      relleno_id:
+        type: integer
+      ruta_camion_id:
+        type: integer
+      vaciado_id:
+        type: integer
+    type: object
+  entities.RegistroVaciadoListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/entities.RegistroVaciado'
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.RegistroVaciadoMessageResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.RegistroVaciadoResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.RegistroVaciado'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.RellenoSanitario:
+    properties:
+      capacidad_toneladas:
+        type: number
+      direccion:
+        type: string
+      eliminado:
+        type: boolean
+      es_rentado:
+        type: boolean
+      nombre:
+        type: string
+      relleno_id:
+        type: integer
+    type: object
+  entities.RellenoSanitarioListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/entities.RellenoSanitario'
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.RellenoSanitarioMessageResponse:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.RellenoSanitarioResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/entities.RellenoSanitario'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  entities.Ruta:
+    properties:
+      created_at:
+        type: string
+      descripcion:
+        type: string
+      eliminado:
+        type: boolean
+      json_ruta:
+        type: string
+      nombre:
+        type: string
+      ruta_id:
+        type: integer
+    type: object
+  entities.RutaResponse:
+    properties:
+      data:
+        $ref: '#/definitions/entities.Ruta'
+      success:
+        type: boolean
+    type: object
+  entities.SolicitarDispositivoRequest:
+    properties:
+      mac_address:
+        type: string
+      nombre_dispositivo:
+        type: string
+      serial_number:
+        type: string
+    required:
+    - mac_address
+    - serial_number
+    type: object
+  entities.TipoAnomalia:
+    enum:
+    - ANOMALIA
+    - INCIDENCIA
+    - REPORTE_CONDUCTOR
+    - REPORTE_FALLA_CRITICA
+    - SEGUIMIENTO_FALLA_CRITICA
+    type: string
+    x-enum-varnames:
+    - TipoAnomaliaGeneral
+    - TipoAnomaliaIncidencia
+    - TipoAnomaliaReporteConductor
+    - TipoAnomaliaReporteFallaCritica
+    - TipoAnomaliaSeguimientoFallaCritica
+  entities.UpdateAnomaliaRequest:
+    properties:
+      anomalia_referencia_id:
+        type: integer
+      camion_id:
+        type: integer
+      conductor_id:
+        type: integer
+      descripcion:
+        type: string
+      eliminado:
+        type: boolean
+      estado:
+        type: string
+      fecha_reporte:
+        type: string
+      fecha_resolucion:
+        type: string
+      json_ruta:
+        type: string
+      punto_id:
+        type: integer
+      ruta_id:
+        type: integer
+      tipo_anomalia:
+        type: string
+    required:
+    - descripcion
+    - tipo_anomalia
+    type: object
+  entities.UpdateCamionRequest:
+    properties:
+      disponibilidad_id:
+        type: integer
+      es_rentado:
+        type: boolean
+      modelo:
+        type: string
+      placa:
+        type: string
+      tipo_camion_id:
+        type: integer
+    type: object
+  entities.UpdateCiudadanoRequest:
+    properties:
+      alias:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  entities.UpdateEmpleadoRequest:
+    properties:
+      apellidos:
+        type: string
+      desactivado:
+        type: boolean
+      mail:
+        type: string
+      nombre:
+        type: string
+      password:
+        type: string
+      rol_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  entities.UpdateEstadoCamionRequest:
+    properties:
+      camion_id:
+        type: integer
+      estado:
+        type: string
+      estado_id:
+        type: integer
+      observaciones:
+        type: string
+      timestamp:
+        type: string
+    type: object
+  entities.UpdateHistorialAsignacionCamionRequest:
+    properties:
+      fecha_asignacion:
+        type: string
+      fecha_baja:
+        type: string
+      id_camion:
+        type: integer
+      id_chofer:
+        type: integer
+      id_historial:
+        type: integer
+    type: object
+  entities.UpdatePuntoRecoleccionRequest:
+    properties:
+      cp:
+        type: string
+      lat:
+        type: number
+      lon:
+        type: number
+      punto_id:
+        type: integer
+      ruta_id:
+        type: integer
+    type: object
+  entities.UpdateRellenoSanitarioRequest:
+    properties:
+      capacidad_toneladas:
+        type: number
+      direccion:
+        type: string
+      es_rentado:
+        type: boolean
+      nombre:
+        type: string
+    type: object
+  infrastructure.broadcastMessageRequest:
+    properties:
+      body:
+        type: string
+      title:
+        type: string
+    required:
+    - body
+    - title
+    type: object
+  infrastructure.sendCitizenRequest:
+    properties:
+      body:
+        type: string
+      data:
+        additionalProperties:
+          type: string
+        type: object
+      title:
+        type: string
+      type:
+        type: string
+      user_ids:
+        items:
+          type: string
+        type: array
+    type: object
+info:
+  contact: {}
+  description: API para gestión de recolección de residuos
+  title: API Recolecta
+  version: "1.0"
+paths:
+  /api/alertas:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.AlertaUsuario'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar mis alertas
+      tags:
+      - AlertaUsuario
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Datos de la alerta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.AlertaUsuario'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear alerta de usuario
+      tags:
+      - AlertaUsuario
+  /api/alertas/{id}/leida:
+    put:
+      parameters:
+      - description: ID de la alerta
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Marcar alerta como leída
+      tags:
+      - AlertaUsuario
+  /api/anomalias/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar anomalías
+      tags:
+      - Anomalia
+    post:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateAnomaliaRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear anomalía
+      tags:
+      - Anomalia
+  /api/anomalias/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaMessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar anomalía
+      tags:
+      - Anomalia
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Anomalía por ID
+      tags:
+      - Anomalia
+    put:
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateAnomaliaRequest'
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar anomalía
+      tags:
+      - Anomalia
+  /api/anomalias/camion/{camionId}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Anomalías por camión
+      tags:
+      - Anomalia
+  /api/anomalias/chofer/{choferId}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Anomalías por chofer
+      tags:
+      - Anomalia
+  /api/anomalias/estado:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Anomalías por estado
+      tags:
+      - Anomalia
+  /api/anomalias/por-fecha:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Anomalías por rango de fecha
+      tags:
+      - Anomalia
+  /api/anomalias/punto/{puntoId}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Anomalías por punto
+      tags:
+      - Anomalia
+  /api/anomalias/referencia/{referenciaId}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Anomalías por anomalía de referencia (seguimientos)
+      tags:
+      - Anomalia
+  /api/anomalias/ruta/{rutaId}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Anomalías por ruta
+      tags:
+      - Anomalia
+  /api/anomalias/tipo:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Anomalías por tipo
+      tags:
+      - Anomalia
+  /api/camion/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar camiones
+      tags:
+      - Camion
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateCamionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.CamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear camión
+      tags:
+      - Camion
+  /api/camion/{id}:
+    delete:
+      parameters:
+      - description: ID camión
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionMessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar camión
+      tags:
+      - Camion
+    get:
+      parameters:
+      - description: ID camión
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener camión por ID
+      tags:
+      - Camion
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID camión
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateCamionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.CamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar camión
+      tags:
+      - Camion
+  /api/camion/modelo:
+    get:
+      parameters:
+      - description: Modelo
+        in: query
+        name: modelo
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Buscar camiones por modelo
+      tags:
+      - Camion
+  /api/camion/placa/{placa}:
+    get:
+      parameters:
+      - description: Placa
+        in: path
+        name: placa
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Buscar camión por placa
+      tags:
+      - Camion
+  /api/camion/telemetry:
+    post:
+      consumes:
+      - application/json
+      description: 'Actualiza la posición del camión (latitud, longitud), su estado
+        operativo actual en Redis (1: En ruta, 2: Vaciando tolva, 3: Repostando gasolina,
+        4: Volviendo a base, 5: En base) y registra eventos en la base de datos PostgreSQL.'
+      parameters:
+      - description: Dirección MAC del dispositivo Android
+        in: header
+        name: X-Device-MAC
+        required: true
+        type: string
+      - description: Número de serie del dispositivo Android
+        in: header
+        name: X-Device-Serial
+        required: true
+        type: string
+      - description: API Key única del dispositivo
+        in: header
+        name: X-Device-API-Key
+        required: true
+        type: string
+      - description: Datos de telemetría y estado operativo
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.ProcessTelemetryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Status OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Procesar telemetría de camión
+      tags:
+      - Camion
+  /api/ciudadanos:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.CiudadanoListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar ciudadanos
+      tags:
+      - Ciudadano
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateCiudadanoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.CiudadanoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      summary: Crear ciudadano
+      tags:
+      - Ciudadano
+  /api/ciudadanos/{id}:
+    delete:
+      parameters:
+      - description: ID del ciudadano
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.CiudadanoMessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar ciudadano
+      tags:
+      - Ciudadano
+    get:
+      parameters:
+      - description: ID del ciudadano
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.CiudadanoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener ciudadano por ID
+      tags:
+      - Ciudadano
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID del ciudadano
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateCiudadanoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.CiudadanoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar ciudadano
+      tags:
+      - Ciudadano
+  /api/ciudadanos/fcm-token:
+    patch:
+      consumes:
+      - application/json
+      description: Actualiza u overwrita el token FCM del ciudadano autenticado en
+        Redis.
+      parameters:
+      - description: FCM Token Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/application_ciudadano.UpdateFCMTokenInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar token FCM de ciudadano
+      tags:
+      - Ciudadano
+  /api/ciudadanos/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.LoginCiudadanoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.LoginCiudadanoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      summary: Login de ciudadano
+      tags:
+      - Ciudadano
+  /api/colonia:
+    get:
+      description: Obtiene el listado de todas las colonias disponibles. Endpoint
+        público
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ColoniaResponse'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar colonias
+      tags:
+      - Colonia
+    post:
+      consumes:
+      - application/json
+      description: Crea una nueva colonia. Solo administradores (rol ADMIN)
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateColoniaRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.ColoniaResponse'
+        "400":
+          description: Datos inválidos
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "401":
+          description: No autenticado
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "403":
+          description: No autorizado (requiere rol ADMIN)
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear colonia
+      tags:
+      - Colonia
+  /api/colonia/{id}:
+    delete:
+      description: Elimina una colonia de la base de datos. Solo administradores (rol
+        ADMIN)
+      parameters:
+      - description: ID de la colonia
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Colonia eliminada correctamente
+        "400":
+          description: ID inválido
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "401":
+          description: No autenticado
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "403":
+          description: No autorizado (requiere rol ADMIN)
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar colonia
+      tags:
+      - Colonia
+    get:
+      description: Obtiene los detalles de una colonia específica. Endpoint público
+      parameters:
+      - description: ID de la colonia
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ColoniaResponse'
+        "400":
+          description: ID inválido
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Colonia no encontrada
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener colonia por ID
+      tags:
+      - Colonia
+    put:
+      consumes:
+      - application/json
+      description: Actualiza los datos de una colonia existente. Solo administradores
+        (rol ADMIN)
+      parameters:
+      - description: ID de la colonia
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateColoniaRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ColoniaResponse'
+        "400":
+          description: Datos inválidos
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "401":
+          description: No autenticado
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "403":
+          description: No autorizado (requiere rol ADMIN)
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar colonia
+      tags:
+      - Colonia
+  /api/dispositivos/aprobar/{conductor_id}:
+    put:
+      consumes:
+      - application/json
+      description: Activa el dispositivo de un conductor para permitirle conectarse
+        y enviar telemetría/arrival. Solo accesible para Supervisor, Coordinador o
+        Administrador.
+      parameters:
+      - description: ID del Conductor
+        in: path
+        name: conductor_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Dispositivo aprobado
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: ID inválido
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Aprobar vinculación de dispositivo
+      tags:
+      - Dispositivo
+  /api/dispositivos/desvincular/{conductor_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Elimina/desvincula de forma lógica el dispositivo de un conductor,
+        permitiendo que solicite vincular otro. Solo accesible para Supervisor, Coordinador
+        o Administrador.
+      parameters:
+      - description: ID del Conductor
+        in: path
+        name: conductor_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Dispositivo desvinculado
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: ID inválido
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Desvincular dispositivo de conductor
+      tags:
+      - Dispositivo
+  /api/dispositivos/pendientes:
+    get:
+      consumes:
+      - application/json
+      description: Devuelve la lista de dispositivos que están solicitando vinculación
+        y esperan aprobación del supervisor. Solo accesible para Supervisor, Coordinador
+        o Administrador.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de dispositivos pendientes
+          schema:
+            additionalProperties:
+              items:
+                $ref: '#/definitions/entities.DispositivoConductorResponse'
+              type: array
+            type: object
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar dispositivos pendientes de aprobación
+      tags:
+      - Dispositivo
+  /api/dispositivos/solicitar:
+    post:
+      consumes:
+      - application/json
+      description: Registra una solicitud de vinculación para el conductor autenticado
+        y retorna la API Key generada (iniciando en estado inactivo hasta que el supervisor
+        la apruebe).
+      parameters:
+      - description: Datos físicos del dispositivo
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.SolicitarDispositivoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: API Key generada y mensaje de confirmación
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request / JSON inválido
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Solicitar vinculación de dispositivo
+      tags:
+      - Dispositivo
+  /api/domicilios:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.DomicilioResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar domicilios
+      tags:
+      - Domicilio
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateDomicilioRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.DomicilioResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear domicilio
+      tags:
+      - Domicilio
+  /api/domicilios/{id}:
+    delete:
+      parameters:
+      - description: ID del domicilio
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.DomicilioResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar domicilio
+      tags:
+      - Domicilio
+    get:
+      parameters:
+      - description: ID del domicilio
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.DomicilioResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener domicilio por ID
+      tags:
+      - Domicilio
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID del domicilio
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateDomicilioRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.DomicilioResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar domicilio
+      tags:
+      - Domicilio
+  /api/empleados/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EmpleadoListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar empleados
+      tags:
+      - Empleado
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Empleado
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateEmpleadoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.EmpleadoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear empleado
+      tags:
+      - Empleado
+  /api/empleados/{id}:
+    delete:
+      parameters:
+      - description: ID del empleado
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EmpleadoMessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar empleado
+      tags:
+      - Empleado
+    get:
+      parameters:
+      - description: ID del empleado
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EmpleadoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener empleado por ID
+      tags:
+      - Empleado
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID del empleado
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Datos a actualizar
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateEmpleadoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EmpleadoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar empleado
+      tags:
+      - Empleado
+  /api/empleados/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Credenciales de login
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.LoginEmpleadoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.LoginEmpleadoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      summary: Login de empleado
+      tags:
+      - Empleado
+  /api/estado-camion/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar estados de camión
+      tags:
+      - EstadoCamion
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateEstadoCamionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear estado de camión
+      tags:
+      - EstadoCamion
+  /api/estado-camion/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionMessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar estado de camión
+      tags:
+      - EstadoCamion
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateEstadoCamionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar estado de camión
+      tags:
+      - EstadoCamion
+  /api/estado-camion/camion/{id}:
+    get:
+      parameters:
+      - description: ID camión
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Estado de camión por ID
+      tags:
+      - EstadoCamion
+  /api/historial-asignacion/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar historiales de asignación
+      tags:
+      - HistorialAsignacion
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateHistorialAsignacionCamionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear historial de asignación de camión
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/{id}:
+    delete:
+      parameters:
+      - description: ID historial
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionMessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar historial de asignación
+      tags:
+      - HistorialAsignacion
+    get:
+      parameters:
+      - description: ID historial
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener historial por ID
+      tags:
+      - HistorialAsignacion
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID historial
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateHistorialAsignacionCamionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar historial de asignación
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/activo/camion/{camionId}:
+    get:
+      parameters:
+      - description: ID camión
+        in: path
+        name: camionId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Asignación activa por camión
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/activo/chofer/{choferId}:
+    get:
+      parameters:
+      - description: ID chofer
+        in: path
+        name: choferId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Asignación activa por chofer
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/baja/{id}:
+    put:
+      parameters:
+      - description: ID historial
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Dar de baja historial
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/camion/{camionId}:
+    get:
+      parameters:
+      - description: ID camión
+        in: path
+        name: camionId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Historial por camión
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/cerrar/camion/{camionId}:
+    put:
+      parameters:
+      - description: ID camión
+        in: path
+        name: camionId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Cerrar asignación activa de camión
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/cerrar/chofer/{choferId}:
+    put:
+      parameters:
+      - description: ID chofer
+        in: path
+        name: choferId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Cerrar asignación activa de chofer
+      tags:
+      - HistorialAsignacion
+  /api/historial-asignacion/chofer/{choferId}:
+    get:
+      parameters:
+      - description: ID chofer
+        in: path
+        name: choferId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Historial por chofer
+      tags:
+      - HistorialAsignacion
+  /api/notificaciones-push/ciudadanos/{citizen_id}/historial:
+    get:
+      description: Retorna las últimas 50 notificaciones recibidas o fallidas enviadas
+        al ciudadano, leídas de la lista en Redis.
+      parameters:
+      - description: ID del Ciudadano
+        in: path
+        name: citizen_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/application.InboxRecord'
+            type: array
+        "500":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener bandeja de entrada del ciudadano
+      tags:
+      - PushNotification
+  /api/notificaciones-push/ciudadanos/difusion:
+    post:
+      consumes:
+      - application/json
+      description: Envía una notificación push con título y cuerpo a todos los ciudadanos
+        registrados en el sistema.
+      parameters:
+      - description: Datos del mensaje general
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/infrastructure.broadcastMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Detalles de envío para cada ciudadano
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/domain.SendResult'
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Enviar notificación general a todos los ciudadanos (Broadcast)
+      tags:
+      - PushNotification
+  /api/notificaciones-push/ciudadanos/difusion/punto/{point_id}:
+    post:
+      consumes:
+      - application/json
+      description: Envía una notificación push con título y cuerpo a todos los ciudadanos
+        con domicilios en un radio de 200m del punto de parada especificado.
+      parameters:
+      - description: ID del Punto de Parada (ej. 15)
+        in: path
+        name: point_id
+        required: true
+        type: string
+      - description: Datos del mensaje general
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/infrastructure.broadcastMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Detalles de envío para cada ciudadano
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/domain.SendResult'
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Enviar notificación general a ciudadanos cerca de un punto
+      tags:
+      - PushNotification
+  /api/notificaciones-push/ciudadanos/difusion/ruta/{route_id}:
+    post:
+      consumes:
+      - application/json
+      description: Envía una notificación push con título y cuerpo a todos los ciudadanos
+        que tengan un domicilio registrado en la colonia de la ruta especificada.
+      parameters:
+      - description: ID de la Ruta
+        in: path
+        name: route_id
+        required: true
+        type: integer
+      - description: Datos del mensaje general
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/infrastructure.broadcastMessageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Detalles de envío para cada ciudadano
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/domain.SendResult'
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Enviar notificación general a ciudadanos de una ruta
+      tags:
+      - PushNotification
+  /api/notificaciones-push/ciudadanos/enviar:
+    post:
+      consumes:
+      - application/json
+      description: Envía una notificación push a una lista de IDs de ciudadanos específicos.
+      parameters:
+      - description: Datos del mensaje
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/infrastructure.sendCitizenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Detalles de envío para cada ciudadano
+          schema:
+            additionalProperties:
+              $ref: '#/definitions/domain.SendResult'
+            type: object
+        "400":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Enviar notificación push a ciudadanos específicos
+      tags:
+      - PushNotification
+  /api/notificaciones-push/fallidas:
+    get:
+      description: Retorna todas las notificaciones que no pudieron ser entregadas
+        en un rango de tiempo especificado. Soporta formatos RFC3339 (ej. 2026-07-19T18:00:00Z)
+        o solo fecha YYYY-MM-DD (ej. 2026-07-19).
+      parameters:
+      - description: Fecha de inicio (ej. 2026-07-19 o 2026-07-19T00:00:00Z)
+        in: query
+        name: start_time
+        type: string
+      - description: Fecha de fin (ej. 2026-07-19 o 2026-07-19T23:59:59Z)
+        in: query
+        name: end_time
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/application.FailedNotificationRecord'
+            type: array
+        "400":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Consultar fallas de entrega globales
+      tags:
+      - PushNotification
+  /api/notificaciones/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar notificaciones
+      tags:
+      - Notificacion
+  /api/notificaciones/{id}:
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Notificación por ID
+      tags:
+      - Notificacion
+  /api/notificaciones/{id}/marcar-leida:
+    patch:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Marcar notificación como leída
+      tags:
+      - Notificacion
+  /api/notificaciones/{id}/reactivar:
+    patch:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Reactivar notificación
+      tags:
+      - Notificacion
+  /api/notificaciones/activas:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Notificaciones activas
+      tags:
+      - Notificacion
+  /api/notificaciones/activas/usuario/{usuario_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Notificaciones activas por usuario
+      tags:
+      - Notificacion
+  /api/notificaciones/camion/{camion_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Notificaciones por camión
+      tags:
+      - Notificacion
+  /api/notificaciones/camion/{camion_id}/tipo/{tipo}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Notificaciones por camión y tipo
+      tags:
+      - Notificacion
+  /api/notificaciones/count/activas/usuario/{usuario_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Contar notificaciones activas por usuario
+      tags:
+      - Notificacion
+  /api/notificaciones/count/camion/{camion_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Contar notificaciones por camión
+      tags:
+      - Notificacion
+  /api/notificaciones/count/tipo/{tipo}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Contar notificaciones por tipo
+      tags:
+      - Notificacion
+  /api/notificaciones/count/usuario/{usuario_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Contar notificaciones por usuario
+      tags:
+      - Notificacion
+  /api/notificaciones/globales:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Notificaciones globales
+      tags:
+      - Notificacion
+  /api/notificaciones/inactivas:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Notificaciones inactivas
+      tags:
+      - Notificacion
+  /api/notificaciones/no-leidas/usuario/{usuario_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Número de notificaciones no leídas
+      tags:
+      - Notificacion
+  /api/notificaciones/rango-fecha:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Notificaciones por rango de fecha
+      tags:
+      - Notificacion
+  /api/notificaciones/tipo/{tipo}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Notificaciones por tipo
+      tags:
+      - Notificacion
+  /api/notificaciones/usuario/{usuario_id}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Notificaciones por usuario
+      tags:
+      - Notificacion
+  /api/notificaciones/usuario/{usuario_id}/marcar-todas-leidas:
+    patch:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Marcar todas como leídas
+      tags:
+      - Notificacion
+  /api/notificaciones/usuario/{usuario_id}/tipo/{tipo}:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.NotificacionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Notificaciones por usuario y tipo
+      tags:
+      - Notificacion
+  /api/puntos-recoleccion/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.PuntoRecoleccionListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar puntos de recolección
+      tags:
+      - PuntoRecoleccion
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreatePuntoRecoleccionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.PuntoRecoleccionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear punto de recolección
+      tags:
+      - PuntoRecoleccion
+  /api/puntos-recoleccion/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.PuntoRecoleccionMessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar punto de recolección
+      tags:
+      - PuntoRecoleccion
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.PuntoRecoleccionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Punto de recolección por ID
+      tags:
+      - PuntoRecoleccion
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdatePuntoRecoleccionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.PuntoRecoleccionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar punto de recolección
+      tags:
+      - PuntoRecoleccion
+  /api/puntos-recoleccion/ruta/{rutaId}:
+    get:
+      parameters:
+      - description: ID ruta
+        in: path
+        name: rutaId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.PuntoRecoleccionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Puntos de recolección por ruta
+      tags:
+      - PuntoRecoleccion
+  /api/registro-vaciado/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RegistroVaciadoListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar registros de vaciado
+      tags:
+      - RegistroVaciado
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateRegistroVaciadoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.RegistroVaciadoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear registro de vaciado
+      tags:
+      - RegistroVaciado
+  /api/registro-vaciado/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RegistroVaciadoMessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar registro de vaciado
+      tags:
+      - RegistroVaciado
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RegistroVaciadoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Registro vaciado por ID
+      tags:
+      - RegistroVaciado
+  /api/registro-vaciado/exists/{id}:
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RegistroVaciadoListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Verificar existencia registro vaciado
+      tags:
+      - RegistroVaciado
+  /api/registro-vaciado/relleno/{relleno_id}:
+    get:
+      parameters:
+      - description: ID relleno
+        in: path
+        name: relleno_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RegistroVaciadoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Registros vaciado por relleno
+      tags:
+      - RegistroVaciado
+  /api/registro-vaciado/ruta-camion/{ruta_camion_id}:
+    get:
+      parameters:
+      - description: ID ruta-camión
+        in: path
+        name: ruta_camion_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RegistroVaciadoResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Registros vaciado por ruta-camión
+      tags:
+      - RegistroVaciado
+  /api/relleno-sanitario/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RellenoSanitarioListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar rellenos sanitarios
+      tags:
+      - RellenoSanitario
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateRellenoSanitarioRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.RellenoSanitarioResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear relleno sanitario
+      tags:
+      - RellenoSanitario
+  /api/relleno-sanitario/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RellenoSanitarioMessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar relleno sanitario
+      tags:
+      - RellenoSanitario
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RellenoSanitarioResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Relleno sanitario por ID
+      tags:
+      - RellenoSanitario
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateRellenoSanitarioRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RellenoSanitarioResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar relleno sanitario
+      tags:
+      - RellenoSanitario
+  /api/relleno-sanitario/buscar:
+    get:
+      parameters:
+      - description: Nombre
+        in: query
+        name: nombre
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RellenoSanitarioResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Buscar relleno sanitario por nombre
+      tags:
+      - RellenoSanitario
+  /api/relleno-sanitario/exists/{id}:
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RellenoSanitarioListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Verificar existencia relleno sanitario
+      tags:
+      - RellenoSanitario
+  /api/roles:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar roles
+      tags:
+      - Rol
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Nombre del rol
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear rol
+      tags:
+      - Rol
+  /api/roles/{id}:
+    delete:
+      parameters:
+      - description: ID rol
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar rol
+      tags:
+      - Rol
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID rol
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar rol
+      tags:
+      - Rol
+  /api/ruta-camion/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar rutas-camión
+      tags:
+      - RutaCamion
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateHistorialAsignacionCamionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear ruta-camión
+      tags:
+      - RutaCamion
+  /api/ruta-camion/{id}:
+    delete:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionMessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar ruta-camión
+      tags:
+      - RutaCamion
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener ruta-camión por ID
+      tags:
+      - RutaCamion
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateHistorialAsignacionCamionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar ruta-camión
+      tags:
+      - RutaCamion
+  /api/ruta-camion/camion/{camion_id}:
+    get:
+      parameters:
+      - description: ID camión
+        in: path
+        name: camion_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Rutas-camión por ID de camión
+      tags:
+      - RutaCamion
+  /api/ruta-camion/exists/{id}:
+    get:
+      parameters:
+      - description: ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Verificar existencia ruta-camión
+      tags:
+      - RutaCamion
+  /api/ruta-camion/ruta/{ruta_id}:
+    get:
+      parameters:
+      - description: ID ruta
+        in: path
+        name: ruta_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Rutas-camión por ID de ruta
+      tags:
+      - RutaCamion
+  /api/rutas/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar rutas
+      tags:
+      - Ruta
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateRutaRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.RutaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear ruta
+      tags:
+      - Ruta
+  /api/rutas/{id}:
+    delete:
+      parameters:
+      - description: ID ruta
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionMessageResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar ruta
+      tags:
+      - Ruta
+    get:
+      parameters:
+      - description: ID ruta
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener ruta por ID
+      tags:
+      - Ruta
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID ruta
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.UpdateEstadoCamionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar ruta
+      tags:
+      - Ruta
+  /api/rutas/activas:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.EstadoCamionListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar rutas activas
+      tags:
+      - Ruta
+  /api/rutas/arrival:
+    post:
+      consumes:
+      - application/json
+      description: Actualiza el estado a ARRIVAL y registra el último punto visitado
+        en Redis. Además, realiza geofencing en el radio de la parada y dispara notificaciones
+        push en tiempo real a los ciudadanos cercanos.
+      parameters:
+      - description: Dirección MAC del dispositivo Android
+        in: header
+        name: X-Device-MAC
+        required: true
+        type: string
+      - description: Número de serie del dispositivo Android
+        in: header
+        name: X-Device-Serial
+        required: true
+        type: string
+      - description: API Key única del dispositivo
+        in: header
+        name: X-Device-API-Key
+        required: true
+        type: string
+      - description: Datos de arribo a parada
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.ProcessArrivalRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Status OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Procesar arribo de camión a parada
+      tags:
+      - Ruta
+  /api/tipo-camion/:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionListResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar tipos de camión
+      tags:
+      - TipoCamion
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entities.CreateHistorialAsignacionCamionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear tipo de camión
+      tags:
+      - TipoCamion
+  /api/tipo-camion/{id}:
+    delete:
+      parameters:
+      - description: ID tipo camión
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionMessageResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar tipo de camión
+      tags:
+      - TipoCamion
+  /api/tipo-camion/nombre/{nombre}:
+    get:
+      parameters:
+      - description: Nombre del tipo
+        in: path
+        name: nombre
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.HistorialAsignacionCamionResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener tipo de camión por nombre
+      tags:
+      - TipoCamion
+securityDefinitions:
+  BearerAuth:
+    description: 'Escribe ''Bearer '' seguido de tu token JWT. Ejemplo: "Bearer eyJhbG..."'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
