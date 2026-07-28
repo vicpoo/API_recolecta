@@ -159,7 +159,7 @@ func (ctr *DispositivoController) Desvincular(c *gin.Context) {
 
 // ListarPendientes devuelve todos los dispositivos con active = false
 // @Summary      Listar dispositivos pendientes de aprobación
-// @Description  Devuelve la lista de dispositivos que están solicitando vinculación y esperan aprobación del supervisor. Solo accesible para Supervisor, Coordinador o Administrador.
+// @Description  Devuelve la lista de dispositivos que estan solicitando vinculación y esperan aprobación del supervisor. Solo accesible para Supervisor, Coordinador o Administrador.
 // @Tags         Dispositivo
 // @Accept       json
 // @Produce      json
@@ -180,5 +180,31 @@ func (ctr *DispositivoController) ListarPendientes(c *gin.Context) {
 
 	core.RespondOK(c, gin.H{
 		"data": pendientes,
+	})
+}
+
+// ListarActivos devuelve todos los dispositivos con active = true
+// @Summary      Listar dispositivos vinculados (activos)
+// @Description  Devuelve la lista de dispositivos ya aprobados y vinculados a conductores. Solo accesible para Supervisor, Coordinador o Administrador.
+// @Tags         Dispositivo
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} map[string][]entities.DispositivoConductorResponse "Lista de dispositivos activos"
+// @Failure      500 {object} core.ErrorResponse "Error interno del servidor"
+// @Security     BearerAuth
+// @Router       /api/dispositivos/activos [get]
+func (ctr *DispositivoController) ListarActivos(c *gin.Context) {
+	activos, err := ctr.useCases.ListarActivos(c.Request.Context())
+	if err != nil {
+		core.RespondInternalServerError(c, "error al listar dispositivos activos", err)
+		return
+	}
+
+	if activos == nil {
+		activos = []*entities.DispositivoConductorResponse{}
+	}
+
+	core.RespondOK(c, gin.H{
+		"data": activos,
 	})
 }

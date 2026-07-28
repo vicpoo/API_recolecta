@@ -56,6 +56,10 @@ func (uc *DispositivoUseCases) ListarPendientes(ctx context.Context) ([]*entitie
 	return uc.repo.ListarPendientes(ctx)
 }
 
+func (uc *DispositivoUseCases) ListarActivos(ctx context.Context) ([]*entities.DispositivoConductorResponse, error) {
+	return uc.repo.ListarActivos(ctx)
+}
+
 // generateAPIKey crea una clave aleatoria de 256 bits (64 caracteres hexadecimales)
 func generateAPIKey() (string, error) {
 	b := make([]byte, 32)
