@@ -20,7 +20,7 @@ import (
 // para siempre, sin que nadie lo reintente.
 //
 // Este worker corre en background durante toda la vida del proceso
-// (arrancado una sola vez con `go worker.Run()`, como worker de larga duración) y
+// (arrancado una sola vez con `go worker.Run()`, como worker de larga duraciÃ³n) y
 // cada `intervalo` revisa la tabla anomalia por filas reclamables:
 // pendientes nunca procesadas, 'procesando' abandonadas hace rato (el
 // goroutine que las tomo murio antes de terminar), o en 'error' con

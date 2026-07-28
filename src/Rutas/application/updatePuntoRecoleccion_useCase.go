@@ -1,6 +1,8 @@
 package application
 
 import (
+	"context"
+
 	"github.com/vicpoo/API_recolecta/src/Rutas/domain/entities"
 	"github.com/vicpoo/API_recolecta/src/Rutas/domain/ports"
 )
@@ -13,6 +15,6 @@ func NewUpdatePuntoRecoleccionUseCase(repo ports.IPuntoRecoleccion) *UpdatePunto
 	return &UpdatePuntoRecoleccionUseCase{repo: repo}
 }
 
-func (uc *UpdatePuntoRecoleccionUseCase) Execute(id int32, p *entities.PuntoRecoleccion) (*entities.PuntoRecoleccion, error) {
-	return uc.repo.Update(id, p)
+func (uc *UpdatePuntoRecoleccionUseCase) Execute(ctx context.Context, tenantID int, id int32, p *entities.PuntoRecoleccion) (*entities.PuntoRecoleccion, error) {
+	return uc.repo.Update(ctx, tenantID, id, p)
 }

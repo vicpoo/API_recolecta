@@ -34,7 +34,7 @@ func (router *AnomaliaRouter) Run() {
 		getMisAnomaliasController, pipelineRetryWorker := InitAnomaliaDependencies(router.alertaRepo, router.modeloReportesURL, router.clasificadorURL, router.anomaliaCreadaWebhookURL)
 
 	// Red de seguridad del pipeline modelo_reportes -> clasificador_reportes:
-	// corre durante toda la vida del proceso, en un goroutine de larga duración, mas
+	// corre durante toda la vida del proceso, igual que tracking_ws.Hub mas
 	// abajo en dependencies.go. Ver pipeline_retry_worker.go.
 	go pipelineRetryWorker.Run()
 
