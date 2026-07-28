@@ -75,13 +75,22 @@ func (r *PostgresDispositivoRepository) Desvincular(ctx context.Context, conduct
 }
 
 func (r *PostgresDispositivoRepository) ListarPendientes(ctx context.Context) ([]*entities.DispositivoConductorResponse, error) {
+	return r.listarPorEstado(ctx, false)
+}
+
+func (r *PostgresDispositivoRepository) ListarActivos(ctx context.Context) ([]*entities.DispositivoConductorResponse, error) {
+	return r.listarPorEstado(ctx, true)
+}
+
+func (r *PostgresDispositivoRepository) listarPorEstado(ctx context.Context, active bool) ([]*entities.DispositivoConductorResponse, error) {
 	query := `
 		SELECT d.id, d.conductor_id, e.nombre, e.apellidos, e.mail, d.mac_address, d.serial_number, d.api_key, d.nombre_dispositivo, d.active, d.created_at
 		FROM dispositivos d
 		JOIN empleado e ON d.conductor_id = e.id
-		WHERE d.active = FALSE AND d.deleted_at IS NULL
+		WHERE d.active = $1 AND d.deleted_at IS NULL
+		ORDER BY d.updated_at DESC NULLS LAST, d.created_at DESC
 	`
-	rows, err := r.db.Query(ctx, query)
+	rows, err := r.db.Query(ctx, query, active)
 	if err != nil {
 		return nil, err
 	}

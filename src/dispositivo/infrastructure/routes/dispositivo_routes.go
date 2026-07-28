@@ -18,5 +18,6 @@ func RegisterDispositivoRoutes(r *gin.Engine, ctrl *controller.DispositivoContro
 		group.PUT("/aprobar/:conductor_id", ctrl.Aprobar)
 		group.DELETE("/desvincular/:conductor_id", ctrl.Desvincular)
 		group.GET("/pendientes", ctrl.ListarPendientes)
+		group.GET("/activos", ctrl.ListarActivos)
 	}
 }
