@@ -266,12 +266,14 @@ func (pg *PostgresRuta) GetActivas(ctx context.Context, tenantID int) ([]entitie
 				(r.deleted_at IS NOT NULL) AS eliminado,
 				r.created_at,
 				COALESCE(
-					hac.id_chofer,
+					-- Preferir asignación explícita del Dashboard (json_ruta.conductor_id)
+					-- sobre el chofer derivado de camión/historial (seeds viejos).
 					CASE
 						WHEN (r.json_ruta::jsonb->>'conductor_id') ~ '^[0-9]+$'
 						THEN (r.json_ruta::jsonb->>'conductor_id')::int
 						ELSE NULL
-					END
+					END,
+					hac.id_chofer
 				) AS conductor_id
 			FROM ruta r
 			LEFT JOIN LATERAL (

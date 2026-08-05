@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
@@ -37,9 +38,24 @@ func (ctr *GetRutaActivasController) Run(ctx *gin.Context) {
 		return
 	}
 
+	// La app móvil manda ?conductor_id=; si viene, devolver solo esas rutas.
+	var filterConductor *int32
+	if raw := ctx.Query("conductor_id"); raw != "" {
+		if n, err := strconv.Atoi(raw); err == nil {
+			v := int32(n)
+			filterConductor = &v
+		}
+	}
+
 	// Convertir cada json_ruta de string a objeto
 	var rutasResponse []gin.H
 	for _, ruta := range rutas {
+		if filterConductor != nil {
+			if ruta.ConductorID == nil || *ruta.ConductorID != *filterConductor {
+				continue
+			}
+		}
+
 		var jsonRuta interface{}
 		if err := json.Unmarshal([]byte(ruta.JsonRuta), &jsonRuta); err != nil {
 			// Si hay error al parsear, devolver el string original
