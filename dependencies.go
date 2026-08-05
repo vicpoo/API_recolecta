@@ -291,12 +291,14 @@ func InitDependencies() {
 
 	puntoRepository := puntoAdapters.NewPostgresPuntoRecoleccion()
 
-	createPuntoUC := puntoUseCases.NewSavePuntoRecoleccionUseCase(puntoRepository)
-	updatePuntoUC := puntoUseCases.NewUpdatePuntoRecoleccionUseCase(puntoRepository)
+	syncRutaJsonUC := rutaUseCases.NewSyncRutaJsonFromPuntosUseCase(rutaRepository, puntoRepository)
+
+	createPuntoUC := puntoUseCases.NewSavePuntoRecoleccionUseCase(puntoRepository, syncRutaJsonUC)
+	updatePuntoUC := puntoUseCases.NewUpdatePuntoRecoleccionUseCase(puntoRepository, syncRutaJsonUC)
 	getAllPuntoUC := puntoUseCases.NewListAllPuntoRecoleccionUseCase(puntoRepository)
 	getPuntoByIdUC := puntoUseCases.NewGetPuntoRecoleccionByIdUseCase(puntoRepository)
 	getPuntoByRutaUC := puntoUseCases.NewGetPuntoRecoleccionByRutaUseCase(puntoRepository)
-	deletePuntoUC := puntoUseCases.NewDeletePuntoRecoleccionUseCase(puntoRepository)
+	deletePuntoUC := puntoUseCases.NewDeletePuntoRecoleccionUseCase(puntoRepository, syncRutaJsonUC)
 
 	createPuntoCTR := puntoControllers.NewCreatePuntoRecoleccionController(createPuntoUC)
 	updatePuntoCTR := puntoControllers.NewUpdatePuntoRecoleccionController(updatePuntoUC)
