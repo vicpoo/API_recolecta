@@ -9,13 +9,14 @@ import (
 type RutaRoutes struct {
 	engine *gin.Engine
 
-	createController  *controllers.CreateRutaController
-	getAllController  *controllers.GetAllRutaController
-	getByIdController *controllers.GetRutaByIdController
-	updateController  *controllers.UpdateRutaController
-	deleteController  *controllers.DeleteRutaController
-	getActivas        *controllers.GetRutaActivasController
-	arrivalController *controllers.ProcessArrivalController // Controlador de arribos
+	createController     *controllers.CreateRutaController
+	getAllController     *controllers.GetAllRutaController
+	getByIdController    *controllers.GetRutaByIdController
+	updateController     *controllers.UpdateRutaController
+	deleteController     *controllers.DeleteRutaController
+	getActivas           *controllers.GetRutaActivasController
+	arrivalController    *controllers.ProcessArrivalController
+	optimizarController  *controllers.OptimizarRutaController
 }
 
 func NewRutaRoutes(
@@ -26,18 +27,20 @@ func NewRutaRoutes(
 	updateController *controllers.UpdateRutaController,
 	deleteController *controllers.DeleteRutaController,
 	getActivasController *controllers.GetRutaActivasController,
-	arrivalController *controllers.ProcessArrivalController, // Inyección de arribos
+	arrivalController *controllers.ProcessArrivalController,
+	optimizarController *controllers.OptimizarRutaController,
 ) *RutaRoutes {
 	return &RutaRoutes{
 		engine: engine,
 
-		createController:  createController,
-		getAllController:  getAllController,
-		getByIdController: getByIdController,
-		updateController:  updateController,
-		deleteController:  deleteController,
-		getActivas:        getActivasController,
-		arrivalController: arrivalController,
+		createController:    createController,
+		getAllController:    getAllController,
+		getByIdController:   getByIdController,
+		updateController:    updateController,
+		deleteController:    deleteController,
+		getActivas:          getActivasController,
+		arrivalController:   arrivalController,
+		optimizarController: optimizarController,
 	}
 }
 
@@ -57,6 +60,7 @@ func (r *RutaRoutes) Run() {
 		write := routes.Group("")
 		write.Use(core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN, core.CONDUCTOR, core.SUPERVISOR, core.COORDINADOR))
 		write.POST("/", r.createController.Run)
+		write.POST("/:id/optimizar", r.optimizarController.Run)
 		write.PUT("/:id", r.updateController.Run)
 		write.DELETE("/:id", r.deleteController.Run)
 	}

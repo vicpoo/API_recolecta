@@ -10,6 +10,7 @@ type Config struct {
 	ModeloReportesURL        string
 	ClasificadorURL          string
 	AnomaliaCreadaWebhookURL string
+	AGApiURL                 string
 }
 
 func LoadConfig() (*Config, error) {
@@ -34,6 +35,9 @@ func LoadConfig() (*Config, error) {
 		// hablar con el AG ni con ese WebSocket directamente. Ver
 		// docs/implementacion-fix-anomalias-y-ag.md.
 		AnomaliaCreadaWebhookURL: getEnvOrDefault("ANOMALIA_CREADA_WEBHOOK_URL", "https://api-rutas.practicasoftware.fun/anomalia_creada"),
+		// algoritmo_genetico_rutas (FastAPI, POST /optimizar). En Docker local
+		// suele ser host:8003; en produccion https://ag.practicasoftware.fun
+		AGApiURL: getEnvOrDefault("AG_API_URL", "https://ag.practicasoftware.fun"),
 	}
 	// Aqui se pueden anadir validaciones (ej. que no esten vacios)
 	return cfg, nil

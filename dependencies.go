@@ -33,6 +33,7 @@ import (
 	registroVaciadoAdapters "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/adapters"
 	rsAdapters "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/adapters"
 	rutaAdapters "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/adapters"
+	agInfra "github.com/vicpoo/API_recolecta/src/Rutas/infrastructure/ag"
 	camionControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
 	estadoCamionControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
 	puntoControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
@@ -268,6 +269,11 @@ func InitDependencies() {
 	deleteRutaCtr := rutaControllers.NewDeleteRutaController(deleteRutaUc)
 	getRutasActivasCtr := rutaControllers.NewGetRutaActivasController(getRutasActivasUc)
 
+	puntoRepository := puntoAdapters.NewPostgresPuntoRecoleccion()
+	agClient := agInfra.NewClient(cfg.AGApiURL)
+	optimizarRutaUc := rutaUseCases.NewOptimizarRutaUseCase(rutaRepository, puntoRepository, agClient)
+	optimizarRutaCtr := rutaControllers.NewOptimizarRutaController(optimizarRutaUc)
+
 	processArrivalUC := camionUseCases.NewProcessTruckArrivalUseCase(redisClient, rulesRepo, fcmClient)
 	arrivalController := rutaControllers.NewProcessArrivalController(processArrivalUC)
 
@@ -280,6 +286,7 @@ func InitDependencies() {
 		deleteRutaCtr,
 		getRutasActivasCtr,
 		arrivalController,
+		optimizarRutaCtr,
 	)
 
 	rutaRoutes.Run()
@@ -288,8 +295,6 @@ func InitDependencies() {
 	recorridoCtr := rutaControllers.NewRecorridoController(recorridoStore)
 	recorridoRoutes := recorridoRoutesPkg.NewRecorridoRoutes(engine, recorridoCtr)
 	recorridoRoutes.Run()
-
-	puntoRepository := puntoAdapters.NewPostgresPuntoRecoleccion()
 
 	syncRutaJsonUC := rutaUseCases.NewSyncRutaJsonFromPuntosUseCase(rutaRepository, puntoRepository)
 
