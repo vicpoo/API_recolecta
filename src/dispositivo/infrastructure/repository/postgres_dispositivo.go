@@ -107,6 +107,14 @@ func (r *PostgresDispositivoRepository) Desvincular(ctx context.Context, tenantI
 }
 
 func (r *PostgresDispositivoRepository) ListarPendientes(ctx context.Context, tenantID int) ([]*entities.DispositivoConductorResponse, error) {
+	return r.listarPorEstado(ctx, tenantID, false)
+}
+
+func (r *PostgresDispositivoRepository) ListarActivos(ctx context.Context, tenantID int) ([]*entities.DispositivoConductorResponse, error) {
+	return r.listarPorEstado(ctx, tenantID, true)
+}
+
+func (r *PostgresDispositivoRepository) listarPorEstado(ctx context.Context, tenantID int, active bool) ([]*entities.DispositivoConductorResponse, error) {
 	var result []*entities.DispositivoConductorResponse
 
 	err := core.RunInTenantTx(ctx, r.db, tenantID, func(tx pgx.Tx) error {
@@ -114,9 +122,10 @@ func (r *PostgresDispositivoRepository) ListarPendientes(ctx context.Context, te
 			SELECT d.id, d.conductor_id, e.nombre, e.apellidos, e.mail, d.mac_address, d.serial_number, d.api_key, d.nombre_dispositivo, d.active, d.created_at
 			FROM dispositivos d
 			JOIN empleado e ON d.conductor_id = e.id
-			WHERE d.active = FALSE AND d.deleted_at IS NULL AND d.tenant_id = $1
+			WHERE d.active = $1 AND d.deleted_at IS NULL AND d.tenant_id = $2
+			ORDER BY d.updated_at DESC NULLS LAST, d.created_at DESC
 		`
-		rows, err := tx.Query(ctx, query, tenantID)
+		rows, err := tx.Query(ctx, query, active, tenantID)
 		if err != nil {
 			return err
 		}

@@ -12,4 +12,5 @@ type DispositivoRepository interface {
 	Aprobar(ctx context.Context, tenantID int, conductorID int) error
 	Desvincular(ctx context.Context, tenantID int, conductorID int) error
 	ListarPendientes(ctx context.Context, tenantID int) ([]*entities.DispositivoConductorResponse, error)
+	ListarActivos(ctx context.Context, tenantID int) ([]*entities.DispositivoConductorResponse, error)
 }

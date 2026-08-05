@@ -34,7 +34,7 @@ func (router *AnomaliaRouter) Run() {
 		getMisAnomaliasController, pipelineRetryWorker := InitAnomaliaDependencies(router.alertaRepo, router.modeloReportesURL, router.clasificadorURL, router.anomaliaCreadaWebhookURL)
 
 	// Red de seguridad del pipeline modelo_reportes -> clasificador_reportes:
-	// corre durante toda la vida del proceso, igual que tracking_ws.Hub mas
+	// corre durante toda la vida del proceso, en un goroutine de larga duracion, mas
 	// abajo en dependencies.go. Ver pipeline_retry_worker.go.
 	go pipelineRetryWorker.Run()
 
@@ -51,7 +51,7 @@ func (router *AnomaliaRouter) Run() {
 	//     wildcard "/:id" del grupo de abajo, asi que no chocan aunque
 	//     esten al mismo nivel de la ruta.
 	// Los ciudadanos no tienen role_id en el esquema de roles de empleados
-	// (su JWT trae role_id: 0, ver login_ciudadano.go) y CONDUCTOR (4)
+	// (su JWT trae role_id: 5, ver login_ciudadano.go) y CONDUCTOR (4)
 	// tampoco es staff, asi que estas rutas no pueden ir en el grupo de
 	// abajo (RequireRole las bloquearia).
 	abiertoGroup := router.engine.Group("/api/anomalias")
@@ -70,7 +70,7 @@ func (router *AnomaliaRouter) Run() {
 		anomaliaGroup.PUT("/:id", updateController.Run)
 		anomaliaGroup.GET("/", getAllController.Run)
 
-		// Rutas específicas
+		// Rutas especificas
 		anomaliaGroup.GET("/punto/:puntoId", getByPuntoIDController.Run)
 		anomaliaGroup.GET("/chofer/:choferId", getByChoferIDController.Run)
 		anomaliaGroup.GET("/camion/:camionId", getByCamionIDController.Run)
