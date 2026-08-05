@@ -144,9 +144,9 @@ func (ctr *DispositivoController) Aprobar(c *gin.Context) {
 	})
 }
 
-// Desvincular desasocia temporalmente o da de baja el dispositivo de un conductor
+// Desvincular elimina el dispositivo de un conductor
 // @Summary      Desvincular dispositivo de conductor
-// @Description  Elimina/desvincula de forma lógica el dispositivo de un conductor, permitiendo que solicite vincular otro. Solo accesible para Supervisor, Coordinador o Administrador.
+// @Description  Elimina el registro del dispositivo del conductor (hard delete), liberando MAC/serial/api_key para que pueda solicitar vinculación de nuevo. Solo accesible para Supervisor, Coordinador o Administrador.
 // @Tags         Dispositivo
 // @Accept       json
 // @Produce      json

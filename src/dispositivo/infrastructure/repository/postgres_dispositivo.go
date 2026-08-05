@@ -90,10 +90,12 @@ func (r *PostgresDispositivoRepository) Aprobar(ctx context.Context, tenantID in
 
 func (r *PostgresDispositivoRepository) Desvincular(ctx context.Context, tenantID int, conductorID int) error {
 	return core.RunInTenantTx(ctx, r.db, tenantID, func(tx pgx.Tx) error {
+		// Hard delete: el soft-delete dejaba la fila (y sus UNIQUE de mac/serial/api_key),
+		// así que la app móvil seguía viendo el dispositivo como "registrado" o no
+		// podía volver a solicitar vinculación con el mismo equipo.
 		query := `
-			UPDATE dispositivos
-			SET deleted_at = CURRENT_TIMESTAMP, active = FALSE
-			WHERE conductor_id = $1 AND deleted_at IS NULL AND tenant_id = $2
+			DELETE FROM dispositivos
+			WHERE conductor_id = $1 AND tenant_id = $2
 		`
 		cmd, err := tx.Exec(ctx, query, conductorID, tenantID)
 		if err != nil {

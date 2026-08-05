@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -67,6 +68,12 @@ func (ctr *CreateRutaController) Run(ctx *gin.Context) {
 
 	err := ctr.uc.Run(ctx.Request.Context(), tenantID, ruta)
 	if err != nil {
+		if strings.Contains(err.Error(), "uq_nombre_ruta") {
+			core.RespondConflict(ctx, "Ya existe una ruta con ese nombre. Usa otro nombre.", map[string]string{
+				"nombre": req.Nombre,
+			})
+			return
+		}
 		core.RespondInternalServerError(ctx, "Error creando ruta", err)
 		return
 	}
