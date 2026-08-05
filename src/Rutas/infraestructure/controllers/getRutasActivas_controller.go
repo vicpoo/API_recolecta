@@ -17,7 +17,7 @@ func NewGetRutaActivasController(uc *application.GetRutaActivasUseCase) *GetRuta
 }
 
 // @Summary      Listar rutas activas
-// @Description  Devuelve rutas no eliminadas. Cada item incluye conductor_id: id_chofer con asignación activa (historial_asignacion_camion.fecha_baja IS NULL) del camión más reciente en ruta_camion. Es null si no hay camión o chofer asignado.
+// @Description  Devuelve rutas no eliminadas. conductor_id = chofer activo vía ruta_camion/historial, o si no hay, json_ruta.conductor_id (asignación desde el Dashboard web).
 // @Tags         Ruta
 // @Produce      json
 // @Success      200 {object} entities.RutaActivasListResponse

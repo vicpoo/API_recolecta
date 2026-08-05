@@ -249,11 +249,11 @@ func (pg *PostgresRuta) Delete(ctx context.Context, tenantID int, id int32) erro
 }
 
 func (pg *PostgresRuta) GetActivas(ctx context.Context, tenantID int) ([]entities.Ruta, error) {
-	// El conductor de una ruta activa se resuelve en dos saltos:
-	// 1) ruta_camion: el camión más recientemente asignado a la ruta.
-	// 2) historial_asignacion_camion: el chofer con asignación activa
-	//    (fecha_baja IS NULL) para ese camión.
-	// "ruta" no guarda conductor_id de forma directa.
+	// El conductor de una ruta activa se resuelve así:
+	// 1) Preferir chofer activo vía ruta_camion + historial_asignacion_camion.
+	// 2) Si no hay camión/chofer, usar json_ruta.conductor_id (lo guarda el
+	//    Dashboard al crear la ruta desde la web, porque "ruta" no tiene
+	//    columna conductor_id propia).
 	var rutas []entities.Ruta
 
 	err := core.RunInTenantTx(ctx, pg.conn, tenantID, func(tx pgx.Tx) error {
@@ -265,7 +265,14 @@ func (pg *PostgresRuta) GetActivas(ctx context.Context, tenantID int) ([]entitie
 				r.json_ruta,
 				(r.deleted_at IS NOT NULL) AS eliminado,
 				r.created_at,
-				hac.id_chofer AS conductor_id
+				COALESCE(
+					hac.id_chofer,
+					CASE
+						WHEN (r.json_ruta::jsonb->>'conductor_id') ~ '^[0-9]+$'
+						THEN (r.json_ruta::jsonb->>'conductor_id')::int
+						ELSE NULL
+					END
+				) AS conductor_id
 			FROM ruta r
 			LEFT JOIN LATERAL (
 				SELECT camion_id
