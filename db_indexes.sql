@@ -1,6 +1,33 @@
 \c proyecto_recolecta;
 
 -- =====================
+-- MULTITENANCY: INDICE EN tenant_id
+-- =====================
+-- Toda politica RLS (db_constraints.sql) agrega un filtro WHERE tenant_id = ...
+-- implicito a cada query sobre estas tablas -- sin indice, degrada el
+-- rendimiento a medida que crece el volumen de datos por tenant.
+
+DO $$
+DECLARE
+    tbl text;
+    tenant_tables text[] := ARRAY[
+        'empleado','licencia','dispositivos','historial_asignacion_camion','camion',
+        'alerta_mantenimiento','registro_mantenimiento','ruta_camion','ruta','punto_recoleccion',
+        'relleno_sanitario','estado_camion','registro_vaciado','colonia','ciudadano','domicilio',
+        'alerta_usuario','aviso','anomalia'
+    ];
+BEGIN
+    FOREACH tbl IN ARRAY tenant_tables LOOP
+        IF NOT EXISTS (
+            SELECT 1 FROM pg_indexes
+            WHERE indexname = 'idx_' || tbl || '_tenant_id'
+        ) THEN
+            EXECUTE format('CREATE INDEX %I ON %I(tenant_id)', 'idx_' || tbl || '_tenant_id', tbl);
+        END IF;
+    END LOOP;
+END $$;
+
+-- =====================
 -- INDEXES
 -- =====================
 

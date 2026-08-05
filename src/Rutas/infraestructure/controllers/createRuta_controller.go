@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +29,12 @@ func NewCreateRutaController(uc *application.CreateRutaUseCase) *CreateRutaContr
 // @Security     BearerAuth
 // @Router       /api/rutas/ [post]
 func (ctr *CreateRutaController) Run(ctx *gin.Context) {
+	tenantID, ok := core.TenantIDFromContext(ctx)
+	if !ok {
+		core.RespondInvalidInput(ctx, "tenant no encontrado en token")
+		return
+	}
+
 	var req struct {
 		Nombre      string          `json:"nombre" binding:"required"`
 		Descripcion string          `json:"descripcion"`
@@ -59,8 +66,14 @@ func (ctr *CreateRutaController) Run(ctx *gin.Context) {
 		CreatedAt:   createdAt,
 	}
 
-	err := ctr.uc.Run(ruta)
+	err := ctr.uc.Run(ctx.Request.Context(), tenantID, ruta)
 	if err != nil {
+		if strings.Contains(err.Error(), "uq_nombre_ruta") {
+			core.RespondConflict(ctx, "Ya existe una ruta con ese nombre. Usa otro nombre.", map[string]string{
+				"nombre": req.Nombre,
+			})
+			return
+		}
 		core.RespondInternalServerError(ctx, "Error creando ruta", err)
 		return
 	}

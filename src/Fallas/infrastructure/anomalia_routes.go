@@ -8,14 +8,20 @@ import (
 )
 
 type AnomaliaRouter struct {
-	engine     *gin.Engine
-	alertaRepo alertaDomain.AlertaUsuarioRepository
+	engine                   *gin.Engine
+	alertaRepo               alertaDomain.AlertaUsuarioRepository
+	modeloReportesURL        string
+	clasificadorURL          string
+	anomaliaCreadaWebhookURL string
 }
 
-func NewAnomaliaRouter(engine *gin.Engine, alertaRepo alertaDomain.AlertaUsuarioRepository) *AnomaliaRouter {
+func NewAnomaliaRouter(engine *gin.Engine, alertaRepo alertaDomain.AlertaUsuarioRepository, modeloReportesURL, clasificadorURL, anomaliaCreadaWebhookURL string) *AnomaliaRouter {
 	return &AnomaliaRouter{
-		engine:     engine,
-		alertaRepo: alertaRepo,
+		engine:                   engine,
+		alertaRepo:               alertaRepo,
+		modeloReportesURL:        modeloReportesURL,
+		clasificadorURL:          clasificadorURL,
+		anomaliaCreadaWebhookURL: anomaliaCreadaWebhookURL,
 	}
 }
 
@@ -24,20 +30,47 @@ func (router *AnomaliaRouter) Run() {
 	createController, getByIdController, updateController, deleteController,
 		getAllController, getByPuntoIDController, getByChoferIDController,
 		getByCamionIDController, getByRutaIDController, getByReferenciaIDController,
-		getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController := InitAnomaliaDependencies(router.alertaRepo)
+		getByEstadoController, getByTipoAnomaliaController, getByFechaRangeController,
+		getMisAnomaliasController, pipelineRetryWorker := InitAnomaliaDependencies(router.alertaRepo, router.modeloReportesURL, router.clasificadorURL, router.anomaliaCreadaWebhookURL)
 
-	// Grupo de rutas para anomalías con prefijo /api
+	// Red de seguridad del pipeline modelo_reportes -> clasificador_reportes:
+	// corre durante toda la vida del proceso, en un goroutine de larga duracion, mas
+	// abajo en dependencies.go. Ver pipeline_retry_worker.go.
+	go pipelineRetryWorker.Run()
+
+	// Rutas abiertas a cualquier usuario autenticado (ciudadano, conductor o
+	// staff), sin RequireRole -- la autorizacion fina (quien puede hacer
+	// que) se resuelve dentro del controller/use case, no aqui:
+	//   - POST "/": crear un reporte propio.
+	//   - DELETE "/:id": borrar un reporte propio (staff puede borrar
+	//     cualquiera; conductor/ciudadano solo el suyo -- ver
+	//     DeleteAnomaliaUseCase).
+	//   - GET "/mis-reportes": listar los reportes propios (ciudadano o
+	//     conductor, segun el JWT -- ver GetMisAnomaliasController). Gin
+	//     resuelve el segmento estatico "mis-reportes" antes que el
+	//     wildcard "/:id" del grupo de abajo, asi que no chocan aunque
+	//     esten al mismo nivel de la ruta.
+	// Los ciudadanos no tienen role_id en el esquema de roles de empleados
+	// (su JWT trae role_id: 5, ver login_ciudadano.go) y CONDUCTOR (4)
+	// tampoco es staff, asi que estas rutas no pueden ir en el grupo de
+	// abajo (RequireRole las bloquearia).
+	abiertoGroup := router.engine.Group("/api/anomalias")
+	abiertoGroup.Use(core.JWTAuthMiddleware())
+	{
+		abiertoGroup.POST("/", createController.Run)
+		abiertoGroup.DELETE("/:id", deleteController.Run)
+		abiertoGroup.GET("/mis-reportes", getMisAnomaliasController.Run)
+	}
+
+	// Resto del CRUD: solo staff (ADMIN/SUPERVISOR/COORDINADOR)
 	anomaliaGroup := router.engine.Group("/api/anomalias")
 	anomaliaGroup.Use(core.JWTAuthMiddleware(), core.RequireRole(core.ADMIN, core.SUPERVISOR, core.COORDINADOR))
 	{
-		// Rutas CRUD básicas
-		anomaliaGroup.POST("/", createController.Run)
 		anomaliaGroup.GET("/:id", getByIdController.Run)
 		anomaliaGroup.PUT("/:id", updateController.Run)
-		anomaliaGroup.DELETE("/:id", deleteController.Run)
 		anomaliaGroup.GET("/", getAllController.Run)
 
-		// Rutas específicas
+		// Rutas especificas
 		anomaliaGroup.GET("/punto/:puntoId", getByPuntoIDController.Run)
 		anomaliaGroup.GET("/chofer/:choferId", getByChoferIDController.Run)
 		anomaliaGroup.GET("/camion/:camionId", getByCamionIDController.Run)

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vicpoo/API_recolecta/src/Rutas/application"
@@ -17,22 +18,44 @@ func NewGetRutaActivasController(uc *application.GetRutaActivasUseCase) *GetRuta
 }
 
 // @Summary      Listar rutas activas
+// @Description  Devuelve rutas no eliminadas. conductor_id = chofer activo vía ruta_camion/historial, o si no hay, json_ruta.conductor_id (asignación desde el Dashboard web).
 // @Tags         Ruta
 // @Produce      json
-// @Success      200 {object} entities.EstadoCamionListResponse
+// @Success      200 {object} entities.RutaActivasListResponse
 // @Failure      500 {object} core.ErrorResponse
 // @Security     BearerAuth
 // @Router       /api/rutas/activas [get]
 func (ctr *GetRutaActivasController) Run(ctx *gin.Context) {
-	rutas, err := ctr.uc.Run()
+	tenantID, ok := core.TenantIDFromContext(ctx)
+	if !ok {
+		core.RespondInvalidInput(ctx, "tenant no encontrado en token")
+		return
+	}
+
+	rutas, err := ctr.uc.Run(ctx.Request.Context(), tenantID)
 	if err != nil {
 		core.RespondInternalServerError(ctx, "Error listando rutas activas", err)
 		return
 	}
 
+	// La app móvil manda ?conductor_id=; si viene, devolver solo esas rutas.
+	var filterConductor *int32
+	if raw := ctx.Query("conductor_id"); raw != "" {
+		if n, err := strconv.Atoi(raw); err == nil {
+			v := int32(n)
+			filterConductor = &v
+		}
+	}
+
 	// Convertir cada json_ruta de string a objeto
 	var rutasResponse []gin.H
 	for _, ruta := range rutas {
+		if filterConductor != nil {
+			if ruta.ConductorID == nil || *ruta.ConductorID != *filterConductor {
+				continue
+			}
+		}
+
 		var jsonRuta interface{}
 		if err := json.Unmarshal([]byte(ruta.JsonRuta), &jsonRuta); err != nil {
 			// Si hay error al parsear, devolver el string original
@@ -40,12 +63,13 @@ func (ctr *GetRutaActivasController) Run(ctx *gin.Context) {
 		}
 
 		rutasResponse = append(rutasResponse, gin.H{
-			"ruta_id":     ruta.RutaID,
-			"nombre":      ruta.Nombre,
-			"descripcion": ruta.Descripcion,
-			"json_ruta":   jsonRuta,
-			"eliminado":   ruta.Eliminado,
-			"created_at":  ruta.CreatedAt,
+			"ruta_id":      ruta.RutaID,
+			"nombre":       ruta.Nombre,
+			"descripcion":  ruta.Descripcion,
+			"json_ruta":    jsonRuta,
+			"eliminado":    ruta.Eliminado,
+			"created_at":   ruta.CreatedAt,
+			"conductor_id": ruta.ConductorID,
 		})
 	}
 

@@ -1,6 +1,9 @@
 package main
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	swaggerFiles "github.com/swaggo/files"
@@ -30,6 +33,7 @@ import (
 	registroVaciadoAdapters "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/adapters"
 	rsAdapters "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/adapters"
 	rutaAdapters "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/adapters"
+	agInfra "github.com/vicpoo/API_recolecta/src/Rutas/infrastructure/ag"
 	camionControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
 	estadoCamionControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
 	puntoControllers "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/controllers"
@@ -42,6 +46,8 @@ import (
 	registroVaciadoRoutesPkg "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
 	rsRoutes "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
 	rutaRoutes "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
+	recorridoRoutesPkg "github.com/vicpoo/API_recolecta/src/Rutas/infraestructure/routes"
+	recorridoApp "github.com/vicpoo/API_recolecta/src/Rutas/application/recorrido"
 	alertaApplication "github.com/vicpoo/API_recolecta/src/alerta_usuario/application"
 	alertaHttp "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/http"
 	alertaPostgres "github.com/vicpoo/API_recolecta/src/alerta_usuario/infrastructure/postgres"
@@ -55,8 +61,13 @@ import (
 	coloniaApplication "github.com/vicpoo/API_recolecta/src/colonia/application"
 	coloniaHttp "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/http"
 	coloniaPostgres "github.com/vicpoo/API_recolecta/src/colonia/infrastructure/postgres"
+	"github.com/vicpoo/API_recolecta/src/bootstrap"
 	empleadoInfra "github.com/vicpoo/API_recolecta/src/empleado/infrastructure"
+	empleadoRepositoryPkg "github.com/vicpoo/API_recolecta/src/empleado/infrastructure/repository"
 	empleadoRoutes "github.com/vicpoo/API_recolecta/src/empleado/infrastructure/routes"
+	tenantApplication "github.com/vicpoo/API_recolecta/src/tenant/application"
+	tenantHttp "github.com/vicpoo/API_recolecta/src/tenant/infrastructure/http"
+	tenantPostgres "github.com/vicpoo/API_recolecta/src/tenant/infrastructure/postgres"
 	notificacionInfra "github.com/vicpoo/API_recolecta/src/notificacion/infrastructure"
 	appConfig "github.com/vicpoo/API_recolecta/config"
 	//rolInfra "github.com/vicpoo/API_recolecta/src/rol/infrastructure"
@@ -76,7 +87,19 @@ func InitDependencies() {
 	engine := gin.Default()
 	engine.Use(core.CORSMiddleware())
 	engine.GET("/api/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	db := core.GetBD()
+
+	db := core.GetBD()
+
+	// Fase D (docs/10-plan-completar-multitenancy.md): crea/actualiza el
+	// usuario SUPERADMIN a partir de SUPERADMIN_EMAIL/USERNAME/PASSWORD si
+	// están configuradas. No detiene el arranque si falta la configuración
+	// o si el seed falla -- un SUPERADMIN es opcional, y el backend debe
+	// seguir funcionando para todo lo demás aunque este paso no se pueda
+	// completar (por ejemplo, en un entorno donde a propósito no se quiere
+	// tener superadmin todavía).
+	if err := bootstrap.SeedSuperAdmin(context.Background(), db); err != nil {
+		fmt.Printf("[seed-superadmin] error al crear/actualizar superadmin: %v\n", err)
+	}
 
 	alertaRepository := alertaPostgres.NewPostgresAlertaRepository(db)
 
@@ -246,6 +269,11 @@ func InitDependencies() {
 	deleteRutaCtr := rutaControllers.NewDeleteRutaController(deleteRutaUc)
 	getRutasActivasCtr := rutaControllers.NewGetRutaActivasController(getRutasActivasUc)
 
+	puntoRepository := puntoAdapters.NewPostgresPuntoRecoleccion()
+	agClient := agInfra.NewClient(cfg.AGApiURL)
+	optimizarRutaUc := rutaUseCases.NewOptimizarRutaUseCase(rutaRepository, puntoRepository, agClient)
+	optimizarRutaCtr := rutaControllers.NewOptimizarRutaController(optimizarRutaUc)
+
 	processArrivalUC := camionUseCases.NewProcessTruckArrivalUseCase(redisClient, rulesRepo, fcmClient)
 	arrivalController := rutaControllers.NewProcessArrivalController(processArrivalUC)
 
@@ -258,18 +286,24 @@ func InitDependencies() {
 		deleteRutaCtr,
 		getRutasActivasCtr,
 		arrivalController,
+		optimizarRutaCtr,
 	)
 
 	rutaRoutes.Run()
 
-	puntoRepository := puntoAdapters.NewPostgresPuntoRecoleccion()
+	recorridoStore := recorridoApp.NewRedisStore(redisClient)
+	recorridoCtr := rutaControllers.NewRecorridoController(recorridoStore)
+	recorridoRoutes := recorridoRoutesPkg.NewRecorridoRoutes(engine, recorridoCtr)
+	recorridoRoutes.Run()
 
-	createPuntoUC := puntoUseCases.NewSavePuntoRecoleccionUseCase(puntoRepository)
-	updatePuntoUC := puntoUseCases.NewUpdatePuntoRecoleccionUseCase(puntoRepository)
+	syncRutaJsonUC := rutaUseCases.NewSyncRutaJsonFromPuntosUseCase(rutaRepository, puntoRepository)
+
+	createPuntoUC := puntoUseCases.NewSavePuntoRecoleccionUseCase(puntoRepository, syncRutaJsonUC)
+	updatePuntoUC := puntoUseCases.NewUpdatePuntoRecoleccionUseCase(puntoRepository, syncRutaJsonUC)
 	getAllPuntoUC := puntoUseCases.NewListAllPuntoRecoleccionUseCase(puntoRepository)
 	getPuntoByIdUC := puntoUseCases.NewGetPuntoRecoleccionByIdUseCase(puntoRepository)
 	getPuntoByRutaUC := puntoUseCases.NewGetPuntoRecoleccionByRutaUseCase(puntoRepository)
-	deletePuntoUC := puntoUseCases.NewDeletePuntoRecoleccionUseCase(puntoRepository)
+	deletePuntoUC := puntoUseCases.NewDeletePuntoRecoleccionUseCase(puntoRepository, syncRutaJsonUC)
 
 	createPuntoCTR := puntoControllers.NewCreatePuntoRecoleccionController(createPuntoUC)
 	updatePuntoCTR := puntoControllers.NewUpdatePuntoRecoleccionController(updatePuntoUC)
@@ -498,6 +532,27 @@ func InitDependencies() {
 	)
 
 	// ===============================
+	// TENANT (Fase D — gestión de municipios, solo SUPERADMIN)
+	// ===============================
+
+	tenantRepository := tenantPostgres.NewTenantRepository(db)
+	tenantEmpleadoRepository := empleadoRepositoryPkg.NewEmpleadoPostgresRepository(db)
+
+	createTenantUC := tenantApplication.NewCreateTenantConAdmin(tenantRepository, tenantEmpleadoRepository)
+	getTenantUC := tenantApplication.NewGetTenant(tenantRepository)
+	listTenantsUC := tenantApplication.NewListTenants(tenantRepository)
+	updateTenantUC := tenantApplication.NewUpdateTenant(tenantRepository)
+
+	tenantController := tenantHttp.NewTenantController(
+		createTenantUC,
+		getTenantUC,
+		listTenantsUC,
+		updateTenantUC,
+	)
+
+	tenantController.RegisterRoutes(engine)
+
+	// ===============================
 	// ALERTA USUARIO
 	// ===============================
 	createAlertaUC := alertaApplication.NewCreateAlerta(alertaRepository)
@@ -512,7 +567,7 @@ func InitDependencies() {
 	// FALLAS Y MANTENIMIENTO
 	// ===============================
 
-	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine, alertaRepository)
+	anomaliaRoutes := anomalia.NewAnomaliaRouter(engine, alertaRepository, cfg.ModeloReportesURL, cfg.ClasificadorURL, cfg.AnomaliaCreadaWebhookURL)
 	anomaliaRoutes.Run()
 
 	// ===============================
@@ -529,6 +584,7 @@ func InitDependencies() {
 	// ===============================
 	dispositivoDeps := dispositivoInfra.InitDispositivoDependencies(db)
 	dispositivoRoutes.RegisterDispositivoRoutes(engine, dispositivoDeps.DispositivoController)
+
 
 	engine.Run(":8080")
 }

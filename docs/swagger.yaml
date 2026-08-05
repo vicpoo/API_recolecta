@@ -74,6 +74,19 @@ definitions:
       error:
         $ref: '#/definitions/core.ErrorDetail'
     type: object
+  domain.AdminInicialInput:
+    properties:
+      apellidos:
+        type: string
+      mail:
+        type: string
+      nombre:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
   domain.AlertaUsuario:
     properties:
       alerta_id:
@@ -125,6 +138,23 @@ definitions:
     - nombre
     - zona
     type: object
+  domain.CreateTenantRequest:
+    properties:
+      admin:
+        $ref: '#/definitions/domain.AdminInicialInput'
+      bbox_max_lat:
+        type: number
+      bbox_max_lon:
+        type: number
+      bbox_min_lat:
+        type: number
+      bbox_min_lon:
+        type: number
+      logo_url:
+        type: string
+      nombre:
+        type: string
+    type: object
   domain.SendResult:
     properties:
       error:
@@ -132,13 +162,85 @@ definitions:
       success:
         type: boolean
     type: object
+  domain.Tenant:
+    properties:
+      activo:
+        type: boolean
+      bbox_max_lat:
+        type: number
+      bbox_max_lon:
+        type: number
+      bbox_min_lat:
+        type: number
+      bbox_min_lon:
+        type: number
+      created_at:
+        type: string
+      logo_url:
+        type: string
+      nombre:
+        type: string
+      tenant_id:
+        type: integer
+    type: object
+  domain.TenantListResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        items:
+          $ref: '#/definitions/domain.Tenant'
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  domain.TenantResponse:
+    properties:
+      code:
+        type: integer
+      data:
+        $ref: '#/definitions/domain.Tenant'
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  domain.UpdateTenantRequest:
+    properties:
+      activo:
+        type: boolean
+      bbox_max_lat:
+        type: number
+      bbox_max_lon:
+        type: number
+      bbox_min_lat:
+        type: number
+      bbox_min_lon:
+        type: number
+      logo_url:
+        type: string
+      nombre:
+        type: string
+    type: object
   entities.Anomalia:
     properties:
+      accion_sugerida:
+        type: string
       anomalia_id:
         type: integer
       anomalia_referencia_id:
         type: integer
       camion_id:
+        type: integer
+      categoria_clasificada:
+        type: string
+      ciudadano_id:
+        description: |-
+          CiudadanoID: quien reporto, cuando fue un ciudadano (nunca junto con
+          ConductorID -- ver CreateAnomaliaController.go, que deriva cual de los
+          dos llenar segun el role_id del JWT, no segun lo que mande el cliente).
         type: integer
       conductor_id:
         type: integer
@@ -150,16 +252,49 @@ definitions:
         type: boolean
       estado:
         type: string
+      estado_pipeline:
+        description: |-
+          Pipeline modelo_reportes -> clasificador_reportes. Se llenan por
+          ActualizarPipeline en background, no al crear la anomalia (por eso
+          EstadoPipeline arranca en "pendiente" via DEFAULT de la columna).
+        type: string
       fecha_reporte:
         type: string
       fecha_resolucion:
         type: string
+      inferencia_id:
+        type: integer
       json_ruta:
         type: string
+      lat:
+        description: |-
+          Lat/Lon: coordenadas GPS de donde ocurrio la anomalia (no necesariamente
+          coinciden con un punto_recoleccion existente -- un "calle bloqueada"
+          puede pasar en cualquier punto de una ruta). Nullable: no todo cliente
+          puede capturar ubicacion todavia. Mismo nombre/tipo que
+          Rutas/domain/entities/PuntoRecoleccion.go (Lat/Lon float64) para
+          mantener la convencion, pero como puntero porque aqui es opcional.
+          Insumo para el algoritmo genetico de rutas (AG): necesita saber donde
+          esta el bloqueo/incidente para decidir que arista del grafo modificar.
+        type: number
+      lon:
+        type: number
+      nivel_riesgo:
+        type: string
+      pipeline_error:
+        type: string
+      pipeline_intentos:
+        description: |-
+          PipelineIntentos cuenta cuantas veces se corrio/reclamo el pipeline
+          sobre esta fila. Lo usa PipelineRetryWorker para acotar los reintentos
+          automaticos de un estado_pipeline = 'error'.
+        type: integer
       punto_id:
         type: integer
       ruta_id:
         type: integer
+      subtipo_clasificado:
+        type: string
       tipo_anomalia:
         $ref: '#/definitions/entities.TipoAnomalia'
       updated_at:
@@ -242,6 +377,8 @@ definitions:
         type: string
       id:
         type: integer
+      tenant_id:
+        type: integer
     type: object
   entities.CiudadanoListResponse:
     properties:
@@ -282,26 +419,43 @@ definitions:
         type: integer
       camion_id:
         type: integer
+      ciudadano_id:
+        type: integer
       conductor_id:
+        description: |-
+          ConductorID/CiudadanoID: solo staff puede fijarlos libremente aqui. Si
+          quien crea es ciudadano o conductor, el backend ignora estos dos
+          campos y deriva el que corresponda del JWT (ver CreateAnomaliaController.go).
         type: integer
       descripcion:
         type: string
       estado:
         type: string
       fecha_reporte:
+        description: 'Formato ISO 8601: YYYY-MM-DDTHH:MM:SSZ'
+        example: "2026-07-22T19:30:00Z"
         type: string
       json_ruta:
         type: string
+      lat:
+        description: |-
+          Coordenadas GPS de donde ocurrio la anomalia. Opcionales, insumo futuro
+          del algoritmo genetico de rutas.
+        type: number
+      lon:
+        type: number
       punto_id:
         type: integer
       ruta_id:
         type: integer
       tipo_anomalia:
-        description: ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA
-          | SEGUIMIENTO_FALLA_CRITICA
+        description: 'Valores validos: ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR |
+          REPORTE_FALLA_CRITICA | SEGUIMIENTO_FALLA_CRITICA'
+        example: REPORTE_CONDUCTOR
         type: string
     required:
     - descripcion
+    - fecha_reporte
     - tipo_anomalia
     type: object
   entities.CreateCamionRequest:
@@ -531,6 +685,8 @@ definitions:
       nombre:
         type: string
       rol_id:
+        type: integer
+      tenant_id:
         type: integer
       updated_at:
         type: string
@@ -910,18 +1066,66 @@ definitions:
     type: object
   entities.Ruta:
     properties:
+      conductor_id:
+        description: |-
+          ConductorID es el id_chofer con asignación activa (historial_asignacion_camion)
+          del camión actualmente asignado a la ruta (ruta_camion). Solo lo llena GetActivas.
+          swagger:description ID del conductor asignado (null si no hay asignación activa)
+        example: 12
+        type: integer
       created_at:
         type: string
       descripcion:
+        example: Recolección zona centro
         type: string
       eliminado:
+        example: false
         type: boolean
       json_ruta:
         type: string
       nombre:
+        example: Ruta Centro
         type: string
       ruta_id:
+        example: 1
         type: integer
+    type: object
+  entities.RutaActivaItem:
+    properties:
+      conductor_id:
+        description: |-
+          ID del empleado chofer con asignación activa (fecha_baja IS NULL)
+          del camión más reciente de la ruta. Null si no hay asignación.
+        example: 12
+        type: integer
+      created_at:
+        example: "2026-07-22T19:30:00Z"
+        type: string
+      descripcion:
+        example: Recolección zona centro
+        type: string
+      eliminado:
+        example: false
+        type: boolean
+      json_ruta:
+        description: Geometría ya parseada (array/objeto JSON), no el string crudo
+          de BD.
+      nombre:
+        example: Ruta Centro
+        type: string
+      ruta_id:
+        example: 1
+        type: integer
+    type: object
+  entities.RutaActivasListResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/entities.RutaActivaItem'
+        type: array
+      success:
+        example: true
+        type: boolean
     type: object
   entities.RutaResponse:
     properties:
@@ -944,14 +1148,14 @@ definitions:
     type: object
   entities.TipoAnomalia:
     enum:
-    - ANOMALIA
-    - INCIDENCIA
-    - REPORTE_CONDUCTOR
-    - REPORTE_FALLA_CRITICA
-    - SEGUIMIENTO_FALLA_CRITICA
-    type: string
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    type: integer
     x-enum-varnames:
-    - TipoAnomaliaGeneral
+    - TipoAnomaliaAnomalia
     - TipoAnomaliaIncidencia
     - TipoAnomaliaReporteConductor
     - TipoAnomaliaReporteFallaCritica
@@ -962,6 +1166,8 @@ definitions:
         type: integer
       camion_id:
         type: integer
+      ciudadano_id:
+        type: integer
       conductor_id:
         type: integer
       descripcion:
@@ -971,19 +1177,26 @@ definitions:
       estado:
         type: string
       fecha_reporte:
+        example: "2026-07-22T19:30:00Z"
         type: string
       fecha_resolucion:
         type: string
       json_ruta:
         type: string
+      lat:
+        type: number
+      lon:
+        type: number
       punto_id:
         type: integer
       ruta_id:
         type: integer
       tipo_anomalia:
+        example: REPORTE_CONDUCTOR
         type: string
     required:
     - descripcion
+    - fecha_reporte
     - tipo_anomalia
     type: object
   entities.UpdateCamionRequest:
@@ -1197,6 +1410,10 @@ paths:
       tags:
       - Anomalia
     post:
+      description: |-
+        Abierto a cualquier usuario autenticado (ciudadano, conductor
+        o staff) -- solo el resto del CRUD de anomalias queda
+        restringido a ADMIN/SUPERVISOR/COORDINADOR.
       parameters:
       - description: Body
         in: body
@@ -1222,6 +1439,10 @@ paths:
       - Anomalia
   /api/anomalias/{id}:
     delete:
+      description: |-
+        Staff puede eliminar cualquier anomalia. Un conductor o
+        ciudadano solo puede eliminar un reporte propio
+        (conductor_id/ciudadano_id == su user_id, segun corresponda).
       parameters:
       - description: ID
         in: path
@@ -1348,6 +1569,27 @@ paths:
       security:
       - BearerAuth: []
       summary: Anomalías por estado
+      tags:
+      - Anomalia
+  /api/anomalias/mis-reportes:
+    get:
+      description: |-
+        Devuelve los reportes del usuario autenticado -- ciudadano o
+        conductor, segun el role_id del JWT. No aplica a staff.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AnomaliaListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Mis anomalías (ciudadano o conductor)
       tags:
       - Anomalia
   /api/anomalias/por-fecha:
@@ -2136,6 +2378,27 @@ paths:
       security:
       - BearerAuth: []
       summary: Desvincular dispositivo de conductor
+      tags:
+      - Dispositivo
+  /api/dispositivos/mi-estado:
+    get:
+      description: Indica si el conductor ya registró un dispositivo y si fue aprobado
+        por un administrador.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Estado del dispositivo
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Error interno del servidor
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Consultar estado de mi dispositivo
       tags:
       - Dispositivo
   /api/dispositivos/pendientes:
@@ -4643,13 +4906,17 @@ paths:
       - Ruta
   /api/rutas/activas:
     get:
+      description: 'Devuelve rutas no eliminadas. Cada item incluye conductor_id:
+        id_chofer con asignación activa (historial_asignacion_camion.fecha_baja IS
+        NULL) del camión más reciente en ruta_camion. Es null si no hay camión o chofer
+        asignado.'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.EstadoCamionListResponse'
+            $ref: '#/definitions/entities.RutaActivasListResponse'
         "500":
           description: Internal Server Error
           schema:
@@ -4714,6 +4981,119 @@ paths:
       summary: Procesar arribo de camión a parada
       tags:
       - Ruta
+  /api/tenants:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.TenantListResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar tenants
+      tags:
+      - Tenant
+    post:
+      consumes:
+      - application/json
+      description: Crea un tenant nuevo junto con su primer empleado (rol ADMIN).
+        Solo SUPERADMIN.
+      parameters:
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateTenantRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.TenantResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Crear tenant (municipio) con su admin inicial
+      tags:
+      - Tenant
+  /api/tenants/{id}:
+    get:
+      parameters:
+      - description: ID del tenant
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.TenantResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener tenant por ID
+      tags:
+      - Tenant
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID del tenant
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateTenantRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.TenantResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/core.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar tenant (nombre, activo, logo, área de cobertura)
+      tags:
+      - Tenant
   /api/tipo-camion/:
     get:
       produces:

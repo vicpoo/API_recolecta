@@ -164,6 +164,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Abierto a cualquier usuario autenticado (ciudadano, conductor\no staff) -- solo el resto del CRUD de anomalias queda\nrestringido a ADMIN/SUPERVISOR/COORDINADOR.",
                 "produces": [
                     "application/json"
                 ],
@@ -277,6 +278,37 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/entities.AnomaliaResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/anomalias/mis-reportes": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve los reportes del usuario autenticado -- ciudadano o\nconductor, segun el role_id del JWT. No aplica a staff.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Anomalia"
+                ],
+                "summary": "Mis anomalías (ciudadano o conductor)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.AnomaliaListResponse"
                         }
                     },
                     "400": {
@@ -528,6 +560,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Staff puede eliminar cualquier anomalia. Un conductor o\nciudadano solo puede eliminar un reporte propio\n(conductor_id/ciudadano_id == su user_id, segun corresponda).",
                 "produces": [
                     "application/json"
                 ],
@@ -1635,6 +1668,38 @@ const docTemplate = `{
                         "description": "ID inválido",
                         "schema": {
                             "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/dispositivos/mi-estado": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Indica si el conductor ya registró un dispositivo y si fue aprobado por un administrador.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dispositivo"
+                ],
+                "summary": "Consultar estado de mi dispositivo",
+                "responses": {
+                    "200": {
+                        "description": "Estado del dispositivo",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
                         }
                     },
                     "500": {
@@ -5502,6 +5567,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
+                "description": "Devuelve rutas no eliminadas. Cada item incluye conductor_id: id_chofer con asignación activa (historial_asignacion_camion.fecha_baja IS NULL) del camión más reciente en ruta_camion. Es null si no hay camión o chofer asignado.",
                 "produces": [
                     "application/json"
                 ],
@@ -5513,7 +5579,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.EstadoCamionListResponse"
+                            "$ref": "#/definitions/entities.RutaActivasListResponse"
                         }
                     },
                     "500": {
@@ -5742,6 +5808,185 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tenants": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Listar tenants",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.TenantListResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Crea un tenant nuevo junto con su primer empleado (rol ADMIN). Solo SUPERADMIN.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Crear tenant (municipio) con su admin inicial",
+                "parameters": [
+                    {
+                        "description": "Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.CreateTenantRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.TenantResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/tenants/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Obtener tenant por ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del tenant",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.TenantResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/core.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Actualizar tenant (nombre, activo, logo, área de cobertura)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del tenant",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.UpdateTenantRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.TenantResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/core.ErrorResponse"
                         }
@@ -6019,6 +6264,26 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.AdminInicialInput": {
+            "type": "object",
+            "properties": {
+                "apellidos": {
+                    "type": "string"
+                },
+                "mail": {
+                    "type": "string"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.AlertaUsuario": {
             "type": "object",
             "properties": {
@@ -6096,6 +6361,32 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.CreateTenantRequest": {
+            "type": "object",
+            "properties": {
+                "admin": {
+                    "$ref": "#/definitions/domain.AdminInicialInput"
+                },
+                "bbox_max_lat": {
+                    "type": "number"
+                },
+                "bbox_max_lon": {
+                    "type": "number"
+                },
+                "bbox_min_lat": {
+                    "type": "number"
+                },
+                "bbox_min_lon": {
+                    "type": "number"
+                },
+                "logo_url": {
+                    "type": "string"
+                },
+                "nombre": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.SendResult": {
             "type": "object",
             "properties": {
@@ -6107,9 +6398,107 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.Tenant": {
+            "type": "object",
+            "properties": {
+                "activo": {
+                    "type": "boolean"
+                },
+                "bbox_max_lat": {
+                    "type": "number"
+                },
+                "bbox_max_lon": {
+                    "type": "number"
+                },
+                "bbox_min_lat": {
+                    "type": "number"
+                },
+                "bbox_min_lon": {
+                    "type": "number"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "logo_url": {
+                    "type": "string"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "tenant_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.TenantListResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Tenant"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "domain.TenantResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "$ref": "#/definitions/domain.Tenant"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "domain.UpdateTenantRequest": {
+            "type": "object",
+            "properties": {
+                "activo": {
+                    "type": "boolean"
+                },
+                "bbox_max_lat": {
+                    "type": "number"
+                },
+                "bbox_max_lon": {
+                    "type": "number"
+                },
+                "bbox_min_lat": {
+                    "type": "number"
+                },
+                "bbox_min_lon": {
+                    "type": "number"
+                },
+                "logo_url": {
+                    "type": "string"
+                },
+                "nombre": {
+                    "type": "string"
+                }
+            }
+        },
         "entities.Anomalia": {
             "type": "object",
             "properties": {
+                "accion_sugerida": {
+                    "type": "string"
+                },
                 "anomalia_id": {
                     "type": "integer"
                 },
@@ -6117,6 +6506,13 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "camion_id": {
+                    "type": "integer"
+                },
+                "categoria_clasificada": {
+                    "type": "string"
+                },
+                "ciudadano_id": {
+                    "description": "CiudadanoID: quien reporto, cuando fue un ciudadano (nunca junto con\nConductorID -- ver CreateAnomaliaController.go, que deriva cual de los\ndos llenar segun el role_id del JWT, no segun lo que mande el cliente).",
                     "type": "integer"
                 },
                 "conductor_id": {
@@ -6134,20 +6530,47 @@ const docTemplate = `{
                 "estado": {
                     "type": "string"
                 },
+                "estado_pipeline": {
+                    "description": "Pipeline modelo_reportes -\u003e clasificador_reportes. Se llenan por\nActualizarPipeline en background, no al crear la anomalia (por eso\nEstadoPipeline arranca en \"pendiente\" via DEFAULT de la columna).",
+                    "type": "string"
+                },
                 "fecha_reporte": {
                     "type": "string"
                 },
                 "fecha_resolucion": {
                     "type": "string"
                 },
+                "inferencia_id": {
+                    "type": "integer"
+                },
                 "json_ruta": {
                     "type": "string"
+                },
+                "lat": {
+                    "description": "Lat/Lon: coordenadas GPS de donde ocurrio la anomalia (no necesariamente\ncoinciden con un punto_recoleccion existente -- un \"calle bloqueada\"\npuede pasar en cualquier punto de una ruta). Nullable: no todo cliente\npuede capturar ubicacion todavia. Mismo nombre/tipo que\nRutas/domain/entities/PuntoRecoleccion.go (Lat/Lon float64) para\nmantener la convencion, pero como puntero porque aqui es opcional.\nInsumo para el algoritmo genetico de rutas (AG): necesita saber donde\nesta el bloqueo/incidente para decidir que arista del grafo modificar.",
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
+                },
+                "nivel_riesgo": {
+                    "type": "string"
+                },
+                "pipeline_error": {
+                    "type": "string"
+                },
+                "pipeline_intentos": {
+                    "description": "PipelineIntentos cuenta cuantas veces se corrio/reclamo el pipeline\nsobre esta fila. Lo usa PipelineRetryWorker para acotar los reintentos\nautomaticos de un estado_pipeline = 'error'.",
+                    "type": "integer"
                 },
                 "punto_id": {
                     "type": "integer"
                 },
                 "ruta_id": {
                     "type": "integer"
+                },
+                "subtipo_clasificado": {
+                    "type": "string"
                 },
                 "tipo_anomalia": {
                     "$ref": "#/definitions/entities.TipoAnomalia"
@@ -6274,6 +6697,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "tenant_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -6332,6 +6758,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "descripcion",
+                "fecha_reporte",
                 "tipo_anomalia"
             ],
             "properties": {
@@ -6341,7 +6768,11 @@ const docTemplate = `{
                 "camion_id": {
                     "type": "integer"
                 },
+                "ciudadano_id": {
+                    "type": "integer"
+                },
                 "conductor_id": {
+                    "description": "ConductorID/CiudadanoID: solo staff puede fijarlos libremente aqui. Si\nquien crea es ciudadano o conductor, el backend ignora estos dos\ncampos y deriva el que corresponda del JWT (ver CreateAnomaliaController.go).",
                     "type": "integer"
                 },
                 "descripcion": {
@@ -6351,10 +6782,19 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "fecha_reporte": {
-                    "type": "string"
+                    "description": "Formato ISO 8601: YYYY-MM-DDTHH:MM:SSZ",
+                    "type": "string",
+                    "example": "2026-07-22T19:30:00Z"
                 },
                 "json_ruta": {
                     "type": "string"
+                },
+                "lat": {
+                    "description": "Coordenadas GPS de donde ocurrio la anomalia. Opcionales, insumo futuro\ndel algoritmo genetico de rutas.",
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
                 },
                 "punto_id": {
                     "type": "integer"
@@ -6363,8 +6803,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "tipo_anomalia": {
-                    "description": "ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA | SEGUIMIENTO_FALLA_CRITICA",
-                    "type": "string"
+                    "description": "Valores validos: ANOMALIA | INCIDENCIA | REPORTE_CONDUCTOR | REPORTE_FALLA_CRITICA | SEGUIMIENTO_FALLA_CRITICA",
+                    "type": "string",
+                    "example": "REPORTE_CONDUCTOR"
                 }
             }
         },
@@ -6707,6 +7148,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rol_id": {
+                    "type": "integer"
+                },
+                "tenant_id": {
                     "type": "integer"
                 },
                 "updated_at": {
@@ -7289,23 +7733,80 @@ const docTemplate = `{
         "entities.Ruta": {
             "type": "object",
             "properties": {
+                "conductor_id": {
+                    "description": "ConductorID es el id_chofer con asignación activa (historial_asignacion_camion)\ndel camión actualmente asignado a la ruta (ruta_camion). Solo lo llena GetActivas.\nswagger:description ID del conductor asignado (null si no hay asignación activa)",
+                    "type": "integer",
+                    "example": 12
+                },
                 "created_at": {
                     "type": "string"
                 },
                 "descripcion": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Recolección zona centro"
                 },
                 "eliminado": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": false
                 },
                 "json_ruta": {
                     "type": "string"
                 },
                 "nombre": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Ruta Centro"
                 },
                 "ruta_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "entities.RutaActivaItem": {
+            "type": "object",
+            "properties": {
+                "conductor_id": {
+                    "description": "ID del empleado chofer con asignación activa (fecha_baja IS NULL)\ndel camión más reciente de la ruta. Null si no hay asignación.",
+                    "type": "integer",
+                    "example": 12
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2026-07-22T19:30:00Z"
+                },
+                "descripcion": {
+                    "type": "string",
+                    "example": "Recolección zona centro"
+                },
+                "eliminado": {
+                    "type": "boolean",
+                    "example": false
+                },
+                "json_ruta": {
+                    "description": "Geometría ya parseada (array/objeto JSON), no el string crudo de BD."
+                },
+                "nombre": {
+                    "type": "string",
+                    "example": "Ruta Centro"
+                },
+                "ruta_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "entities.RutaActivasListResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.RutaActivaItem"
+                    }
+                },
+                "success": {
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -7339,16 +7840,16 @@ const docTemplate = `{
             }
         },
         "entities.TipoAnomalia": {
-            "type": "string",
+            "type": "integer",
             "enum": [
-                "ANOMALIA",
-                "INCIDENCIA",
-                "REPORTE_CONDUCTOR",
-                "REPORTE_FALLA_CRITICA",
-                "SEGUIMIENTO_FALLA_CRITICA"
+                0,
+                1,
+                2,
+                3,
+                4
             ],
             "x-enum-varnames": [
-                "TipoAnomaliaGeneral",
+                "TipoAnomaliaAnomalia",
                 "TipoAnomaliaIncidencia",
                 "TipoAnomaliaReporteConductor",
                 "TipoAnomaliaReporteFallaCritica",
@@ -7359,6 +7860,7 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "descripcion",
+                "fecha_reporte",
                 "tipo_anomalia"
             ],
             "properties": {
@@ -7366,6 +7868,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "camion_id": {
+                    "type": "integer"
+                },
+                "ciudadano_id": {
                     "type": "integer"
                 },
                 "conductor_id": {
@@ -7381,13 +7886,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "fecha_reporte": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-07-22T19:30:00Z"
                 },
                 "fecha_resolucion": {
                     "type": "string"
                 },
                 "json_ruta": {
                     "type": "string"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "lon": {
+                    "type": "number"
                 },
                 "punto_id": {
                     "type": "integer"
@@ -7396,7 +7908,8 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "tipo_anomalia": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "REPORTE_CONDUCTOR"
                 }
             }
         },

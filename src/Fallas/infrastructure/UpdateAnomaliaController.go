@@ -31,6 +31,12 @@ func NewUpdateAnomaliaController(updateUseCase *application.UpdateAnomaliaUseCas
 // @Security     BearerAuth
 // @Router       /api/anomalias/{id} [put]
 func (ctrl *UpdateAnomaliaController) Run(c *gin.Context) {
+	tenantID, ok := core.TenantIDFromContext(c)
+	if !ok {
+		core.RespondBadRequest(c, "tenant no encontrado en token", nil)
+		return
+	}
+
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
@@ -42,11 +48,14 @@ func (ctrl *UpdateAnomaliaController) Run(c *gin.Context) {
 		TipoAnomalia         string  `json:"tipo_anomalia" binding:"required"`
 		PuntoID              *int32  `json:"punto_id"`
 		ConductorID          *int32  `json:"conductor_id"`
+		CiudadanoID          *int32  `json:"ciudadano_id"`
 		CamionID             *int32  `json:"camion_id"`
 		RutaID               *int32  `json:"ruta_id"`
 		AnomaliaReferenciaID *int32  `json:"anomalia_referencia_id"`
 		Descripcion          string  `json:"descripcion" binding:"required"`
 		JsonRuta             string  `json:"json_ruta"`
+		Lat                  *float64 `json:"lat"`
+		Lon                  *float64 `json:"lon"`
 		Estado               string  `json:"estado" binding:"required"`
 		Eliminado            bool    `json:"eliminado"`
 		FechaReporte         string  `json:"fecha_reporte" binding:"required"`
@@ -96,18 +105,21 @@ func (ctrl *UpdateAnomaliaController) Run(c *gin.Context) {
 		TipoAnomalia:         tipoAnomalia,
 		PuntoID:              request.PuntoID,
 		ConductorID:          request.ConductorID,
+		CiudadanoID:          request.CiudadanoID,
 		CamionID:             request.CamionID,
 		RutaID:               request.RutaID,
 		AnomaliaReferenciaID: request.AnomaliaReferenciaID,
 		Descripcion:          request.Descripcion,
 		JsonRuta:             request.JsonRuta,
+		Lat:                  request.Lat,
+		Lon:                  request.Lon,
 		Estado:               request.Estado,
 		Eliminado:            request.Eliminado,
 		FechaReporte:         fechaReporte,
 		FechaResolucion:      fechaResolucionPtr,
 	}
 
-	updatedAnomalia, err := ctrl.updateUseCase.Run(anomalia)
+	updatedAnomalia, err := ctrl.updateUseCase.Run(c.Request.Context(), tenantID, anomalia)
 	if err != nil {
 		if err.Error() == "anomalia not found" {
 			core.RespondNotFound(c, "Anomalía", idParam)

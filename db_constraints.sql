@@ -1,6 +1,109 @@
 \c proyecto_recolecta;
 
 -- =====================
+-- MULTITENANCY: COLUMNA + FK EN TABLAS PREEXISTENTES
+-- =====================
+-- CREATE TABLE IF NOT EXISTS (db_script.sql) no modifica una tabla que ya
+-- existe -- este bloque es el que de verdad garantiza tenant_id sin importar
+-- si la tabla es nueva o si ya tenia datos de antes. Ver docs/07-plan-multitenancy.md.
+
+DO $$
+DECLARE
+    tbl text;
+    tenant_tables text[] := ARRAY[
+        'empleado','licencia','dispositivos','historial_asignacion_camion','camion',
+        'alerta_mantenimiento','registro_mantenimiento','ruta_camion','ruta','punto_recoleccion',
+        'relleno_sanitario','estado_camion','registro_vaciado','colonia','ciudadano','domicilio',
+        'alerta_usuario','aviso','anomalia'
+    ];
+BEGIN
+    FOREACH tbl IN ARRAY tenant_tables LOOP
+        EXECUTE format('ALTER TABLE %I ADD COLUMN IF NOT EXISTS tenant_id INTEGER NOT NULL DEFAULT 1', tbl);
+
+        IF NOT EXISTS (
+            SELECT 1 FROM information_schema.table_constraints
+            WHERE constraint_name = 'fk_' || tbl || '_tenant'
+        ) THEN
+            EXECUTE format('ALTER TABLE %I ADD CONSTRAINT %I FOREIGN KEY (tenant_id) REFERENCES tenant(tenant_id)', tbl, 'fk_' || tbl || '_tenant');
+        END IF;
+    END LOOP;
+END $$;
+
+-- =====================
+-- MULTITENANCY: ROW LEVEL SECURITY
+-- =====================
+-- empleado y ciudadano quedan fuera de RLS a proposito: el login los busca
+-- por email/username de forma global, antes de conocer el tenant -- forzar
+-- RLS ahi bloquearia el login de cualquiera que no fuera del tenant 1.
+-- El fallback a tenant 1 (en vez de bloquear todo sin contexto) permite
+-- activar RLS de forma incremental: los modulos que aun no llamen
+-- RunInTenantTx siguen funcionando igual que hoy. Ver docs/07-plan-multitenancy.md Fase 5.
+DO $$
+DECLARE
+    tbl text;
+    rls_tables text[] := ARRAY[
+        'licencia','dispositivos','historial_asignacion_camion','camion',
+        'alerta_mantenimiento','registro_mantenimiento','ruta_camion','ruta','punto_recoleccion',
+        'relleno_sanitario','estado_camion','registro_vaciado','colonia','domicilio',
+        'alerta_usuario','aviso','anomalia'
+    ];
+BEGIN
+    FOREACH tbl IN ARRAY rls_tables LOOP
+        EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', tbl);
+        EXECUTE format('ALTER TABLE %I FORCE ROW LEVEL SECURITY', tbl);
+
+        IF NOT EXISTS (
+            SELECT 1 FROM pg_policies
+            WHERE tablename = tbl AND policyname = 'tenant_isolation'
+        ) THEN
+            EXECUTE format(
+                'CREATE POLICY tenant_isolation ON %I USING (tenant_id = COALESCE(NULLIF(current_setting(%L, true), %L)::integer, 1))',
+                tbl, 'app.current_tenant', ''
+            );
+        END IF;
+    END LOOP;
+END $$;
+
+-- =====================
+-- MULTITENANCY: DESACTIVAR SUPERUSER EN EL ROL DE CONEXION DE LA APP
+-- =====================
+-- Hallazgo de docs/08-multitenancy-implementado.md (Fase 5): los superusuarios
+-- de Postgres ignoran RLS sin importar FORCE ROW LEVEL SECURITY. El rol que usa
+-- la app para conectarse (current_user en este script, el mismo DB_USER de
+-- .env que corre init-database.sh) se crea superusuario por defecto porque asi
+-- funciona la imagen oficial de postgres con POSTGRES_USER. Sin este bloque,
+-- las politicas tenant_isolation de mas abajo quedan definidas pero inertes
+-- para el trafico real de la app.
+--
+-- Por que ALTER ROLE en vez de crear un rol nuevo separado: este mismo rol ya
+-- es el DUENO de las 19 tablas tenant-scoped (las creo al correr db_script.sql
+-- en la primera inicializacion). Quitarle SUPERUSER no le quita privilegios
+-- sobre lo que ya posee -- un dueno de tabla puede seguir haciendo ALTER
+-- TABLE/CREATE POLICY/etc. sobre sus propias tablas sin ser superusuario. Y
+-- justamente por eso el bloque de RLS de arriba usa FORCE ROW LEVEL SECURITY:
+-- esa clausula hace que la politica aplique incluso al dueno de la tabla, no
+-- solo a otros roles. Crear un segundo rol de aplicacion habria significado
+-- migrar GRANTs tabla por tabla y mantenerlos sincronizados a mano cada vez
+-- que se agregue una tabla nueva -- innecesario cuando el rol que ya existe
+-- puede quedarse como dueno y simplemente perder el bypass de RLS.
+--
+-- Se mantiene CREATEDB porque init-database.sh usa este mismo rol para el
+-- CREATE DATABASE de la primera inicializacion (db_script.sql, linea 4) -- sin
+-- esta clausula, un ambiente levantado desde cero (volumen nuevo) fallaria en
+-- ese paso al ya no ser superusuario.
+--
+-- Idempotente: no-op en corridas siguientes, una vez que rolsuper ya es false.
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM pg_roles WHERE rolname = current_user AND rolsuper = true
+    ) THEN
+        EXECUTE format('ALTER ROLE %I NOSUPERUSER CREATEDB', current_user);
+        RAISE NOTICE 'Rol % degradado de SUPERUSER a NOSUPERUSER (CREATEDB conservado) -- RLS ahora aplica de verdad.', current_user;
+    END IF;
+END $$;
+
+-- =====================
 -- CONSTRAINTS
 -- =====================
 
